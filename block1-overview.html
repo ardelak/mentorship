@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Block 1 Overview: Python & Git Foundations — Mentoring for Levani</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17223B;
+    --ink-soft:#4B5670;
+    --paper:#F3F1E7;
+    --card:#FFFFFF;
+    --amber:#B8791C;
+    --amber-deep:#8F5D12;
+    --amber-wash:#F1E1BE;
+    --rule:#D8D1BC;
+    --green:#3F7A56;
+    --green-wash:#E1EEE6;
+    --danger:#9C3B2E;
+    --danger-wash:#F5E1DC;
+    --vs-bg:#1E1E1E;
+    --vs-tabs:#252526;
+    --vs-text:#D4D4D4;
+    --vs-keyword:#569CD6;
+    --vs-string:#CE9178;
+    --vs-comment:#6A9955;
+    --vs-func:#DCDCAA;
+    --vs-var:#9CDCFE;
+    --vs-num:#B5CEA8;
+    --term-bg:#111417;
+    --term-text:#D8DEE4;
+    --term-prompt:#6FCF97;
+    --radius-sm:6px;
+    --radius-md:12px;
+    --shadow: 0 1px 2px rgba(23,34,59,0.06), 0 6px 20px rgba(23,34,59,0.07);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(23,34,59,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Karla', sans-serif;
+    font-size:16.5px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Newsreader', serif; color:var(--ink); margin:0; }
+  a{ color:var(--amber-deep); }
+  ::selection{ background:var(--amber-wash); }
+
+  /* ---------- top nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(243,241,231,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--rule);
+    padding:0.7rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    flex-wrap:wrap;
+  }
+  .topnav .brand{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:1.05rem; color:var(--ink); white-space:nowrap;
+  }
+  .topnav .links{ display:flex; gap:0.35rem; flex-wrap:wrap; margin-left:auto; }
+  .topnav a.pill{
+    font-size:0.82rem; color:var(--ink-soft); text-decoration:none;
+    padding:0.3rem 0.7rem; border-radius:999px; border:1px solid transparent;
+  }
+  .topnav a.pill:hover{ border-color:var(--rule); background:var(--card); color:var(--ink); }
+
+  /* ---------- layout ---------- */
+  .wrap{ max-width:820px; margin:0 auto; padding:0 1.5rem 6rem; }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:3.5rem 0 2.5rem; text-align:center; }
+  .stamp{
+    width:110px; height:110px; margin:0 auto 1.6rem;
+    border:2px dashed var(--amber);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(-5deg);
+    color:var(--amber-deep);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.04em; text-align:center;
+    line-height:1.3;
+  }
+  .hero h1{
+    font-size:2.8rem; font-style:italic; font-weight:500;
+    max-width:680px; margin:0 auto 0.6rem; line-height:1.15;
+  }
+  .hero .for-line{ color:var(--ink-soft); font-size:1.1rem; margin-bottom:1.4rem; }
+  .hero .for-line strong{ color:var(--ink); font-weight:600; }
+  .chips{ display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .chip{
+    font-size:0.8rem; font-family:'JetBrains Mono', monospace;
+    background:var(--card); border:1px solid var(--rule);
+    padding:0.32rem 0.75rem; border-radius:999px; color:var(--ink-soft);
+  }
+
+  /* ---------- objective panel ---------- */
+  .objective{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:1.6rem 1.8rem;
+    margin:2rem 0;
+    box-shadow:var(--shadow);
+  }
+  .objective h2{ font-size:1.2rem; margin-bottom:0.5rem; }
+  .objective p{ color:var(--ink-soft); margin:0 0 0.8rem; }
+  .objective p:last-child{ margin:0; }
+
+  /* ---------- timeline grid ---------- */
+  .timeline-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:0.6rem;
+    margin:2.2rem 0 2.6rem;
+  }
+  .timeline-grid a{
+    text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-sm); padding:0.8rem 0.6rem;
+    text-align:center; display:block; transition:all 0.15s ease;
+  }
+  .timeline-grid a:hover{ border-color:var(--amber); transform:translateY(-2px); }
+  .timeline-grid .t-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--amber-deep);
+    display:block; margin-bottom:0.2rem;
+  }
+  .timeline-grid .t-label{ font-size:0.82rem; color:var(--ink); font-weight:600; line-height:1.25; }
+  @media (max-width:680px){ .timeline-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ---------- waypoint sections ---------- */
+  .trail{ position:relative; padding-left:2.6rem; }
+  .trail::before{
+    content:""; position:absolute; left:1.05rem; top:0.4rem; bottom:0.4rem;
+    width:2px; background-image:linear-gradient(var(--rule) 60%, transparent 0%);
+    background-size: 2px 10px; background-repeat:repeat-y;
+  }
+  .waypoint{ position:relative; margin-bottom:3.5rem; }
+  .waypoint .stamp-num{
+    position:absolute; left:-2.6rem; top:0.1rem;
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.95rem; font-weight:600;
+  }
+  .waypoint .wp-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--amber-deep);
+    margin-bottom:0.2rem; display:block;
+  }
+  .waypoint h2{ font-size:1.6rem; margin-bottom:0.2rem; }
+  .waypoint .wp-sub{ color:var(--ink-soft); margin-bottom:1.2rem; font-size:0.98rem; }
+
+  .lead-list{ margin:0 0 1.2rem; padding-left:1.2rem; }
+  .lead-list li{ margin-bottom:0.55rem; }
+
+  /* ---------- agenda box ---------- */
+  .agenda-box{
+    background:rgba(23,34,59,0.03);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-sm);
+    padding:0.9rem 1.1rem;
+    margin:1rem 0 1.4rem;
+    font-size:0.92rem;
+  }
+  .agenda-box h4{
+    font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;
+  }
+  .agenda-grid{ display:grid; grid-template-columns:auto 1fr; gap:0.4rem 1rem; }
+  .agenda-time{ font-family:'JetBrains Mono', monospace; color:var(--amber-deep); font-weight:500; }
+
+  /* ---------- callout cards ---------- */
+  .note{
+    border-radius:var(--radius-sm);
+    padding:1rem 1.15rem;
+    margin:1.2rem 0;
+    font-size:0.95rem;
+    border:1px solid var(--rule);
+  }
+  .note .note-label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.03em; margin-bottom:0.35rem; font-weight:600;
+  }
+  .note.tip{ background:var(--amber-wash); border-color:#e2c98a; }
+  .note.tip .note-label{ color:var(--amber-deep); }
+  .note.hint{ background:#EEF1F7; border-color:#c9d2e6; }
+  .note.hint .note-label{ color:#3B4E80; }
+  .note.watch{ background:var(--danger-wash); border-color:#e3b6ac; }
+  .note.watch .note-label{ color:var(--danger); }
+  .note.win{ background:var(--green-wash); border-color:#b9d8c5; }
+  .note.win .note-label{ color:var(--green); }
+  .note p{ margin:0 0 0.4rem; }
+  .note p:last-child{ margin-bottom:0; }
+  .note code{ background:rgba(0,0,0,0.06); padding:0.1rem 0.35rem; border-radius:4px; }
+
+  /* ---------- code window (VS Code look) ---------- */
+  .editor{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--vs-bg);
+  }
+  .editor .tabbar{
+    background:var(--vs-tabs);
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+    border-bottom:1px solid #111;
+  }
+  .editor .filename{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:#c9c9c9;
+    background:#1e1e1e; padding:0.28rem 0.7rem; border-radius:6px 6px 0 0;
+  }
+  .editor .copy-btn{
+    margin-left:auto; background:none; border:1px solid #3c3c3c; color:#c9c9c9;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .editor .copy-btn:hover{ background:#2d2d2d; }
+  .editor pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.65;
+    color:var(--vs-text);
+  }
+  .kw{ color:var(--vs-keyword); }
+  .str{ color:var(--vs-string); }
+  .cm{ color:var(--vs-comment); font-style:italic; }
+  .fn{ color:var(--vs-func); }
+  .vr{ color:var(--vs-var); }
+  .nm{ color:var(--vs-num); }
+
+  /* ---------- terminal window ---------- */
+  .term{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--term-bg);
+  }
+  .term .tabbar{
+    background:#1a1d21;
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+  }
+  .term .dots{ display:flex; gap:0.32rem; }
+  .term .dots span{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .term .dots span:nth-child(1){ background:#ff5f56; }
+  .term .dots span:nth-child(2){ background:#ffbd2e; }
+  .term .dots span:nth-child(3){ background:#27c93f; }
+  .term .termtitle{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#9aa4ad; margin-left:0.3rem; }
+  .term .copy-btn{
+    margin-left:auto; background:none; border:1px solid #33383d; color:#9aa4ad;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .term .copy-btn:hover{ background:#22262b; }
+  .term pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.7;
+    color:var(--term-text);
+  }
+  .term .prompt{ color:var(--term-prompt); }
+  .term .out{ color:#e7ebee; }
+  .term .cmt{ color:#7d8892; }
+
+  /* ---------- tables ---------- */
+  table.cmdtable{ width:100%; border-collapse:collapse; margin:1.2rem 0; font-size:0.93rem; }
+  table.cmdtable th, table.cmdtable td{
+    text-align:left; padding:0.6rem 0.7rem; border-bottom:1px solid var(--rule); vertical-align:top;
+  }
+  table.cmdtable th{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  table.cmdtable code{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-size:0.85rem; }
+
+  /* ---------- checklist ---------- */
+  .checklist{ background:var(--card); border:1px solid var(--rule); border-radius:var(--radius-md); padding:1.2rem 1.4rem; margin:1.2rem 0; }
+  .check-item{ display:flex; align-items:flex-start; gap:0.6rem; padding:0.4rem 0; }
+  .check-item input{ margin-top:0.3rem; width:16px; height:16px; accent-color:var(--amber); flex:none; }
+  .check-item label{ cursor:pointer; }
+  .check-item input:checked + label{ text-decoration:line-through; color:var(--ink-soft); opacity:0.7; }
+
+  /* ---------- dossier (homework) ---------- */
+  .dossier{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:2rem 1.9rem;
+    margin:2.5rem 0;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .dossier::before{
+    content:"BLOCK 1 ROADMAP";
+    position:absolute; top:-0.75rem; left:1.7rem;
+    background:var(--ink); color:var(--paper);
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem; letter-spacing:0.06em;
+    padding:0.25rem 0.7rem; border-radius:999px;
+  }
+  .dossier h2{ font-size:1.6rem; margin-bottom:0.2rem; }
+  .dossier .meta{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); margin-bottom:1.4rem; }
+  .step{ margin:1.6rem 0; }
+  .step h3{ font-size:1.1rem; margin-bottom:0.4rem; }
+  .step .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.6rem; height:1.6rem; border-radius:50%; background:var(--amber-wash);
+    color:var(--amber-deep); font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+    margin-right:0.5rem;
+  }
+
+  /* ---------- divider ---------- */
+  .divider{ display:flex; align-items:center; gap:0.8rem; margin:3rem 0 2.4rem; color:var(--ink-soft); }
+  .divider::before, .divider::after{ content:""; flex:1; border-top:1px dashed var(--rule); }
+  .divider span{ font-family:'JetBrains Mono', monospace; font-size:0.78rem; }
+
+  /* ---------- closing ---------- */
+  .closing{
+    text-align:center; padding:3rem 1rem 1rem; color:var(--ink-soft);
+  }
+  .closing h2{ font-style:italic; font-size:1.6rem; color:var(--ink); margin-bottom:0.6rem; }
+  .closing p{ max-width:520px; margin:0 auto; }
+
+  /* ---------- scroll top ---------- */
+  .scroll-top{
+    position:fixed; bottom:1.6rem; right:1.6rem;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:999px;
+    width:42px; height:42px; font-size:1.1rem;
+    cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  }
+  .scroll-top:hover{ opacity:0.85; }
+
+  code.inline{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-family:'JetBrains Mono', monospace; font-size:0.85em; }
+
+  @media (max-width:640px){
+    .trail{ padding-left:2.1rem; }
+    .waypoint .stamp-num{ left:-2.1rem; width:1.9rem; height:1.9rem; font-size:0.82rem; }
+    .hero h1{ font-size:2.15rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="brand">Block 1 Syllabus Overview</span>
+  <div class="links">
+    <a class="pill" href="#overview">Overview</a>
+    <a class="pill" href="#l1">L1</a>
+    <a class="pill" href="#l2">L2</a>
+    <a class="pill" href="#l3">L3</a>
+    <a class="pill" href="#l4">L4</a>
+    <a class="pill" href="#l5">L5</a>
+    <a class="pill" href="#l6">L6</a>
+    <a class="pill" href="#l7">L7</a>
+    <a class="pill" href="#l8">L8</a>
+    <a class="pill" href="#homework-roadmap">Homework</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="hero" id="overview">
+    <div class="stamp">BLOCK 1<br/>COMPLETE<br/>✓ OVERVIEW</div>
+    <h1>Python &amp; Git Foundations</h1>
+    <p class="for-line">Individual mentoring curriculum for <strong>Levani</strong> — From First Terminal Command to GitHub Portfolio Project</p>
+    <div class="chips">
+      <span class="chip">⏱ 8 Sessions (60 Min)</span>
+      <span class="chip">🐍 Python OOP</span>
+      <span class="chip">📦 Git &amp; GitHub</span>
+      <span class="chip">📁 JSON Storage</span>
+    </div>
+  </section>
+
+  <div class="objective">
+    <h2>Block 1 Learning Outcomes</h2>
+    <p>By the end of Block 1, Levani transitions from writing basic scripts to building structured, object-oriented Command Line Interface (CLI) applications managed through professional Git version control.</p>
+    <p>Every session combines structured concept walkthroughs, live pair programming, and a scaffolded homework assignment designed to build real developer habits without cognitive overwhelm.</p>
+  </div>
+
+  <div class="timeline-grid">
+    <a href="#l1"><span class="t-time">Lesson 1</span><span class="t-label">VS Code &amp; Terminal</span></a>
+    <a href="#l2"><span class="t-time">Lesson 2</span><span class="t-label">Git &amp; GitHub Basics</span></a>
+    <a href="#l3"><span class="t-time">Lesson 3</span><span class="t-label">Objects: Blueprints</span></a>
+    <a href="#l4"><span class="t-time">Lesson 4</span><span class="t-label">Objects: Methods</span></a>
+    <a href="#l5"><span class="t-time">Lesson 5</span><span class="t-label">Lists &amp; JSON Persistence</span></a>
+    <a href="#l6"><span class="t-time">Lesson 6</span><span class="t-label">Errors &amp; AI Partner</span></a>
+    <a href="#l7"><span class="t-time">Lesson 7</span><span class="t-label">Mini-Project Skeleton</span></a>
+    <a href="#l8"><span class="t-time">Lesson 8</span><span class="t-label">Merge &amp; Launch!</span></a>
+  </div>
+
+  <div class="trail">
+
+    <!-- ===================== LESSON 1 ===================== -->
+    <section class="waypoint" id="l1">
+      <span class="stamp-num">1</span>
+      <span class="wp-time">Lesson 1 · 60 Minutes</span>
+      <h2>Hello, Developer World! — VS Code &amp; Terminal Basics</h2>
+      <p class="wp-sub">Objective: Get comfortable inside VS Code, run Python scripts directly from the terminal, and understand local execution.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:15</span><span>Welcome &amp; Low-Stress VS Code Setup</span>
+          <span class="agenda-time">00:15 – 00:35</span><span>Pair Programming: Terminal Commands &amp; Interactive Scripting</span>
+          <span class="agenda-time">00:35 – 00:50</span><span>Introducing the Starter Template Workflow (<code class="inline"># TODO</code>)</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Session Recap &amp; Confidence Check</span>
+        </div>
+      </div>
+
+      <p>Key terminal commands introduced for cross-platform navigation:</p>
+      <table class="cmdtable">
+        <tr><th>Question</th><th>Mac / Linux</th><th>Windows</th><th>Action</th></tr>
+        <tr><td><em>Where am I?</em></td><td><code>pwd</code></td><td><code>cd</code> / <code>pwd</code></td><td>Prints current directory path</td></tr>
+        <tr><td><em>What's here?</em></td><td><code>ls</code></td><td><code>dir</code></td><td>Lists directory contents</td></tr>
+        <tr><td><em>Move around</em></td><td><code>cd folder</code></td><td><code>cd folder</code></td><td>Navigates into folder (<code>cd ..</code> steps out)</td></tr>
+      </table>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">main.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="vr">name</span> = <span class="fn">input</span>(<span class="str">"What's your name? "</span>)
+<span class="vr">age</span> = <span class="fn">input</span>(<span class="str">"How old are you? "</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="str">"Hello, {name}! In 5 years you'll be {int(age) + 5}."</span>)</code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">AHA! MOMENT</span>
+        <p>Typing <code class="inline">python main.py</code> in the terminal and watching the computer prompt for user input, process the response, and return a dynamic f-string calculation!</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Profile Generator Script</h2>
+        <p class="meta">profile_builder.py &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <p>Turn three interactive inputs into a neatly formatted ASCII profile badge printed to the terminal screen.</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l1c1"><label for="l1c1">Ask user for name, language, and hobby using <code class="inline">input()</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l1c2"><label for="l1c2">Format and print an ASCII border profile badge using f-strings.</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 2 ===================== -->
+    <section class="waypoint" id="l2">
+      <span class="stamp-num">2</span>
+      <span class="wp-time">Lesson 2 · 60 Minutes</span>
+      <h2>Your Code Time Machine — Git &amp; GitHub Basics</h2>
+      <p class="wp-sub">Objective: Understand Git as a "save point" system for code, make local commits, and push a project to a private GitHub repository.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:10</span><span>Homework Showcase: Levani runs Profile Generator live!</span>
+          <span class="agenda-time">00:10 – 00:35</span><span>Concept Walkthrough: The Git Mental Model (Checkpoints &amp; Cloud)</span>
+          <span class="agenda-time">00:35 – 00:50</span><span>Pair Programming: First Push (Init, Commit, Remote Connect)</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Wrap-up &amp; Checklist Review</span>
+        </div>
+      </div>
+
+      <div class="note hint">
+        <span class="note-label">THE 4 ESSENTIAL GIT COMMANDS</span>
+        <p><strong>1. <code class="inline">git status</code></strong> — Inspect changes in your repository.<br/>
+        <strong>2. <code class="inline">git add .</code></strong> — Stage all altered files for the next checkpoint.<br/>
+        <strong>3. <code class="inline">git commit -m "..."</code></strong> — Save staged snapshot with a descriptive message.<br/>
+        <strong>4. <code class="inline">git push</code></strong> — Upload local commits to remote GitHub servers.</p>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — First Push Workflow</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">git init</span>
+<span class="prompt">$</span> <span class="out">git add .</span>
+<span class="prompt">$</span> <span class="out">git commit -m "feat: initial commit of profile generator"</span>
+<span class="prompt">$</span> <span class="out">git branch -M main</span>
+<span class="prompt">$</span> <span class="out">git remote add origin https://github.com/levani/python-journal.git</span>
+<span class="prompt">$</span> <span class="out">git push -u origin main</span></code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">AHA! MOMENT</span>
+        <p>Refreshing the GitHub web page in a browser and seeing local code and commit history appear online instantly!</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: GitHub Journal Entry</h2>
+        <p class="meta">README.md &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <p>Open project in VS Code, fill in 3 bullet points under <code class="inline"># My Coding Journal</code> in <code class="inline">README.md</code>, and push changes to GitHub.</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l2c1"><label for="l2c1">Run <code class="inline">git status</code> and <code class="inline">git add README.md</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l2c2"><label for="l2c2">Commit: <code class="inline">git commit -m "docs: add week 2 journal entry"</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l2c3"><label for="l2c3">Push code with <code class="inline">git push</code> and verify update on GitHub.com.</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 3 ===================== -->
+    <section class="waypoint" id="l3">
+      <span class="stamp-num">3</span>
+      <span class="wp-time">Lesson 3 · 60 Minutes</span>
+      <h2>Thinking in Objects (Part 1) — The Blueprint &amp; Attributes</h2>
+      <p class="wp-sub">Objective: Understand why procedural variables become messy and learn how to create custom object blueprints using Python <code class="inline">class</code> and <code class="inline">__init__()</code>.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:10</span><span>Git Warm-up: Verify GitHub journal update &amp; run <code class="inline">git status</code></span>
+          <span class="agenda-time">00:10 – 00:30</span><span>The Core Concept: Blueprints (Cookie Cutter) vs. Objects (Cookies)</span>
+          <span class="agenda-time">00:30 – 00:50</span><span>Pair Programming: Building &amp; Instantiating Custom Instances</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Wrap-up &amp; Homework Walkthrough</span>
+        </div>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">player.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Player</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">name</span>, <span class="vr">score</span>):
+        <span class="vr">self</span>.name = <span class="vr">name</span>
+        <span class="vr">self</span>.score = <span class="vr">score</span>
+
+<span class="cm"># Instantiating two distinct objects</span>
+<span class="vr">player1</span> = <span class="fn">Player</span>(<span class="str">"Levani"</span>, <span class="nm">100</span>)
+<span class="vr">player2</span> = <span class="fn">Player</span>(<span class="str">"Alexey"</span>, <span class="nm">85</span>)
+
+<span class="fn">print</span>(<span class="vr">player1</span>.name)   <span class="cm"># Dot notation access -> "Levani"</span>
+<span class="fn">print</span>(<span class="vr">player2</span>.score)  <span class="cm"># Dot notation access -> 85</span></code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">AHA! MOMENT</span>
+        <p>Realizing that a single class blueprint can spawn dozens of unique object instances, each holding its own state and data!</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Game Character Blueprint</h2>
+        <p class="meta">character_factory.py &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l3c1"><label for="l3c1">Step 1: Fill <code class="inline"># TODO</code> inside <code class="inline">__init__()</code> for <code class="inline">level</code> (default 1) &amp; <code class="inline">health</code> (default 100).</label></div>
+          <div class="check-item"><input type="checkbox" id="l3c2"><label for="l3c2">Step 2: Instantiate 3 unique characters (Hero, Villain, Ally) with custom attributes.</label></div>
+          <div class="check-item"><input type="checkbox" id="l3c3"><label for="l3c3">Step 3: Print character summaries using dot notation in terminal.</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 4 ===================== -->
+    <section class="waypoint" id="l4">
+      <span class="stamp-num">4</span>
+      <span class="wp-time">Lesson 4 · 60 Minutes</span>
+      <h2>Thinking in Objects (Part 2) — Methods &amp; Changing State</h2>
+      <p class="wp-sub">Objective: Add actions (methods) to classes, modify object state dynamically, and use <code class="inline">__str__</code> for friendly print outputs.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:10</span><span>Review &amp; Homework Check (<code class="inline">character_factory.py</code>)</span>
+          <span class="agenda-time">00:10 – 00:35</span><span>Concept Walkthrough: Methods, <code class="inline">self</code> Mutation &amp; <code class="inline">__str__</code> Formatting</span>
+          <span class="agenda-time">00:35 – 00:50</span><span>Pair Programming: Interactive Character State Loop</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Wrap-up &amp; Git Push</span>
+        </div>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">character.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Character</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">name</span>, <span class="vr">health</span>=<span class="nm">100</span>):
+        <span class="vr">self</span>.name = <span class="vr">name</span>
+        <span class="vr">self</span>.health = <span class="vr">health</span>
+
+    <span class="kw">def</span> <span class="fn">take_damage</span>(<span class="vr">self</span>, <span class="vr">amount</span>):
+        <span class="vr">self</span>.health -= <span class="vr">amount</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"{self.name} took {amount} damage! Health: {self.health}"</span>)
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="vr">self</span>):
+        <span class="kw">return</span> <span class="kw">f</span><span class="str">"Character: {self.name} | HP: {self.health}/100"</span></code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">AHA! MOMENT</span>
+        <p>Replacing cryptic memory addresses like <code class="inline">&lt;__main__.Player object at 0x...&gt;</code> with clean, automatically formatted string outputs simply by defining <code class="inline">__str__</code>!</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Digital Pet Simulator</h2>
+        <p class="meta">pet.py &amp; test_pet.py &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l4c1"><label for="l4c1">Implement <code class="inline">feed()</code> method (decreases <code class="inline">hunger</code> by 20).</label></div>
+          <div class="check-item"><input type="checkbox" id="l4c2"><label for="l4c2">Implement <code class="inline">play()</code> method (increases <code class="inline">hunger</code> by 10, decreases <code class="inline">energy</code> by 15).</label></div>
+          <div class="check-item"><input type="checkbox" id="l4c3"><label for="l4c3">Implement <code class="inline">__str__()</code> returning <code class="inline">"Pet: [Name] | Hunger: [X]/100 | Energy: [Y]/100"</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l4c4"><label for="l4c4">Run provided test script <code class="inline">python test_pet.py</code> to verify all 3 test checks pass!</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 5 ===================== -->
+    <section class="waypoint" id="l5">
+      <span class="stamp-num">5</span>
+      <span class="wp-time">Lesson 5 · 60 Minutes</span>
+      <h2>Lists of Objects &amp; Simple Data Files</h2>
+      <p class="wp-sub">Objective: Store multiple custom objects inside Python lists, iterate over them with loops, and save/load data using <code class="inline">.json</code> files.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:10</span><span>Pet Simulator Showcase: Review Levani's code &amp; test output</span>
+          <span class="agenda-time">00:10 – 00:30</span><span>Concept Walkthrough: Manager Pattern, Object Collections &amp; JSON</span>
+          <span class="agenda-time">00:30 – 00:50</span><span>Pair Programming: Mini Collection Manager (JSON load/display)</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Wrap-up &amp; Homework Explanation</span>
+        </div>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">manager.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> json
+
+<span class="cm"># Iterating over a list of custom objects</span>
+<span class="vr">pet_list</span> = [<span class="fn">Pet</span>(<span class="str">"Rex"</span>), <span class="fn">Pet</span>(<span class="str">"Milo"</span>)]
+<span class="kw">for</span> <span class="vr">pet</span> <span class="kw">in</span> <span class="vr">pet_list</span>:
+    <span class="vr">pet</span>.<span class="fn">feed</span>()
+
+<span class="cm"># Saving object data to JSON</span>
+<span class="vr">raw_data</span> = [{<span class="str">"name"</span>: <span class="vr">p</span>.name, <span class="str">"hunger"</span>: <span class="vr">p</span>.hunger} <span class="kw">for</span> <span class="vr">p</span> <span class="kw">in</span> <span class="vr">pet_list</span>]
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> <span class="vr">f</span>:
+    json.<span class="fn">dump</span>(<span class="vr">raw_data</span>, <span class="vr">f</span>, indent=<span class="nm">2</span>)</code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">FIELD NOTE</span>
+        <p>JSON (JavaScript Object Notation) is the universal format for storing and transferring structured data across modern apps and APIs.</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Inventory List Manager</h2>
+        <p class="meta">inventory_app/ &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l5c1"><label for="l5c1">Step 1: Complete <code class="inline">for</code> loop in <code class="inline">display_all_items()</code> to print every inventory object.</label></div>
+          <div class="check-item"><input type="checkbox" id="l5c2"><label for="l5c2">Step 2: Un-comment provided JSON loading code to read automatically from <code class="inline">items.json</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l5c3"><label for="l5c3">Self-Check: Add new item, restart script, and confirm state persists across runs!</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 6 ===================== -->
+    <section class="waypoint" id="l6">
+      <span class="stamp-num">6</span>
+      <span class="wp-time">Lesson 6 · 60 Minutes</span>
+      <h2>Decoding Errors &amp; AI as Your Coding Partner</h2>
+      <p class="wp-sub">Objective: Demystify terminal error messages (Tracebacks) and learn how to use AI tools as debugging assistants without copy-pasting blindly.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:15</span><span>Concept Walkthrough: Anatomy of a Traceback (Line Numbers &amp; Error Types)</span>
+          <span class="agenda-time">00:15 – 00:40</span><span>Interactive Exercise: "Bug Hunt" (Debugging 3 intentional errors)</span>
+          <span class="agenda-time">00:40 – 00:55</span><span>Prompting Framework: The "Explain, Don't Fix" AI Template</span>
+          <span class="agenda-time">00:55 – 01:00</span><span>Wrap-up &amp; Git Push</span>
+        </div>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">COMMON TRACEBACK CATALOG</span>
+        <p>• <strong>NameError:</strong> Variable name misspelled or accessed before assignment.<br/>
+        • <strong>TypeError:</strong> Operation performed on incompatible types (e.g., <code class="inline">"10" + 5</code>).<br/>
+        • <strong>AttributeError:</strong> Trying to access a method/variable that doesn't exist on an object.<br/>
+        • <strong>IndexError:</strong> Attempting to access a list position outside its valid bounds.</p>
+      </div>
+
+      <div class="note hint">
+        <span class="note-label">THE "EXPLAIN, DON'T FIX" PROMPT TEMPLATE</span>
+        <p><em>"I am getting this Python error in my CLI application: <strong>[Paste Traceback Error]</strong>. Explain why this happened and give me a step-by-step hint on how to fix it, but do not write the full code solution for me."</em></p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Guided Bug Repair Challenge</h2>
+        <p class="meta">buggy_script.py &amp; NOTES.md &nbsp;·&nbsp; estimated time: 1 – 1.5 hours</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l6c1"><label for="l6c1">Run <code class="inline">buggy_script.py</code> and identify the terminal traceback error names.</label></div>
+          <div class="check-item"><input type="checkbox" id="l6c2"><label for="l6c2">Use the AI prompt template to analyze *why* each error occurs.</label></div>
+          <div class="check-item"><input type="checkbox" id="l6c3"><label for="l6c3">Fix the 3 bugs line-by-line, document solutions in <code class="inline">NOTES.md</code>, and push to GitHub.</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 7 ===================== -->
+    <section class="waypoint" id="l7">
+      <span class="stamp-num">7</span>
+      <span class="wp-time">Lesson 7 · 60 Minutes</span>
+      <h2>Mini-Project Phase 1 — Building the Skeleton</h2>
+      <p class="wp-sub">Objective: Collaboratively select and set up the Block 1 CLI Mini-Project (Task Tracker, Study Planner, or Game Inventory), building the app skeleton using starter scaffolding.</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:15</span><span>Collaborative Project Selection &amp; Blueprint Diagram Review</span>
+          <span class="agenda-time">00:15 – 00:45</span><span>Pair Programming: Setting Up Project Skeleton &amp; Core Options</span>
+          <span class="agenda-time">00:45 – 01:00</span><span>Git Feature Branch Setup (<code class="inline">git checkout -b feature/user-inputs</code>)</span>
+        </div>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Project Architecture Overview</span></div>
+        <pre><code><span class="cmt">project_scaffold/
+├── item.py      </span><span class="out"># Data model class (Item attributes & __str__)</span><span class="cmt">
+├── manager.py   </span><span class="out"># Collection management & JSON load/save methods</span><span class="cmt">
+├── main.py      </span><span class="out"># Interactive menu loop & user inputs</span><span class="cmt">
+└── data.json    </span><span class="out"># Persistent storage file</span></code></pre>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Terminal — Feature Branch Commands</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">git checkout -b feature/user-inputs</span>
+<span class="cmt">Switched to a new branch 'feature/user-inputs'</span></code></pre>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Sprint 1 — User Input Options</h2>
+        <p class="meta">Work inside branch: feature/user-inputs &nbsp;·&nbsp; estimated time: 1.5 hours</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l7c1"><label for="l7c1">Step 1 (<code class="inline"># TODO</code>): Implement Option 3 ("Mark Item Complete" / "Update Item").</label></div>
+          <div class="check-item"><input type="checkbox" id="l7c2"><label for="l7c2">Step 2 (<code class="inline"># TODO</code>): Implement Option 4 ("Delete Item") using guidance comments in <code class="inline">manager.py</code>.</label></div>
+          <div class="check-item"><input type="checkbox" id="l7c3"><label for="l7c3">Push branch: <code class="inline">git push origin feature/user-inputs</code>.</label></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LESSON 8 ===================== -->
+    <section class="waypoint" id="l8">
+      <span class="stamp-num">8</span>
+      <span class="wp-time">Lesson 8 · 60 Minutes</span>
+      <h2>Mini-Project Phase 2 — Polishing &amp; GitHub Launch!</h2>
+      <p class="wp-sub">Objective: Finalize data persistence, merge feature branch into <code class="inline">main</code>, format a clean GitHub <code class="inline">README.md</code>, and celebrate completing Block 1!</p>
+
+      <div class="agenda-box">
+        <h4>Session Structure</h4>
+        <div class="agenda-grid">
+          <span class="agenda-time">00:00 – 00:15</span><span>Live Application Showcase: Levani demonstrates CLI features live!</span>
+          <span class="agenda-time">00:15 – 00:35</span><span>Pair Programming: Branch Merging &amp; JSON Verification</span>
+          <span class="agenda-time">00:35 – 00:50</span><span>Authoring a Great GitHub README (Title, How-to-run, Lessons Learned)</span>
+          <span class="agenda-time">00:50 – 01:00</span><span>Retrospective &amp; Block 2 Preview (Web APIs)</span>
+        </div>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — Merging Feature Branch to Main</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">git checkout main</span>
+<span class="prompt">$</span> <span class="out">git merge feature/user-inputs</span>
+<span class="prompt">$</span> <span class="out">git push origin main</span></code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">CELEBRATION MILESTONE</span>
+        <p>Transitioning from a first terminal command to publishing a fully working, version-controlled software project hosted publicly on GitHub!</p>
+      </div>
+
+      <div class="dossier" style="margin:1.5rem 0;">
+        <h2>Scaffolded Homework: Portfolio Showcase</h2>
+        <p class="meta">GitHub Portfolio Repository &nbsp;·&nbsp; estimated time: 1 hour</p>
+        <div class="checklist">
+          <div class="check-item"><input type="checkbox" id="l8c1"><label for="l8c1">Perform final formatting on GitHub project landing page (<code class="inline">README.md</code>).</label></div>
+          <div class="check-item"><input type="checkbox" id="l8c2"><label for="l8c2">Add 1 custom personal touch (e.g., terminal ASCII banner or custom color accents).</label></div>
+          <div class="check-item"><input type="checkbox" id="l8c3"><label for="l8c3">Share completed repository link with family, friends, or profile portfolio!</label></div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /.trail -->
+
+  <div class="divider"><span>BLOCK 1 MASTER HOMEWORK &amp; PROGRESS TRACKER</span></div>
+
+  <!-- ===================== MASTER HOMEWORK DOSSIER ===================== -->
+  <div class="dossier" id="homework-roadmap">
+    <h2>Levani's Block 1 Milestone Tracker</h2>
+    <p class="meta">8 Progressive Homework Assignments &nbsp;·&nbsp; Estimated Total: 8–10 Hours</p>
+
+    <div class="step">
+      <h3><span class="step-num">1</span>Lesson 1: Profile Generator Script (<code class="inline">profile_builder.py</code>)</h3>
+      <p>Build an interactive CLI prompt collecting name, programming language, and hobby, returning a framed ASCII profile badge using f-strings.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">2</span>Lesson 2: GitHub Journal Entry (<code class="inline">README.md</code>)</h3>
+      <p>Initialize local Git tracking, write a 3-bullet reflection in Markdown, make an initial commit, and execute first <code class="inline">git push</code> to GitHub.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">3</span>Lesson 3: Game Character Blueprint (<code class="inline">character_factory.py</code>)</h3>
+      <p>Implement Python class constructor <code class="inline">__init__()</code> with default arguments (<code class="inline">level=1</code>, <code class="inline">health=100</code>) and instantiate multiple unique character objects.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">4</span>Lesson 4: Digital Pet Simulator (<code class="inline">pet.py</code>)</h3>
+      <p>Add state-modifying methods (<code class="inline">feed()</code>, <code class="inline">play()</code>) and friendly string representation (<code class="inline">__str__</code>), passing 3 automated test checks in <code class="inline">test_pet.py</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">5</span>Lesson 5: Inventory List Manager (<code class="inline">inventory_app/</code>)</h3>
+      <p>Iterate over lists of custom objects, call object methods inside loops, and implement persistent load/save functions using JSON data files.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">6</span>Lesson 6: Guided Bug Repair Challenge (<code class="inline">buggy_script.py</code>)</h3>
+      <p>Read terminal traceback line numbers, diagnose common Python exceptions using an AI prompting framework, and document bug fixes in <code class="inline">NOTES.md</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">7</span>Lesson 7: Project Sprint 1 — User Inputs (<code class="inline">feature/user-inputs</code>)</h3>
+      <p>Work on a dedicated Git feature branch to code CLI update and delete features following scaffolded comments inside project manager files.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">8</span>Lesson 8: Portfolio Showcase (<code class="inline">GitHub Launch</code>)</h3>
+      <p>Merge feature branch into <code class="inline">main</code>, complete project documentation in <code class="inline">README.md</code>, add personal polish, and publish portfolio link online.</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    <h2>Outstanding Work in Block 1, Levani!</h2>
+    <p>You've built a rock-solid foundation in core Python programming, object-oriented design, error handling, and professional Git workflows. Next up in <strong>Block 2</strong>: Connecting our local programs to live Web APIs!</p>
+  </div>
+
+</div><!-- /.wrap -->
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+  function copyCode(btn){
+    const container = btn.closest('.editor, .term');
+    const codeEl = container.querySelector('pre code');
+    const text = codeEl.innerText;
+    navigator.clipboard.writeText(text).then(function(){
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(function(){ btn.textContent = original; }, 1400);
+    });
+  }
+</script>
+
+</body>
+</html>

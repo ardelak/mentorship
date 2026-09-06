@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello, Developer World! — Lesson 1 for Levani</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17223B;
+    --ink-soft:#4B5670;
+    --paper:#F3F1E7;
+    --card:#FFFFFF;
+    --amber:#B8791C;
+    --amber-deep:#8F5D12;
+    --amber-wash:#F1E1BE;
+    --rule:#D8D1BC;
+    --green:#3F7A56;
+    --green-wash:#E1EEE6;
+    --danger:#9C3B2E;
+    --danger-wash:#F5E1DC;
+    --vs-bg:#1E1E1E;
+    --vs-tabs:#252526;
+    --vs-text:#D4D4D4;
+    --vs-keyword:#569CD6;
+    --vs-string:#CE9178;
+    --vs-comment:#6A9955;
+    --vs-func:#DCDCAA;
+    --vs-var:#9CDCFE;
+    --vs-num:#B5CEA8;
+    --term-bg:#111417;
+    --term-text:#D8DEE4;
+    --term-prompt:#6FCF97;
+    --radius-sm:6px;
+    --radius-md:12px;
+    --shadow: 0 1px 2px rgba(23,34,59,0.06), 0 6px 20px rgba(23,34,59,0.07);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(23,34,59,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Karla', sans-serif;
+    font-size:16.5px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Newsreader', serif; color:var(--ink); margin:0; }
+  a{ color:var(--amber-deep); }
+  ::selection{ background:var(--amber-wash); }
+
+  /* ---------- top nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(243,241,231,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--rule);
+    padding:0.7rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    flex-wrap:wrap;
+  }
+  .topnav .brand{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:1.05rem; color:var(--ink); white-space:nowrap;
+  }
+  .topnav .links{ display:flex; gap:0.35rem; flex-wrap:wrap; margin-left:auto; }
+  .topnav a.pill{
+    font-size:0.82rem; color:var(--ink-soft); text-decoration:none;
+    padding:0.3rem 0.7rem; border-radius:999px; border:1px solid transparent;
+  }
+  .topnav a.pill:hover{ border-color:var(--rule); background:var(--card); color:var(--ink); }
+
+  /* ---------- layout ---------- */
+  .wrap{ max-width:760px; margin:0 auto; padding:0 1.5rem 6rem; }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:3.5rem 0 2.5rem; text-align:center; }
+  .stamp{
+    width:104px; height:104px; margin:0 auto 1.6rem;
+    border:2px dashed var(--amber);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(-6deg);
+    color:var(--amber-deep);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.04em; text-align:center;
+    line-height:1.3;
+  }
+  .hero h1{
+    font-size:2.6rem; font-style:italic; font-weight:500;
+    max-width:600px; margin:0 auto 0.6rem; line-height:1.15;
+  }
+  .hero .for-line{ color:var(--ink-soft); font-size:1.05rem; margin-bottom:1.4rem; }
+  .hero .for-line strong{ color:var(--ink); font-weight:600; }
+  .chips{ display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .chip{
+    font-size:0.8rem; font-family:'JetBrains Mono', monospace;
+    background:var(--card); border:1px solid var(--rule);
+    padding:0.32rem 0.75rem; border-radius:999px; color:var(--ink-soft);
+  }
+
+  /* ---------- objective panel ---------- */
+  .objective{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:1.5rem 1.75rem;
+    margin:2rem 0;
+    box-shadow:var(--shadow);
+  }
+  .objective h2{ font-size:1.15rem; margin-bottom:0.5rem; }
+  .objective p{ color:var(--ink-soft); margin:0; }
+
+  /* ---------- timeline strip ---------- */
+  .timeline{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem;
+    margin:2.2rem 0 2.6rem;
+  }
+  .timeline a{
+    text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-sm); padding:0.8rem 0.6rem;
+    text-align:center; display:block;
+  }
+  .timeline a:hover{ border-color:var(--amber); }
+  .timeline .t-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--amber-deep);
+    display:block; margin-bottom:0.3rem;
+  }
+  .timeline .t-label{ font-size:0.82rem; color:var(--ink); font-weight:600; }
+  @media (max-width:640px){ .timeline{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ---------- waypoint sections ---------- */
+  .trail{ position:relative; padding-left:2.6rem; }
+  .trail::before{
+    content:""; position:absolute; left:1.05rem; top:0.4rem; bottom:0.4rem;
+    width:2px; background-image:linear-gradient(var(--rule) 60%, transparent 0%);
+    background-size: 2px 10px; background-repeat:repeat-y;
+  }
+  .waypoint{ position:relative; margin-bottom:3.2rem; }
+  .waypoint .stamp-num{
+    position:absolute; left:-2.6rem; top:0.1rem;
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.95rem; font-weight:600;
+  }
+  .waypoint .wp-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--amber-deep);
+    margin-bottom:0.2rem; display:block;
+  }
+  .waypoint h2{ font-size:1.55rem; margin-bottom:0.3rem; }
+  .waypoint .wp-sub{ color:var(--ink-soft); margin-bottom:1.3rem; font-size:0.98rem; }
+
+  .lead-list{ margin:0 0 1.2rem; padding-left:1.2rem; }
+  .lead-list li{ margin-bottom:0.55rem; }
+
+  /* ---------- callout cards ---------- */
+  .note{
+    border-radius:var(--radius-sm);
+    padding:1rem 1.15rem;
+    margin:1.2rem 0;
+    font-size:0.95rem;
+    border:1px solid var(--rule);
+  }
+  .note .note-label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.03em; margin-bottom:0.35rem; font-weight:600;
+  }
+  .note.tip{ background:var(--amber-wash); border-color:#e2c98a; }
+  .note.tip .note-label{ color:var(--amber-deep); }
+  .note.hint{ background:#EEF1F7; border-color:#c9d2e6; }
+  .note.hint .note-label{ color:#3B4E80; }
+  .note.watch{ background:var(--danger-wash); border-color:#e3b6ac; }
+  .note.watch .note-label{ color:var(--danger); }
+  .note.win{ background:var(--green-wash); border-color:#b9d8c5; }
+  .note.win .note-label{ color:var(--green); }
+  .note p{ margin:0 0 0.4rem; }
+  .note p:last-child{ margin-bottom:0; }
+  .note code{ background:rgba(0,0,0,0.06); padding:0.1rem 0.35rem; border-radius:4px; }
+
+  /* ---------- code window (VS Code look) ---------- */
+  .editor{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--vs-bg);
+  }
+  .editor .tabbar{
+    background:var(--vs-tabs);
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+    border-bottom:1px solid #111;
+  }
+  .editor .dots{ display:flex; gap:0.32rem; margin-right:0.4rem; }
+  .editor .dots span{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .editor .dots span:nth-child(1){ background:#ff5f56; }
+  .editor .dots span:nth-child(2){ background:#ffbd2e; }
+  .editor .dots span:nth-child(3){ background:#27c93f; }
+  .editor .filename{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:#c9c9c9;
+    background:#1e1e1e; padding:0.28rem 0.7rem; border-radius:6px 6px 0 0;
+  }
+  .editor .copy-btn{
+    margin-left:auto; background:none; border:1px solid #3c3c3c; color:#c9c9c9;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .editor .copy-btn:hover{ background:#2d2d2d; }
+  .editor pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.65;
+    color:var(--vs-text);
+  }
+  .kw{ color:var(--vs-keyword); }
+  .str{ color:var(--vs-string); }
+  .cm{ color:var(--vs-comment); font-style:italic; }
+  .fn{ color:var(--vs-func); }
+  .vr{ color:var(--vs-var); }
+  .nm{ color:var(--vs-num); }
+
+  /* ---------- terminal window ---------- */
+  .term{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--term-bg);
+  }
+  .term .tabbar{
+    background:#1a1d21;
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+  }
+  .term .dots{ display:flex; gap:0.32rem; }
+  .term .dots span{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .term .dots span:nth-child(1){ background:#ff5f56; }
+  .term .dots span:nth-child(2){ background:#ffbd2e; }
+  .term .dots span:nth-child(3){ background:#27c93f; }
+  .term .termtitle{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#9aa4ad; margin-left:0.3rem; }
+  .term .copy-btn{
+    margin-left:auto; background:none; border:1px solid #33383d; color:#9aa4ad;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .term .copy-btn:hover{ background:#22262b; }
+  .term pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.7;
+    color:var(--term-text);
+  }
+  .term .prompt{ color:var(--term-prompt); }
+  .term .out{ color:#e7ebee; }
+  .term .cmt{ color:#7d8892; }
+
+  /* ---------- tables ---------- */
+  table.cmdtable{ width:100%; border-collapse:collapse; margin:1.2rem 0; font-size:0.93rem; }
+  table.cmdtable th, table.cmdtable td{
+    text-align:left; padding:0.6rem 0.7rem; border-bottom:1px solid var(--rule); vertical-align:top;
+  }
+  table.cmdtable th{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); text-transform:none; }
+  table.cmdtable code{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-size:0.85rem; }
+
+  /* ---------- checklist ---------- */
+  .checklist{ background:var(--card); border:1px solid var(--rule); border-radius:var(--radius-md); padding:1.2rem 1.4rem; margin:1.2rem 0; }
+  .check-item{ display:flex; align-items:flex-start; gap:0.6rem; padding:0.4rem 0; }
+  .check-item input{ margin-top:0.3rem; width:16px; height:16px; accent-color:var(--amber); flex:none; }
+  .check-item label{ cursor:pointer; }
+  .check-item input:checked + label{ text-decoration:line-through; color:var(--ink-soft); opacity:0.7; }
+
+  /* ---------- dossier (homework) ---------- */
+  .dossier{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:2rem 1.9rem;
+    margin:2.5rem 0;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .dossier::before{
+    content:"HOMEWORK";
+    position:absolute; top:-0.75rem; left:1.7rem;
+    background:var(--ink); color:var(--paper);
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem; letter-spacing:0.06em;
+    padding:0.25rem 0.7rem; border-radius:999px;
+  }
+  .dossier h2{ font-size:1.6rem; margin-bottom:0.2rem; }
+  .dossier .meta{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); margin-bottom:1.4rem; }
+  .step{ margin:1.6rem 0; }
+  .step h3{ font-size:1.1rem; margin-bottom:0.4rem; }
+  .step .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.6rem; height:1.6rem; border-radius:50%; background:var(--amber-wash);
+    color:var(--amber-deep); font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+    margin-right:0.5rem;
+  }
+
+  /* ---------- badge preview ---------- */
+  .badge-preview{
+    font-family:'JetBrains Mono', monospace; white-space:pre;
+    background:var(--term-bg); color:#6FCF97;
+    border-radius:var(--radius-md); padding:1.2rem 1.4rem; margin:1rem 0;
+    font-size:0.85rem; overflow-x:auto; box-shadow:var(--shadow);
+  }
+
+  /* ---------- divider ---------- */
+  .divider{ display:flex; align-items:center; gap:0.8rem; margin:3rem 0 2.4rem; color:var(--ink-soft); }
+  .divider::before, .divider::after{ content:""; flex:1; border-top:1px dashed var(--rule); }
+  .divider span{ font-family:'JetBrains Mono', monospace; font-size:0.78rem; }
+
+  /* ---------- closing ---------- */
+  .closing{
+    text-align:center; padding:3rem 1rem 1rem; color:var(--ink-soft);
+  }
+  .closing h2{ font-style:italic; font-size:1.5rem; color:var(--ink); margin-bottom:0.6rem; }
+  .closing p{ max-width:480px; margin:0 auto; }
+
+  /* ---------- scroll top ---------- */
+  .scroll-top{
+    position:fixed; bottom:1.6rem; right:1.6rem;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:999px;
+    width:42px; height:42px; font-size:1.1rem;
+    cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  }
+  .scroll-top:hover{ opacity:0.85; }
+
+  code.inline{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-family:'JetBrains Mono', monospace; font-size:0.85em; }
+
+  @media (max-width:640px){
+    .trail{ padding-left:2.1rem; }
+    .waypoint .stamp-num{ left:-2.1rem; width:1.9rem; height:1.9rem; font-size:0.82rem; }
+    .hero h1{ font-size:2.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="links">
+    <a class="pill" href="#w1">Setup</a>
+    <a class="pill" href="#w2">Terminal</a>
+    <a class="pill" href="#w3">Template</a>
+    <a class="pill" href="#w4">Recap</a>
+    <a class="pill" href="#homework">Homework</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="stamp">LESSON<br/>№ 1<br/>✓ ISSUED</div>
+    <h1>Hello, Developer World!</h1>
+    <p class="for-line">Individual mentoring session for <strong>Levani</strong> — VS Code &amp; Terminal Basics</p>
+    <div class="chips">
+      <span class="chip">⏱ 60 minutes</span>
+      <span class="chip">🧭 Lesson 1</span>
+      <span class="chip">🐍 Python</span>
+    </div>
+  </section>
+
+  <div class="objective">
+    <h2>Today's objective</h2>
+    <p>Get comfortable inside VS Code, run Python scripts directly from the terminal, and understand — in plain terms — how local code execution actually works. By the end of the hour you'll have typed a real command, seen your own words printed back at you, and built the skeleton of your first interactive script.</p>
+  </div>
+
+  <div class="objective" id="vscode-intro">
+    <h2>Before we dive in: what is VS Code, and why does everyone use it?</h2>
+    <p><strong>Visual Studio Code</strong> (almost always just called "VS Code") is a free code editor built by Microsoft. It's not the only one that exists, but it's become the tool of choice for the vast majority of professional developers — which means the habits you build inside it today will transfer directly to real jobs and real projects later.</p>
+
+    <ul class="lead-list">
+      <li><strong>Free and lightweight</strong> — it starts up fast and won't bog down an older laptop.</li>
+      <li><strong>Cross-platform</strong> — the exact same tool on Windows, Mac, and Linux, so what you learn today works anywhere.</li>
+      <li><strong>Integrated terminal built in</strong> — no separate app needed to run commands, which is exactly what we're about to explore.</li>
+      <li><strong>A huge extension marketplace</strong> — free add-ons give you instant syntax colouring, autocomplete, and error-checking for Python and almost any other language.</li>
+      <li><strong>Built-in Git support and a debugger</strong> — useful once your programs grow past a single file, later in the course.</li>
+    </ul>
+
+    <div class="note win">
+      <span class="note-label">WHY THIS MATTERS</span>
+      <p>Every tool we'll use this year — the file explorer, the terminal, running Python files — lives inside this one window. Get comfortable with VS Code once, and every future lesson gets easier.</p>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin:1.6rem 0 0.6rem;">Installing VS Code</h3>
+    <ul class="lead-list">
+      <li>Go to <code class="inline">code.visualstudio.com</code> in your browser. The site detects your operating system and shows one big Download button.</li>
+      <li><strong>Windows:</strong> run the downloaded <code class="inline">.exe</code> file, accept the license agreement, and keep the default options checked — especially "Add to PATH". Click Install, then Finish.</li>
+      <li><strong>Mac:</strong> open the downloaded <code class="inline">.zip</code> file, then drag <code class="inline">Visual Studio Code.app</code> into your Applications folder.</li>
+      <li><strong>Linux:</strong> download the <code class="inline">.deb</code> (Ubuntu/Debian) or <code class="inline">.rpm</code> (Fedora/RHEL) package and install it from your terminal, or search "Visual Studio Code" in your distro's software centre.</li>
+      <li>Open VS Code, click the Extensions icon in the left sidebar (it looks like four small squares), search for <strong>Python</strong>, and install the official Microsoft extension — this is what gives you syntax colours, autocomplete, and the "Run Python File" button.</li>
+    </ul>
+
+    <div class="note tip">
+      <span class="note-label">FIELD NOTE</span>
+      <p>VS Code is only the editor — it doesn't come with Python itself. Open the integrated terminal and check what you already have installed:</p>
+    </div>
+
+    <div class="term">
+      <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="prompt">$</span> <span class="out">python --version</span>
+<span class="out">Python 3.12.2</span></code></pre>
+    </div>
+
+    <p>If you see a version number, you're ready to go. If you see something like <code class="inline">command not found</code>, install Python separately from <code class="inline">python.org</code> before our next step — VS Code will find it automatically once it's there.</p>
+  </div>
+
+  <div class="timeline">
+    <a href="#w1"><span class="t-time">Step 1</span><span class="t-label">Welcome &amp; Setup</span></a>
+    <a href="#w2"><span class="t-time">Step 2</span><span class="t-label">Terminal &amp; Scripting</span></a>
+    <a href="#w3"><span class="t-time">Step 3</span><span class="t-label">Starter Template</span></a>
+    <a href="#w4"><span class="t-time">Step 4</span><span class="t-label">Recap &amp; Check-in</span></a>
+  </div>
+
+  <div class="trail">
+
+    <!-- ===================== WAYPOINT 1 ===================== -->
+    <section class="waypoint" id="w1">
+      <span class="stamp-num">1</span>
+      <span class="wp-time">Part 1 of 4</span>
+      <h2>Welcome &amp; Low-Stress Setup</h2>
+      <p class="wp-sub">No pressure, no clock-watching — just a tour of your new workspace.</p>
+
+      <p>Open VS Code together and take it slow. There are only three areas that matter today:</p>
+      <ul class="lead-list">
+        <li><strong>File Explorer</strong> (left sidebar) — every file and folder in your project lives here. Think of it as the table of contents for your work.</li>
+        <li><strong>Code Editor</strong> (center) — where you read and write actual code. Each open file gets its own tab along the top.</li>
+        <li><strong>Integrated Terminal</strong> (bottom panel, open it with <code class="inline">Ctrl + `</code> on Windows/Linux or <code class="inline">Cmd + `</code> on Mac) — a direct line to your computer, where you'll type commands instead of clicking icons.</li>
+      </ul>
+
+      <div class="note hint">
+        <span class="note-label">TRAIL MARKER</span>
+        <p>If the terminal panel isn't visible, go to the top menu: <strong>View → Terminal</strong>. It will always reopen at the bottom of the window.</p>
+      </div>
+
+      <h3 style="font-size:1.05rem; margin:1.6rem 0 0.6rem;">The "Aha!" moment</h3>
+      <p>Create a file called <code class="inline">main.py</code> in your project folder and type exactly this:</p>
+
+      <div class="editor">
+        <div class="tabbar">
+          <span class="filename">main.py</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="fn">print</span>(<span class="str">"Hello Levani!"</span>)</code></pre>
+      </div>
+
+      <p>Save the file (<code class="inline">Ctrl/Cmd + S</code> — VS Code shows a small dot on the tab if you forget), click into the terminal, and type:</p>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">python main.py</span>
+<span class="out">Hello Levani!</span></code></pre>
+      </div>
+
+      <p>That's it. You just told your computer, in its own language, to do something — and it did it. Everything else this course teaches is a variation on that same loop: <em>write → save → run → read the result</em>.</p>
+
+      <div class="note tip">
+        <span class="note-label">FIELD NOTE</span>
+        <p>On some machines the command is <code class="inline">python3 main.py</code> instead of <code class="inline">python main.py</code>. If you see an error like <code class="inline">command not found: python</code>, just try <code class="inline">python3</code> — Mac and Linux often keep the "3" to distinguish it from an old, unsupported version of Python.</p>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">TROUBLE AHEAD</span>
+        <p>Nothing happened, or you see <code class="inline">SyntaxError</code>? Check for a missing closing parenthesis or quotation mark first — Python is very literal about matching them up in pairs.</p>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 2 ===================== -->
+    <section class="waypoint" id="w2">
+      <span class="stamp-num">2</span>
+      <span class="wp-time">Part 2 of 4</span>
+      <h2>Pair Programming: Terminal Commands &amp; Scripting</h2>
+      <p class="wp-sub">Three commands to navigate anywhere, then your first interactive program.</p>
+
+      <p>The terminal only ever answers three kinds of questions. Learn these three commands and you can navigate any computer, forever:</p>
+
+      <table class="cmdtable">
+        <tr><th>Question</th><th>Mac / Linux</th><th>Windows</th><th>What it does</th></tr>
+        <tr><td><em>Where am I?</em></td><td><code>pwd</code></td><td><code>cd</code> (alone) or <code>pwd</code> in PowerShell</td><td>Prints the full path of your current folder</td></tr>
+        <tr><td><em>What's here?</em></td><td><code>ls</code></td><td><code>dir</code></td><td>Lists files and folders in the current location</td></tr>
+        <tr><td><em>Move around</em></td><td><code>cd foldername</code></td><td><code>cd foldername</code></td><td>Steps into a folder. <code>cd ..</code> steps back out one level</td></tr>
+      </table>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — example walkthrough</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">pwd</span>
+<span class="cmt">/Users/levani/projects/lesson1</span>
+
+<span class="prompt">$</span> <span class="out">ls</span>
+<span class="cmt">main.py    notes.txt    assets/</span>
+
+<span class="prompt">$</span> <span class="out">cd assets</span>
+<span class="prompt">$</span> <span class="out">pwd</span>
+<span class="cmt">/Users/levani/projects/lesson1/assets</span>
+
+<span class="prompt">$</span> <span class="out">cd ..</span>
+<span class="prompt">$</span> <span class="out">pwd</span>
+<span class="cmt">/Users/levani/projects/lesson1</span></code></pre>
+      </div>
+
+      <div class="note hint">
+        <span class="note-label">TRAIL MARKER</span>
+        <p>Type the first letter or two of a file or folder name, then press <code class="inline">Tab</code>. VS Code's terminal will auto-complete it for you — fewer typos, faster navigation.</p>
+      </div>
+
+      <h3 style="font-size:1.05rem; margin:1.8rem 0 0.6rem;">Building an interactive script together</h3>
+      <p>We'll grow this in three small steps — run it after every single change so you always know exactly which line caused what.</p>
+
+      <p><span class="step-num" style="width:1.4rem;height:1.4rem;font-size:0.75rem;">1</span><strong>Store a value in a variable</strong></p>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">main.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="vr">name</span> = <span class="str">"Levani"</span>
+<span class="fn">print</span>(<span class="vr">name</span>)</code></pre>
+      </div>
+
+      <p><span class="step-num" style="width:1.4rem;height:1.4rem;font-size:0.75rem;">2</span><strong>Ask the user instead of hard-coding it</strong></p>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">main.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="vr">name</span> = <span class="fn">input</span>(<span class="str">"What's your name? "</span>)
+<span class="fn">print</span>(<span class="vr">name</span>)</code></pre>
+      </div>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">python main.py</span>
+<span class="out">What's your name? </span><span class="prompt">Levani</span>
+<span class="out">Levani</span></code></pre>
+      </div>
+
+      <p><span class="step-num" style="width:1.4rem;height:1.4rem;font-size:0.75rem;">3</span><strong>Combine values neatly with an f-string</strong></p>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">main.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="vr">name</span> = <span class="fn">input</span>(<span class="str">"What's your name? "</span>)
+<span class="vr">age</span> = <span class="fn">input</span>(<span class="str">"How old are you? "</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="str">"Hello, {name}! In 5 years you'll be {int(age) + 5}."</span>)</code></pre>
+      </div>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">python main.py</span>
+<span class="out">What's your name? </span><span class="prompt">Levani</span>
+<span class="out">How old are you? </span><span class="prompt">17</span>
+<span class="out">Hello, Levani! In 5 years you'll be 22.</span></code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">FIELD NOTE</span>
+        <p>The letter <code class="inline">f</code> right before the opening quote turns a normal string into an <strong>f-string</strong> — anything inside <code class="inline">{ }</code> gets calculated and inserted automatically. Forget the <code class="inline">f</code>, and Python will print the curly braces literally instead of the value.</p>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">TROUBLE AHEAD — two classics</span>
+        <p><strong>TypeError: can only concatenate str (not "int") to str</strong> — happens if you try <code class="inline">"Age: " + age</code> directly. <code class="inline">input()</code> always returns text, even for numbers, so wrap it in <code class="inline">int(age)</code> first if you need to do math.</p>
+        <p><strong>NameError: name 'nane' is not defined</strong> — a simple typo. Python variable names must match exactly, every time, including capitalisation.</p>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 3 ===================== -->
+    <section class="waypoint" id="w3">
+      <span class="stamp-num">3</span>
+      <span class="wp-time">Part 3 of 4</span>
+      <h2>Introducing the Starter Template Workflow</h2>
+      <p class="wp-sub">This is exactly how every homework file from now on will work.</p>
+
+      <p>From today onward, homework arrives as a "scaffolded" folder — a project that's already half-built, with clear notes on what's left for you to add. Here's what that folder looks like on disk:</p>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">File Explorer view</span></div>
+        <pre><code><span class="cmt">lesson1-homework/
+├── profile_builder.py   </span><span class="out"># the file you'll edit</span><span class="cmt">
+└── README.md             </span><span class="out"># task instructions</span></code></pre>
+      </div>
+
+      <p>Open <code class="inline">profile_builder.py</code> and you'll see comments like this scattered through it:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">profile_builder.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm"># TODO: Ask the user for their name and store it in a variable called `name`</span></code></pre>
+      </div>
+
+      <p>A <code class="inline"># TODO</code> comment is a note left just for you — Python ignores everything after a <code class="inline">#</code>, so it never affects the program, but VS Code often highlights these lines so they're easy to spot. Your job is simply to replace the "gap" with real code, one <code class="inline">TODO</code> at a time.</p>
+
+      <div class="note hint">
+        <span class="note-label">TRAIL MARKER</span>
+        <p>Run the script after finishing <em>each</em> TODO, not just at the very end. If something breaks, you'll instantly know it was caused by the line you just added — not by hunting through fifteen lines of new code.</p>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">WHY THIS MATTERS</span>
+        <p>Reading someone else's scaffolded code and filling in the gaps is precisely what real junior-developer work looks like — nobody starts from a totally blank file. Getting comfortable with TODOs now is a genuine head start.</p>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 4 ===================== -->
+    <section class="waypoint" id="w4">
+      <span class="stamp-num">4</span>
+      <span class="wp-time">Part 4 of 4</span>
+      <h2>Session Recap &amp; Confidence Check</h2>
+      <p class="wp-sub">A quick look back before you head off to the homework.</p>
+
+      <p>In fifteen minutes, you went from an empty editor to running your own interactive program. Today you can now:</p>
+      <ul class="lead-list">
+        <li>Find your way around VS Code's three main panels without getting lost.</li>
+        <li>Run any Python file from the terminal with <code class="inline">python filename.py</code>.</li>
+        <li>Navigate folders with <code class="inline">pwd</code>, <code class="inline">ls</code>/<code class="inline">dir</code>, and <code class="inline">cd</code>.</li>
+        <li>Store answers from <code class="inline">input()</code> in variables and print them back using an f-string.</li>
+        <li>Read a <code class="inline"># TODO</code> comment and know exactly what it's asking for.</li>
+      </ul>
+
+      <div class="checklist">
+        <div class="check-item"><input type="checkbox" id="conf1"><label for="conf1">I could open the integrated terminal without help.</label></div>
+        <div class="check-item"><input type="checkbox" id="conf2"><label for="conf2">I understand what <code class="inline">python main.py</code> does when I type it.</label></div>
+        <div class="check-item"><input type="checkbox" id="conf3"><label for="conf3">I can explain what an f-string is, in my own words.</label></div>
+        <div class="check-item"><input type="checkbox" id="conf4"><label for="conf4">I'm ready to tackle the homework on my own.</label></div>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">FIELD NOTE</span>
+        <p>If any box above feels shaky, that's completely normal for lesson one — say so out loud at the start of next session rather than pushing through silently. Naming the gap is how it gets closed fastest.</p>
+      </div>
+    </section>
+
+  </div><!-- /.trail -->
+
+  <div class="divider"><span>SCAFFOLDED HOMEWORK · 1–1.5 HOURS</span></div>
+
+  <!-- ===================== HOMEWORK ===================== -->
+  <div class="dossier" id="homework">
+    <h2>Profile Generator Script</h2>
+    <p class="meta">profile_builder.py &nbsp;·&nbsp; estimated time: 60–90 minutes</p>
+
+    <p>Your mission: turn three simple questions into a stylish terminal <strong>profile badge</strong> — a framed little card, printed entirely out of text, that shows off who you are.</p>
+
+    <div class="editor">
+      <div class="tabbar"><span class="filename">profile_builder.py (starter file)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># profile_builder.py
+# Your mission: turn three simple questions into a stylish terminal "profile badge".</span>
+
+<span class="cm"># TODO 1: Ask for the user's name and store it in a variable called `name`</span>
+
+
+<span class="cm"># TODO 2: Ask for their favorite programming language and store it in `language`</span>
+
+
+<span class="cm"># TODO 3: Ask for their favorite hobby and store it in `hobby`</span>
+
+
+<span class="cm"># TODO 4: Use f-strings to print a neatly framed profile badge
+#         using name, language, and hobby.</span></code></pre>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">1</span>Collect the three answers</h3>
+      <p>Replace TODOs 1–3 with three <code class="inline">input()</code> calls, exactly the way we practiced in Waypoint 2. Give each question a friendly prompt — the text inside the parentheses is what Levani-from-the-future will actually read when running the script.</p>
+      <div class="note hint">
+        <span class="note-label">TRAIL MARKER</span>
+        <p>Test after finishing this step alone — even before touching the badge. If the script asks three sensible questions and prints nothing fancy yet, you're exactly on schedule.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">2</span>Build the profile badge</h3>
+      <p>Now use f-strings (one or several <code class="inline">print()</code> calls) to turn those three variables into something that looks like a badge, not just three lines of plain text. Here's the target output:</p>
+
+      <div class="badge-preview">╔══════════════════════════════╗
+║        PROFILE BADGE         ║
+╠══════════════════════════════╣
+║ Name:      Levani             ║
+║ Language:  Python             ║
+║ Hobby:     Chess              ║
+╚══════════════════════════════╝</div>
+
+      <p>A few different ways to get there — pick whichever feels most comfortable:</p>
+      <ul class="lead-list">
+        <li><strong>Simplest:</strong> hard-code a border out of repeated characters, e.g. <code class="inline">"=" * 32</code>, printed above and below your three lines.</li>
+        <li><strong>Neater:</strong> paste box-drawing characters straight into your string — <code class="inline">║</code>, <code class="inline">═</code>, <code class="inline">╔</code>, <code class="inline">╗</code>, <code class="inline">╚</code>, <code class="inline">╝</code>, <code class="inline">╠</code>, <code class="inline">╣</code> — and lay them out by hand.</li>
+        <li><strong>Extra polish:</strong> use an f-string alignment spec like <code class="inline">f"{name:&lt;10}"</code> to left-pad a value to a fixed width, so every row lines up perfectly regardless of how long the answer is.</li>
+      </ul>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">profile_builder.py (one possible finish)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="fn">print</span>(<span class="str">"╔══════════════════════════════╗"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="str">"║ Name:      {name:&lt;18}║"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="str">"║ Language:  {language:&lt;18}║"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="str">"║ Hobby:     {hobby:&lt;18}║"</span>)
+<span class="fn">print</span>(<span class="str">"╚══════════════════════════════╝"</span>)</code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">FIELD NOTE</span>
+        <p>Don't chase pixel-perfect alignment before the badge even works. Get the three values printing correctly first, then spend your remaining time making it pretty — that order saves the most frustration.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin:1.8rem 0 0.8rem;">Self-check checklist</h3>
+    <div class="checklist">
+      <div class="check-item"><input type="checkbox" id="hw1"><label for="hw1">Running <code class="inline">python profile_builder.py</code> asks 3 questions.</label></div>
+      <div class="check-item"><input type="checkbox" id="hw2"><label for="hw2">Output displays a neatly framed profile badge in the terminal.</label></div>
+    </div>
+
+    <div class="note watch" style="margin-top:1.6rem;">
+      <span class="note-label">🧯 FRUSTRATION CIRCUIT-BREAKER</span>
+      <p>Seeing a <strong>File Not Found</strong> error when you try to run the script? Almost always one of these three things:</p>
+      <p>1. You're not <code class="inline">cd</code>'d into the folder that actually contains <code class="inline">profile_builder.py</code> — run <code class="inline">pwd</code> then <code class="inline">ls</code> to double-check.<br/>
+      2. The filename is spelled slightly differently than you typed (check for underscores vs. dashes, and correct capitalisation).<br/>
+      3. You typed <code class="inline">python</code> when your machine needs <code class="inline">python3</code> (or vice versa).</p>
+      <p>Stuck for more than five minutes? Stop, don't spiral — just send a screenshot of the exact error in chat. That's what it's there for.</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    <h2>Good work today, Levani.</h2>
+    <p>You wrote code, ran it yourself, and got a computer to talk back. Every developer's very first "Hello World" looks a lot like yours did today — the only difference from here is practice. See you next lesson with a working profile badge in hand.</p>
+  </div>
+
+</div><!-- /.wrap -->
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+  function copyCode(btn){
+    const container = btn.closest('.editor, .term');
+    const codeEl = container.querySelector('pre code');
+    const text = codeEl.innerText;
+    navigator.clipboard.writeText(text).then(function(){
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(function(){ btn.textContent = original; }, 1400);
+    });
+  }
+</script>
+
+</body>
+</html>
