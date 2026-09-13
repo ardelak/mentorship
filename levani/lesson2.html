@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deep Dive: Object-Oriented Programming in Python — Mentoring for Levani</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17223B;
+    --ink-soft:#4B5670;
+    --paper:#F3F1E7;
+    --card:#FFFFFF;
+    --amber:#B8791C;
+    --amber-deep:#8F5D12;
+    --amber-wash:#F1E1BE;
+    --rule:#D8D1BC;
+    --green:#3F7A56;
+    --green-wash:#E1EEE6;
+    --danger:#9C3B2E;
+    --danger-wash:#F5E1DC;
+    --vs-bg:#1E1E1E;
+    --vs-tabs:#252526;
+    --vs-text:#D4D4D4;
+    --vs-keyword:#569CD6;
+    --vs-string:#CE9178;
+    --vs-comment:#6A9955;
+    --vs-func:#DCDCAA;
+    --vs-var:#9CDCFE;
+    --vs-num:#B5CEA8;
+    --term-bg:#111417;
+    --term-text:#D8DEE4;
+    --term-prompt:#6FCF97;
+    --radius-sm:6px;
+    --radius-md:12px;
+    --shadow: 0 1px 2px rgba(23,34,59,0.06), 0 6px 20px rgba(23,34,59,0.07);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(23,34,59,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Karla', sans-serif;
+    font-size:16.5px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Newsreader', serif; color:var(--ink); margin:0; }
+  a{ color:var(--amber-deep); }
+  ::selection{ background:var(--amber-wash); }
+
+  /* ---------- top nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(243,241,231,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--rule);
+    padding:0.7rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    flex-wrap:wrap;
+  }
+  .topnav .brand{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:1.05rem; color:var(--ink); white-space:nowrap;
+  }
+  .topnav .links{ display:flex; gap:0.35rem; flex-wrap:wrap; margin-left:auto; }
+  .topnav a.pill{
+    font-size:0.82rem; color:var(--ink-soft); text-decoration:none;
+    padding:0.3rem 0.7rem; border-radius:999px; border:1px solid transparent;
+  }
+  .topnav a.pill:hover{ border-color:var(--rule); background:var(--card); color:var(--ink); }
+
+  /* ---------- layout ---------- */
+  .wrap{ max-width:840px; margin:0 auto; padding:0 1.5rem 6rem; }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:3.5rem 0 2.5rem; text-align:center; }
+  .stamp{
+    width:115px; height:115px; margin:0 auto 1.6rem;
+    border:2px dashed var(--amber);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(-5deg);
+    color:var(--amber-deep);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.04em; text-align:center;
+    line-height:1.3;
+  }
+  .hero h1{
+    font-size:2.8rem; font-style:italic; font-weight:500;
+    max-width:720px; margin:0 auto 0.6rem; line-height:1.15;
+  }
+  .hero .for-line{ color:var(--ink-soft); font-size:1.1rem; margin-bottom:1.4rem; }
+  .hero .for-line strong{ color:var(--ink); font-weight:600; }
+  .chips{ display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .chip{
+    font-size:0.8rem; font-family:'JetBrains Mono', monospace;
+    background:var(--card); border:1px solid var(--rule);
+    padding:0.32rem 0.75rem; border-radius:999px; color:var(--ink-soft);
+  }
+
+  /* ---------- objective panel ---------- */
+  .objective{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:1.6rem 1.8rem;
+    margin:2rem 0;
+    box-shadow:var(--shadow);
+  }
+  .objective h2{ font-size:1.25rem; margin-bottom:0.5rem; }
+  .objective p{ color:var(--ink-soft); margin:0 0 0.8rem; }
+  .objective p:last-child{ margin:0; }
+
+  /* ---------- timeline grid ---------- */
+  .timeline-grid{
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:0.6rem;
+    margin:2.2rem 0 2.6rem;
+  }
+  .timeline-grid a{
+    text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-sm); padding:0.8rem 0.6rem;
+    text-align:center; display:block; transition:all 0.15s ease;
+  }
+  .timeline-grid a:hover{ border-color:var(--amber); transform:translateY(-2px); }
+  .timeline-grid .t-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--amber-deep);
+    display:block; margin-bottom:0.2rem;
+  }
+  .timeline-grid .t-label{ font-size:0.82rem; color:var(--ink); font-weight:600; line-height:1.25; }
+  @media (max-width:680px){ .timeline-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (min-width:681px) and (max-width:860px){ .timeline-grid{ grid-template-columns:repeat(3,1fr); } }
+
+  /* ---------- waypoint sections ---------- */
+  .trail{ position:relative; padding-left:2.6rem; }
+  .trail::before{
+    content:""; position:absolute; left:1.05rem; top:0.4rem; bottom:0.4rem;
+    width:2px; background-image:linear-gradient(var(--rule) 60%, transparent 0%);
+    background-size: 2px 10px; background-repeat:repeat-y;
+  }
+  .waypoint{ position:relative; margin-bottom:3.8rem; }
+  .waypoint .stamp-num{
+    position:absolute; left:-2.6rem; top:0.1rem;
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.95rem; font-weight:600;
+  }
+  .waypoint .wp-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--amber-deep);
+    margin-bottom:0.2rem; display:block;
+  }
+  .waypoint h2{ font-size:1.65rem; margin-bottom:0.2rem; }
+  .waypoint .wp-sub{ color:var(--ink-soft); margin-bottom:1.2rem; font-size:0.98rem; }
+
+  /* ---------- callout cards ---------- */
+  .note{
+    border-radius:var(--radius-sm);
+    padding:1rem 1.15rem;
+    margin:1.2rem 0;
+    font-size:0.95rem;
+    border:1px solid var(--rule);
+  }
+  .note .note-label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.03em; margin-bottom:0.35rem; font-weight:600;
+  }
+  .note.tip{ background:var(--amber-wash); border-color:#e2c98a; }
+  .note.tip .note-label{ color:var(--amber-deep); }
+  .note.hint{ background:#EEF1F7; border-color:#c9d2e6; }
+  .note.hint .note-label{ color:#3B4E80; }
+  .note.watch{ background:var(--danger-wash); border-color:#e3b6ac; }
+  .note.watch .note-label{ color:var(--danger); }
+  .note.win{ background:var(--green-wash); border-color:#b9d8c5; }
+  .note.win .note-label{ color:var(--green); }
+  .note p{ margin:0 0 0.4rem; }
+  .note p:last-child{ margin-bottom:0; }
+  .note code{ background:rgba(0,0,0,0.06); padding:0.1rem 0.35rem; border-radius:4px; }
+
+  /* ---------- code window (VS Code look) ---------- */
+  .editor{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--vs-bg);
+  }
+  .editor .tabbar{
+    background:var(--vs-tabs);
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+    border-bottom:1px solid #111;
+  }
+  .editor .filename{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:#c9c9c9;
+    background:#1e1e1e; padding:0.28rem 0.7rem; border-radius:6px 6px 0 0;
+  }
+  .editor .copy-btn{
+    margin-left:auto; background:none; border:1px solid #3c3c3c; color:#c9c9c9;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .editor .copy-btn:hover{ background:#2d2d2d; }
+  .editor pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.65;
+    color:var(--vs-text);
+  }
+  .kw{ color:var(--vs-keyword); }
+  .str{ color:var(--vs-string); }
+  .cm{ color:var(--vs-comment); font-style:italic; }
+  .fn{ color:var(--vs-func); }
+  .vr{ color:var(--vs-var); }
+  .nm{ color:var(--vs-num); }
+
+  /* ---------- terminal window ---------- */
+  .term{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--term-bg);
+  }
+  .term .tabbar{
+    background:#1a1d21;
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+  }
+  .term .dots{ display:flex; gap:0.32rem; }
+  .term .dots span{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .term .dots span:nth-child(1){ background:#ff5f56; }
+  .term .dots span:nth-child(2){ background:#ffbd2e; }
+  .term .dots span:nth-child(3){ background:#27c93f; }
+  .term .termtitle{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#9aa4ad; margin-left:0.3rem; }
+  .term .copy-btn{
+    margin-left:auto; background:none; border:1px solid #33383d; color:#9aa4ad;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .term .copy-btn:hover{ background:#22262b; }
+  .term pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.7;
+    color:var(--term-text);
+  }
+  .term .prompt{ color:var(--term-prompt); }
+  .term .out{ color:#e7ebee; }
+  .term .cmt{ color:#7d8892; }
+
+  /* ---------- tables ---------- */
+  table.cmdtable{ width:100%; border-collapse:collapse; margin:1.2rem 0; font-size:0.93rem; }
+  table.cmdtable th, table.cmdtable td{
+    text-align:left; padding:0.6rem 0.7rem; border-bottom:1px solid var(--rule); vertical-align:top;
+  }
+  table.cmdtable th{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  table.cmdtable code{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-size:0.85rem; }
+
+  /* ---------- interactive practice box ---------- */
+  .drill-box{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--amber);
+    border-radius:var(--radius-sm);
+    padding:1.2rem 1.4rem;
+    margin:1.5rem 0;
+  }
+  .drill-box h4{ font-family:'Karla', sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:0.4rem; }
+
+  /* ---------- closing ---------- */
+  .closing{
+    text-align:center; padding:3rem 1rem 1rem; color:var(--ink-soft);
+  }
+  .closing h2{ font-style:italic; font-size:1.6rem; color:var(--ink); margin-bottom:0.6rem; }
+  .closing p{ max-width:540px; margin:0 auto; }
+
+  /* ---------- scroll top ---------- */
+  .scroll-top{
+    position:fixed; bottom:1.6rem; right:1.6rem;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:999px;
+    width:42px; height:42px; font-size:1.1rem;
+    cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  }
+  .scroll-top:hover{ opacity:0.85; }
+
+  code.inline{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-family:'JetBrains Mono', monospace; font-size:0.85em; }
+
+  @media (max-width:640px){
+    .trail{ padding-left:2.1rem; }
+    .waypoint .stamp-num{ left:-2.1rem; width:1.9rem; height:1.9rem; font-size:0.82rem; }
+    .hero h1{ font-size:2.15rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="brand">Python OOP Masterclass</span>
+  <div class="links">
+    <a class="pill" href="#overview">Overview</a>
+    <a class="pill" href="#part1">Part 1: Blueprints</a>
+    <a class="pill" href="#part2">Part 2: Methods</a>
+    <a class="pill" href="#drills">Hands-on Drills</a>
+    <a class="pill" href="#project">Mini CLI Project</a>
+    <a class="pill" href="#extensions">Extension Challenges</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="overview">
+    <div class="stamp">OOP<br/>HANDS-ON<br/>TUTORIAL</div>
+    <h1>Thinking in Objects in Python</h1>
+    <p class="for-line">Interactive Mentoring Module for <strong>Levani</strong> — From Procedural Chaos to Clean Object Architectures</p>
+    <div class="chips">
+      <span class="chip">🧩 Procedural vs. OOP</span>
+      <span class="chip">🏛 Classes &amp; __init__()</span>
+      <span class="chip">⚡ Methods &amp; State</span>
+      <span class="chip">🛠 Practical CLI App</span>
+    </div>
+  </section>
+
+  <!-- ===================== OBJECTIVES ===================== -->
+  <div class="objective">
+    <h2>Learning Objectives &amp; Roadmap</h2>
+    <p>In this deep-dive tutorial, you move from writing fragmented procedural code to modeling real-world entities cleanly in Python.</p>
+    <p>We start by exploring why standard variables and dictionaries become unmanageable as applications scale, master constructing reusable class blueprints with attributes and custom behaviors, and culminate in building a complete, interactive Command Line Interface (CLI) project.</p>
+  </div>
+
+  <div class="timeline-grid">
+    <a href="#part1"><span class="t-time">Part 1</span><span class="t-label">Blueprints &amp; Attributes</span></a>
+    <a href="#part2"><span class="t-time">Part 2</span><span class="t-label">Methods &amp; State Change</span></a>
+    <a href="#drills"><span class="t-time">Practical</span><span class="t-label">Hands-on Drills</span></a>
+    <a href="#project"><span class="t-time">Mini-Project</span><span class="t-label">Dev Log &amp; CLI App</span></a>
+    <a href="#extensions"><span class="t-time">Stretch</span><span class="t-label">Extension Challenges</span></a>
+  </div>
+
+  <div class="trail">
+
+    <!-- ===================== PART 1 ===================== -->
+    <section class="waypoint" id="part1">
+      <span class="stamp-num">1</span>
+      <span class="wp-time">Section 1 · Theoretical &amp; Practical Foundation</span>
+      <h2>Thinking in Objects (Part 1) — The Blueprint &amp; Attributes</h2>
+      <p class="wp-sub">Objective: Understand why procedural variables become messy and learn how to create custom object blueprints using Python <code class="inline">class</code> and <code class="inline">__init__()</code>.</p>
+
+      <h3>1.1 The Problem: Why Procedural Code Breaks Down</h3>
+      <p>Imagine building an inventory or RPG system using raw variables or loose dictionaries. As soon as you add a second or third item, tracking state quickly turns into spaghetti code:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">procedural_mess.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm"># Procedural Approach: Loose variables without structural guarantees</span>
+<span class="vr">player1_name</span> = <span class="str">"Levani"</span>
+<span class="vr">player1_hp</span> = <span class="nm">100</span>
+<span class="vr">player1_inventory</span> = [<span class="str">"Potion"</span>, <span class="str">"Shield"</span>]
+
+<span class="vr">player2_name</span> = <span class="str">"Alexey"</span>
+<span class="vr">player2_hp</span> = <span class="nm">85</span>
+<span class="cm"># Oops! We forgot player2_inventory entirely!</span>
+
+<span class="kw">def</span> <span class="fn">heal</span>(<span class="vr">hp</span>, <span class="vr">amount</span>):
+    <span class="kw">return</span> <span class="vr">hp</span> + <span class="vr">amount</span>
+
+<span class="cm"># Easy to pass the wrong parameters or corrupt data state</span>
+<span class="vr">player1_hp</span> = <span class="fn">heal</span>(<span class="vr">player1_hp</span>, <span class="nm">20</span>)</code></pre>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">THE PROCEDURAL PITFALL</span>
+        <p>Notice how functions and data are detached. Nothing prevents a programmer from passing negative health, misspelling key names in dictionaries, or missing required properties on new records.</p>
+      </div>
+
+      <h3>1.2 The Solution: Custom Blueprints with <code class="inline">class</code> and <code class="inline">__init__()</code></h3>
+      <p>An Object-Oriented approach couples <strong>data (attributes)</strong> and <strong>actions (methods)</strong> together into a single blueprint called a <strong>Class</strong>. An <strong>Instance</strong> is an individual object crafted from that blueprint.</p>
+
+      <table class="cmdtable">
+        <tr><th>Concept</th><th>Real-World Analogy</th><th>Python Equivalent</th></tr>
+        <tr><td><strong>Class</strong></td><td>Architectural Blueprint / Cookie Cutter</td><td><code class="inline">class Book:</code></td></tr>
+        <tr><td><strong>Instance</strong></td><td>The Actual Built House / Baked Cookie</td><td><code class="inline">my_book = Book(...)</code></td></tr>
+        <tr><td><strong>Attribute</strong></td><td>Color, Dimensions, Page Count</td><td><code class="inline">self.pages = 250</code></td></tr>
+        <tr><td><strong>Method</strong></td><td>Opening doors, Turning pages</td><td><code class="inline">def read(self):</code></td></tr>
+      </table>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">book_blueprint.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Book</span>:
+    <span class="cm"># The initializer method runs automatically when creating a new instance</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">title</span>, <span class="vr">author</span>, <span class="vr">pages</span>):
+        <span class="cm"># 'self' refers to the specific instance being created right now</span>
+        <span class="vr">self</span>.title = <span class="vr">title</span>
+        <span class="vr">self</span>.author = <span class="vr">author</span>
+        <span class="vr">self</span>.pages = <span class="vr">pages</span>
+        <span class="vr">self</span>.current_page = <span class="nm">1</span>  <span class="cm"># Default starting attribute</span>
+
+<span class="cm"># Instantiating two independent objects</span>
+<span class="vr">book1</span> = <span class="fn">Book</span>(<span class="str">"Clean Code"</span>, <span class="str">"Robert C. Martin"</span>, <span class="nm">464</span>)
+<span class="vr">book2</span> = <span class="fn">Book</span>(<span class="str">"The Pragmatic Programmer"</span>, <span class="str">"Andrew Hunt"</span>, <span class="nm">352</span>)
+
+<span class="cm"># Inspecting instance attributes using dot notation</span>
+<span class="fn">print</span>(<span class="vr">book1</span>.title)        <span class="cm"># Output: Clean Code</span>
+<span class="fn">print</span>(<span class="vr">book2</span>.current_page) <span class="cm"># Output: 1</span></code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">DECODING 'SELF' FOR LEVANI</span>
+        <p>Think of <code class="inline">self</code> as a tag saying <em>"MY own personal variable"</em>. When <code class="inline">book1.title</code> is accessed, Python translates it behind the scenes to <code class="inline">Book.title(book1)</code>, passing <code class="inline">book1</code> into <code class="inline">self</code>!</p>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">AHA! MOMENT</span>
+        <p>Even if you make 1,000 book objects from the same blueprint, changing <code class="inline">book1.current_page = 50</code> will never accidentally corrupt <code class="inline">book2</code>'s data! They inhabit distinct memory spaces.</p>
+      </div>
+
+      <h3>1.3 Bonus: Instance Attributes vs. Class Attributes</h3>
+      <p>Everything above (<code class="inline">self.title</code>, <code class="inline">self.pages</code>) is an <strong>instance attribute</strong> — unique per object. Python also allows <strong>class attributes</strong>, defined directly inside the class body, which are shared by every instance unless overridden.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">class_vs_instance.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Book</span>:
+    <span class="cm"># CLASS ATTRIBUTE: lives on the Book class itself, shared by every instance</span>
+    <span class="cm"># unless a specific object overrides it with its own instance attribute.</span>
+    <span class="vr">library_name</span> = <span class="str">"Levani's Home Library"</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">title</span>, <span class="vr">author</span>, <span class="vr">pages</span>):
+        <span class="cm"># INSTANCE ATTRIBUTES: created fresh for every object via 'self'</span>
+        <span class="vr">self</span>.title = <span class="vr">title</span>
+        <span class="vr">self</span>.author = <span class="vr">author</span>
+        <span class="vr">self</span>.pages = <span class="vr">pages</span>
+
+<span class="vr">book1</span> = <span class="fn">Book</span>(<span class="str">"Clean Code"</span>, <span class="str">"Robert C. Martin"</span>, <span class="nm">464</span>)
+<span class="vr">book2</span> = <span class="fn">Book</span>(<span class="str">"Dune"</span>, <span class="str">"Frank Herbert"</span>, <span class="nm">412</span>)
+
+<span class="cm"># Both objects read the SAME class attribute — nothing was duplicated</span>
+<span class="fn">print</span>(<span class="vr">book1</span>.library_name)  <span class="cm"># Output: Levani's Home Library</span>
+<span class="fn">print</span>(<span class="vr">book2</span>.library_name)  <span class="cm"># Output: Levani's Home Library</span>
+
+<span class="cm"># Assigning to self.library_name on ONE instance creates a NEW instance</span>
+<span class="cm"># attribute that shadows the class attribute — it does not change it globally.</span>
+<span class="vr">book1</span>.library_name = <span class="str">"Levani's School Library"</span>
+<span class="fn">print</span>(<span class="vr">book1</span>.library_name)  <span class="cm"># Output: Levani's School Library (shadowed)</span>
+<span class="fn">print</span>(<span class="vr">book2</span>.library_name)  <span class="cm"># Output: Levani's Home Library (unchanged)</span></code></pre>
+      </div>
+
+      <div class="note hint">
+        <span class="note-label">WHEN TO REACH FOR A CLASS ATTRIBUTE</span>
+        <p>Use class attributes for genuinely shared, constant-like data (a species name, a tax rate, a default configuration). Use instance attributes for anything that should vary per object — which, in practice, is most of what you'll model.</p>
+      </div>
+    </section>
+
+    <!-- ===================== PART 2 ===================== -->
+    <section class="waypoint" id="part2">
+      <span class="stamp-num">2</span>
+      <span class="wp-time">Section 2 · Theoretical &amp; Practical Foundation</span>
+      <h2>Thinking in Objects (Part 2) — Methods &amp; Changing State</h2>
+      <p class="wp-sub">Objective: Add actions (methods) to classes, modify object state dynamically, and use <code class="inline">__str__</code> for friendly print outputs.</p>
+
+      <h3>2.1 Defining Instance Methods &amp; Enforcing Rules</h3>
+      <p>Methods are functions defined inside a class that operate directly on the object's instance variables. They enable objects to manipulate their own internal state securely.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">smart_bank_account.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">BankAccount</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">owner</span>, <span class="vr">starting_balance</span>=<span class="nm">0.0</span>):
+        <span class="cm"># Every account object gets its own owner name and balance —</span>
+        <span class="cm"># changing one account's balance can never touch another's.</span>
+        <span class="vr">self</span>.owner = <span class="vr">owner</span>
+        <span class="vr">self</span>.balance = <span class="vr">starting_balance</span>
+
+    <span class="cm"># Instance Method: Deposit funds</span>
+    <span class="kw">def</span> <span class="fn">deposit</span>(<span class="vr">self</span>, <span class="vr">amount</span>):
+        <span class="cm"># Guard clause: reject bad input BEFORE it can corrupt self.balance.</span>
+        <span class="cm"># This is the "protective guard" idea — the object defends its own state.</span>
+        <span class="kw">if</span> <span class="vr">amount</span> &lt;= <span class="nm">0</span>:
+            <span class="fn">print</span>(<span class="str">"❌ Deposit must be positive!"</span>)
+            <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># Signal failure so the caller can react</span>
+        <span class="vr">self</span>.balance += <span class="vr">amount</span>  <span class="cm"># Mutate THIS object's own state, nothing else's</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"✅ Deposited ${amount:.2f}. New balance: ${self.balance:.2f}"</span>)
+        <span class="kw">return</span> <span class="kw">True</span>  <span class="cm"># Signal success</span>
+
+    <span class="cm"># Instance Method: Withdraw funds safely</span>
+    <span class="kw">def</span> <span class="fn">withdraw</span>(<span class="vr">self</span>, <span class="vr">amount</span>):
+        <span class="cm"># Second guard clause: block overdrafts before they ever happen</span>
+        <span class="kw">if</span> <span class="vr">amount</span> &gt; <span class="vr">self</span>.balance:
+            <span class="fn">print</span>(<span class="kw">f</span><span class="str">"⚠️ Insufficient funds! Available: ${self.balance:.2f}"</span>)
+            <span class="kw">return</span> <span class="kw">False</span>
+        <span class="vr">self</span>.balance -= <span class="vr">amount</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"💸 Withdrew ${amount:.2f}. Remaining balance: ${self.balance:.2f}"</span>)
+        <span class="kw">return</span> <span class="kw">True</span></code></pre>
+      </div>
+
+      <h3>2.2 Making Objects Human-Readable with <code class="inline">__str__()</code></h3>
+      <p>If you try printing an object directly with <code class="inline">print(account)</code>, Python displays an ugly memory reference like <code class="inline">&lt;__main__.BankAccount object at 0x7f8c120&gt;</code>. Defining the magic method <code class="inline">__str__()</code> solves this instantly!</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">str_dunder.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">BankAccount</span>:
+    <span class="cm"># ... (__init__, deposit, withdraw as above) ...</span>
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="vr">self</span>):
+        <span class="cm"># Python calls this AUTOMATICALLY whenever the object needs to become</span>
+        <span class="cm"># text: print(obj), str(obj), or an f-string like f"{obj}".</span>
+        <span class="cm"># Must return a string — never print() from inside __str__ itself!</span>
+        <span class="kw">return</span> <span class="kw">f</span><span class="str">"🏦 Account Owner: {self.owner} | Balance: ${self.balance:,.2f}"</span>
+
+<span class="vr">levani_account</span> = <span class="fn">BankAccount</span>(<span class="str">"Levani"</span>, <span class="nm">250.00</span>)
+<span class="fn">print</span>(<span class="vr">levani_account</span>)  <span class="cm"># print() calls __str__() behind the scenes</span>
+<span class="cm"># Output: 🏦 Account Owner: Levani | Balance: $250.00</span></code></pre>
+      </div>
+
+      <div class="note hint">
+        <span class="note-label">WHY USE METHODS INSTEAD OF DIRECT ATTRIBUTE ACCESS?</span>
+        <p>Methods act as protective guards. By using <code class="inline">account.withdraw(500)</code>, your class validates whether sufficient funds exist before modifying internal state, preventing invalid data states!</p>
+      </div>
+    </section>
+
+    <!-- ===================== PRACTICAL DRILLS ===================== -->
+    <section class="waypoint" id="drills">
+      <span class="stamp-num">3</span>
+      <span class="wp-time">Section 3 · Applied Practice</span>
+      <h2>Hands-on Practical Application Drills</h2>
+      <p class="wp-sub">Test understanding by completing these standalone micro-exercises before jumping into the main CLI project!</p>
+
+      <div class="drill-box">
+        <h4>Drill 1: The Smart Thermostat Blueprint</h4>
+        <p>Create a class named <code class="inline">Thermostat</code> with target temperature attributes and methods to raise/lower temperatures safely within bounds (15°C to 30°C).</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill1_thermostat.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Thermostat</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">room_name</span>, <span class="vr">temp</span>=<span class="nm">20.0</span>):
+        <span class="cm"># room_name and temp are instance attributes — every Thermostat</span>
+        <span class="cm"># object tracks its OWN room and its OWN current temperature.</span>
+        <span class="vr">self</span>.room_name = <span class="vr">room_name</span>
+        <span class="vr">self</span>.temp = <span class="vr">temp</span>
+
+    <span class="kw">def</span> <span class="fn">set_temperature</span>(<span class="vr">self</span>, <span class="vr">new_temp</span>):
+        <span class="cm"># Guard clause keeps self.temp inside a safe, realistic range —</span>
+        <span class="cm"># this is exactly the same validation pattern as BankAccount.deposit().</span>
+        <span class="kw">if</span> <span class="nm">15.0</span> &lt;= <span class="vr">new_temp</span> &lt;= <span class="nm">30.0</span>:
+            <span class="vr">self</span>.temp = <span class="vr">new_temp</span>
+            <span class="fn">print</span>(<span class="kw">f</span><span class="str">"🌡️ {self.room_name} temp set to {self.temp}°C"</span>)
+        <span class="kw">else</span>:
+            <span class="cm"># Invalid input is rejected; self.temp is left untouched</span>
+            <span class="fn">print</span>(<span class="str">"⚠️ Invalid temperature! Must be between 15°C and 30°C."</span>)
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="vr">self</span>):
+        <span class="cm"># Friendly text form used automatically by print(t)</span>
+        <span class="kw">return</span> <span class="kw">f</span><span class="str">"Thermostat[{self.room_name}]: {self.temp}°C"</span>
+
+<span class="cm"># Verification</span>
+<span class="vr">t</span> = <span class="fn">Thermostat</span>(<span class="str">"Study Room"</span>)
+<span class="vr">t</span>.<span class="fn">set_temperature</span>(<span class="nm">22.5</span>)  <span class="cm"># Valid — updates self.temp</span>
+<span class="vr">t</span>.<span class="fn">set_temperature</span>(<span class="nm">35.0</span>)  <span class="cm"># Should trigger warning, self.temp stays at 22.5</span>
+<span class="fn">print</span>(<span class="vr">t</span>)</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Drill 2: Student Grade Tracker</h4>
+        <p>Build a <code class="inline">Student</code> class that holds a list of grades, provides a method to record new test scores, and calculates the GPA / average dynamically.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill2_student.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">Student</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">name</span>):
+        <span class="vr">self</span>.name = <span class="vr">name</span>
+        <span class="vr">self</span>.grades = []  <span class="cm"># Starts empty — a fresh, independent list per student</span>
+
+    <span class="kw">def</span> <span class="fn">add_grade</span>(<span class="vr">self</span>, <span class="vr">score</span>):
+        <span class="cm"># Validate BEFORE mutating self.grades — never trust raw input</span>
+        <span class="kw">if</span> <span class="nm">0</span> &lt;= <span class="vr">score</span> &lt;= <span class="nm">100</span>:
+            <span class="vr">self</span>.grades.<span class="fn">append</span>(<span class="vr">score</span>)  <span class="cm"># Grow this student's own grade list</span>
+            <span class="fn">print</span>(<span class="kw">f</span><span class="str">"📝 Grade {score} added for {self.name}."</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="str">"❌ Score must be between 0 and 100!"</span>)
+
+    <span class="kw">def</span> <span class="fn">get_average</span>(<span class="vr">self</span>):
+        <span class="cm"># Guard against dividing by zero when no grades exist yet</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="vr">self</span>.grades:
+            <span class="kw">return</span> <span class="nm">0.0</span>
+        <span class="cm"># Computed live from self.grades every time — never stored separately,</span>
+        <span class="cm"># so it can never drift out of sync with the underlying data.</span>
+        <span class="kw">return</span> <span class="fn">sum</span>(<span class="vr">self</span>.grades) / <span class="fn">len</span>(<span class="vr">self</span>.grades)
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="vr">self</span>):
+        <span class="cm"># Calls get_average() each time it's printed, so the summary is always current</span>
+        <span class="kw">return</span> <span class="kw">f</span><span class="str">"🎓 Student: {self.name} | Average Score: {self.get_average():.1f}%"</span>
+
+<span class="cm"># Verification</span>
+<span class="vr">s</span> = <span class="fn">Student</span>(<span class="str">"Levani"</span>)
+<span class="vr">s</span>.<span class="fn">add_grade</span>(<span class="nm">95</span>)
+<span class="vr">s</span>.<span class="fn">add_grade</span>(<span class="nm">88</span>)
+<span class="vr">s</span>.<span class="fn">add_grade</span>(<span class="nm">100</span>)
+<span class="fn">print</span>(<span class="vr">s</span>)</code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== MINI PROJECT ===================== -->
+    <section class="waypoint" id="project">
+      <span class="stamp-num">4</span>
+      <span class="wp-time">Section 4 · Comprehensive Capstone</span>
+      <h2>Mini CLI Project: Task Tracker &amp; Productivity Engine</h2>
+      <p class="wp-sub">Combining Object-Oriented Blueprints, Lists of Instances, and Interactive CLI Menus into a Single Runnable Python File.</p>
+
+      <div class="note win">
+        <span class="note-label">PROJECT SPECIFICATION</span>
+        <p>We will construct an object-oriented task manager featuring two primary classes:<br/>
+        1. <code class="inline">Task</code> — Object blueprint representing individual tasks, status, and urgency.<br/>
+        2. <code class="inline">TaskManager</code> — Manager class handling a collection of Task instances, adding items, toggling completion, filtering, and summary stats.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">task_cli_app.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> sys
+
+<span class="kw">class</span> <span class="fn">Task</span>:
+    <span class="str">"""Blueprint for individual task items."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">task_id</span>, <span class="vr">title</span>, <span class="vr">priority</span>=<span class="str">"Medium"</span>):
+        <span class="cm"># Each Task instance stores its own id, title, priority and completion flag.</span>
+        <span class="vr">self</span>.id = <span class="vr">task_id</span>
+        <span class="vr">self</span>.title = <span class="vr">title</span>
+        <span class="vr">self</span>.priority = <span class="vr">priority</span>
+        <span class="vr">self</span>.is_completed = <span class="kw">False</span>  <span class="cm"># Every new task starts as NOT done</span>
+
+    <span class="kw">def</span> <span class="fn">mark_complete</span>(<span class="vr">self</span>):
+        <span class="cm"># A tiny method whose ONLY job is to flip this task's own state.</span>
+        <span class="cm"># Keeping this logic inside the class (not scattered in main()) is</span>
+        <span class="cm"># what makes the object "responsible for itself".</span>
+        <span class="vr">self</span>.is_completed = <span class="kw">True</span>
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="vr">self</span>):
+        <span class="cm"># Builds the one-line display format used by list_all_tasks() below.</span>
+        <span class="vr">status</span> = <span class="str">"x"</span> <span class="kw">if</span> <span class="vr">self</span>.is_completed <span class="kw">else</span> <span class="str">" "</span>
+        <span class="kw">return</span> <span class="kw">f</span><span class="str">"[{status}] #{self.id} | {self.title} ({self.priority} Priority)"</span>
+
+
+<span class="kw">class</span> <span class="fn">TaskManager</span>:
+    <span class="str">"""Manages a list of Task instances and operations."""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>):
+        <span class="vr">self</span>.tasks = []       <span class="cm"># Holds every Task object we've created so far</span>
+        <span class="vr">self</span>._next_id = <span class="nm">1</span>  <span class="cm"># Auto-incrementing ID counter, private by convention (_)</span>
+
+    <span class="kw">def</span> <span class="fn">add_task</span>(<span class="vr">self</span>, <span class="vr">title</span>, <span class="vr">priority</span>=<span class="str">"Medium"</span>):
+        <span class="cm"># Build a brand-new Task object using the manager's current ID counter...</span>
+        <span class="vr">new_task</span> = <span class="fn">Task</span>(<span class="vr">self</span>._next_id, <span class="vr">title</span>, <span class="vr">priority</span>)
+        <span class="vr">self</span>.tasks.<span class="fn">append</span>(<span class="vr">new_task</span>)  <span class="cm"># ...then store it in this manager's list</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"✨ Task added: '{title}' with ID #{self._next_id}"</span>)
+        <span class="vr">self</span>._next_id += <span class="nm">1</span>  <span class="cm"># Bump the counter so the NEXT task gets a unique ID</span>
+
+    <span class="kw">def</span> <span class="fn">list_all_tasks</span>(<span class="vr">self</span>):
+        <span class="cm"># Early exit keeps the "happy path" below free of nested if/else clutter</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="vr">self</span>.tasks:
+            <span class="fn">print</span>(<span class="str">"📭 No tasks currently registered!"</span>)
+            <span class="kw">return</span>
+        
+        <span class="fn">print</span>(<span class="str">"\n--- CURRENT TASK LIST ---"</span>)
+        <span class="kw">for</span> <span class="vr">task</span> <span class="kw">in</span> <span class="vr">self</span>.tasks:
+            <span class="fn">print</span>(<span class="vr">task</span>)  <span class="cm"># Calls task.__str__() automatically!</span>
+        <span class="fn">print</span>(<span class="str">"-------------------------\n"</span>)
+
+    <span class="kw">def</span> <span class="fn">complete_task</span>(<span class="vr">self</span>, <span class="vr">task_id</span>):
+        <span class="cm"># Linear search through self.tasks looking for a matching id.</span>
+        <span class="kw">for</span> <span class="vr">task</span> <span class="kw">in</span> <span class="vr">self</span>.tasks:
+            <span class="kw">if</span> <span class="vr">task</span>.id == <span class="vr">task_id</span>:
+                <span class="vr">task</span>.<span class="fn">mark_complete</span>()  <span class="cm"># Delegate the state change to the Task itself</span>
+                <span class="fn">print</span>(<span class="kw">f</span><span class="str">"🎉 Task #{task_id} marked as completed!"</span>)
+                <span class="kw">return</span>  <span class="cm"># Stop as soon as we find and update the match</span>
+        <span class="cm"># The loop finished without a 'return', so no matching task existed</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"❌ Error: Task #{task_id} not found."</span>)
+
+    <span class="kw">def</span> <span class="fn">get_stats</span>(<span class="vr">self</span>):
+        <span class="cm"># A generator expression (t.is_completed for t in self.tasks) is</span>
+        <span class="cm"># summed to count True values, since True behaves like 1 in Python.</span>
+        <span class="vr">total</span> = <span class="fn">len</span>(<span class="vr">self</span>.tasks)
+        <span class="vr">completed</span> = <span class="fn">sum</span>(<span class="nm">1</span> <span class="kw">for</span> <span class="vr">t</span> <span class="kw">in</span> <span class="vr">self</span>.tasks <span class="kw">if</span> <span class="vr">t</span>.is_completed)
+        <span class="vr">pending</span> = <span class="vr">total</span> - <span class="vr">completed</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"\n📊 STATS: Total: {total} | Completed: {completed} | Pending: {pending}\n"</span>)
+
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="cm"># Interactive Command Line Interface loop</span>
+    <span class="vr">manager</span> = <span class="fn">TaskManager</span>()  <span class="cm"># One manager object owns the entire task list</span>
+    
+    <span class="cm"># Pre-populate sample tasks so the menu has something to show immediately</span>
+    <span class="vr">manager</span>.<span class="fn">add_task</span>(<span class="str">"Review Python OOP Docs"</span>, <span class="str">"High"</span>)
+    <span class="vr">manager</span>.<span class="fn">add_task</span>(<span class="str">"Commit code to GitHub"</span>, <span class="str">"High"</span>)
+
+    <span class="kw">while</span> <span class="kw">True</span>:  <span class="cm"># Keep showing the menu until the user chooses to exit</span>
+        <span class="fn">print</span>(<span class="str">"=== LEVANI'S OOP TASK MANAGER ==="</span>)
+        <span class="fn">print</span>(<span class="str">"1. View All Tasks"</span>)
+        <span class="fn">print</span>(<span class="str">"2. Add New Task"</span>)
+        <span class="fn">print</span>(<span class="str">"3. Mark Task Complete"</span>)
+        <span class="fn">print</span>(<span class="str">"4. View Summary Stats"</span>)
+        <span class="fn">print</span>(<span class="str">"5. Exit"</span>)
+
+        <span class="vr">choice</span> = <span class="fn">input</span>(<span class="str">"\nSelect option (1-5): "</span>).<span class="fn">strip</span>()
+
+        <span class="cm"># The menu logic below never touches manager.tasks directly — it always</span>
+        <span class="cm"># goes through TaskManager's own methods. That's OOP encapsulation in action.</span>
+        <span class="kw">if</span> <span class="vr">choice</span> == <span class="str">"1"</span>:
+            <span class="vr">manager</span>.<span class="fn">list_all_tasks</span>()
+        <span class="kw">elif</span> <span class="vr">choice</span> == <span class="str">"2"</span>:
+            <span class="vr">title</span> = <span class="fn">input</span>(<span class="str">"Enter task title: "</span>).<span class="fn">strip</span>()
+            <span class="cm"># "or" falls back to "Medium" only if the user just pressed Enter</span>
+            <span class="vr">prio</span> = <span class="fn">input</span>(<span class="str">"Enter priority (Low/Medium/High) [Medium]: "</span>).<span class="fn">strip</span>() <span class="kw">or</span> <span class="str">"Medium"</span>
+            <span class="kw">if</span> <span class="vr">title</span>:
+                <span class="vr">manager</span>.<span class="fn">add_task</span>(<span class="vr">title</span>, <span class="vr">prio</span>)
+            <span class="kw">else</span>:
+                <span class="fn">print</span>(<span class="str">"❌ Title cannot be empty!"</span>)
+        <span class="kw">elif</span> <span class="vr">choice</span> == <span class="str">"3"</span>:
+            <span class="vr">tid</span> = <span class="fn">input</span>(<span class="str">"Enter Task ID to complete: "</span>).<span class="fn">strip</span>()
+            <span class="cm"># isdigit() protects int() from crashing on non-numeric input</span>
+            <span class="kw">if</span> <span class="vr">tid</span>.<span class="fn">isdigit</span>():
+                <span class="vr">manager</span>.<span class="fn">complete_task</span>(<span class="fn">int</span>(<span class="vr">tid</span>))
+            <span class="kw">else</span>:
+                <span class="fn">print</span>(<span class="str">"❌ Please enter a valid numerical ID."</span>)
+        <span class="kw">elif</span> <span class="vr">choice</span> == <span class="str">"4"</span>:
+            <span class="vr">manager</span>.<span class="fn">get_stats</span>()
+        <span class="kw">elif</span> <span class="vr">choice</span> == <span class="str">"5"</span>:
+            <span class="fn">print</span>(<span class="str">"👋 Happy coding, Levani! Exiting CLI."</span>)
+            sys.<span class="fn">exit</span>(<span class="nm">0</span>)  <span class="cm"># Cleanly stops the while-True loop and ends the program</span>
+        <span class="kw">else</span>:
+            <span class="cm"># Catches anything that wasn't 1-5, so the loop never crashes on bad input</span>
+            <span class="fn">print</span>(<span class="str">"⚠️ Invalid option. Please enter a number between 1 and 5."</span>)
+
+
+<span class="kw">if</span> <span class="vr">__name__</span> == <span class="str">"__main__"</span>:
+    <span class="fn">main</span>()</code></pre>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal Execution Sample</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> <span class="out">python task_cli_app.py</span>
+<span class="cmt">✨ Task added: 'Review Python OOP Docs' with ID #1
+✨ Task added: 'Commit code to GitHub' with ID #2
+
+=== LEVANI'S OOP TASK MANAGER ===
+1. View All Tasks
+2. Add New Task
+3. Mark Task Complete
+4. View Summary Stats
+5. Exit
+
+Select option (1-5): 1
+
+--- CURRENT TASK LIST ---
+[ ] #1 | Review Python OOP Docs (High Priority)
+[ ] #2 | Commit code to GitHub (High Priority)
+-------------------------</span></code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== EXTENSION CHALLENGES ===================== -->
+    <section class="waypoint" id="extensions">
+      <span class="stamp-num">5</span>
+      <span class="wp-time">Section 5 · Stretch Goals</span>
+      <h2>Extension Challenges</h2>
+      <p class="wp-sub">Once the Task Tracker above is running comfortably, push further with these two challenges before our next session. Attempt them in order, and try to write the code yourself before peeking at the hints.</p>
+
+      <div class="drill-box">
+        <h4>🟢 Challenge 1: Due Dates &amp; Sorting</h4>
+        <p>Add a <code class="inline">due_date</code> parameter (a plain string like <code class="inline">"2026-09-20"</code>) to <code class="inline">Task.__init__</code>, include it in <code class="inline">__str__</code>, and add a new <code class="inline">TaskManager</code> method <code class="inline">sort_by_priority()</code> that reorders <code class="inline">self.tasks</code> so <code class="inline">"High"</code> priority tasks print first.</p>
+      </div>
+      <div class="note hint">
+        <span class="note-label">HINT</span>
+        <p>Python's <code class="inline">list.sort(key=...)</code> accepts a function that maps each item to a sortable value. A small dictionary like <code class="inline">{"High": 0, "Medium": 1, "Low": 2}</code> combined with <code class="inline">task.priority</code> gives you a clean sort key.</p>
+      </div>
+
+      <div class="drill-box">
+        <h4>🟢 Challenge 2: Filtering &amp; Search</h4>
+        <p>Add a <code class="inline">find_by_keyword(keyword)</code> method to <code class="inline">TaskManager</code> that prints only the tasks whose <code class="inline">title</code> contains the given text (case-insensitive), and wire it up as a new option "6. Search Tasks" in the CLI menu.</p>
+      </div>
+      <div class="note hint">
+        <span class="note-label">HINT</span>
+        <p><code class="inline">keyword.lower() in task.title.lower()</code> handles the case-insensitive matching. Reuse the same "loop through <code class="inline">self.tasks</code>" pattern you already saw in <code class="inline">complete_task()</code>.</p>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">COMING UP IN OUR NEXT SESSIONS</span>
+        <p>Once Challenges 1 and 2 feel comfortable, we'll build on this same Task Tracker to cover two bigger ideas: <strong>persistence</strong> (saving/loading tasks to a file with <code class="inline">json</code>, so progress survives between runs) and <strong>inheritance</strong> (creating an <code class="inline">UrgentTask</code> class that reuses <code class="inline">Task</code>'s code instead of rewriting it). No need to attempt these yet — just keep them in mind!</p>
+      </div>
+    </section>
+
+  </div><!-- /.trail -->
+
+  <div class="closing">
+    <h2>Awesome Progress, Levani!</h2>
+    <p>You now master thinking in object blueprints, defining internal state attributes, writing state-modifying methods, and tying everything together inside OOP CLI applications! When you're ready, work through the Extension Challenges above to deepen your skills before our next session.</p>
+  </div>
+
+</div><!-- /.wrap -->
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+  function copyCode(btn){
+    const container = btn.closest('.editor, .term');
+    const codeEl = container.querySelector('pre code');
+    const text = codeEl.innerText;
+    navigator.clipboard.writeText(text).then(function(){
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(function(){ btn.textContent = original; }, 1400);
+    });
+  }
+</script>
+
+</body>
+</html>
