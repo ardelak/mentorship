@@ -404,36 +404,7 @@ if __name__ == "__main__":
       <p class="wp-sub">Use the command line and short Python scripts to inspect real requests, compare responses, and practice debugging deliberately.</p>
       <h3>Hands-on Practical Application Drills</h3>
       <div class="drill-box">
-        <h3>Drill 1: Explore a REST-style API with curl</h3>
-        <p>Use JSONPlaceholder to make each request. Record the method, path, status code, and one useful field from the response.</p>
-        <ol class="checklist">
-          <li>GET <code class="inline">/users/1</code>; find the user's name and email.</li>
-          <li>GET <code class="inline">/users/1/todos</code>; count the returned items and explain what the nested path means.</li>
-          <li>GET <code class="inline">/users/99999</code>; compare its status and response body with the valid user request.</li>
-          <li>POST a todo to <code class="inline">/todos</code> with a title, <code class="inline">completed: false</code>, and <code class="inline">userId: 1</code>; note the status and returned ID.</li>
-        </ol>
-      </div>
-      <div class="drill-box">
-        <h3>Drill 2: Parse and summarize an API response</h3>
-        <p>Write a short Python script that fetches <code class="inline">https://jsonplaceholder.typicode.com/users/1/todos</code>. Print the total item count, then print the titles of incomplete todos only.</p>
-        <ol class="checklist">
-          <li>Pass a timeout to <code class="inline">requests.get()</code> and call <code class="inline">raise_for_status()</code>.</li>
-          <li>Parse the response with <code class="inline">.json()</code>; it should be a list of dictionaries.</li>
-          <li>Use a loop and an <code class="inline">if not todo["completed"]</code> condition to filter results.</li>
-          <li>Handle a network or HTTP error so a failed request produces a readable message.</li>
-        </ol>
-      </div>
-      <div class="drill-box">
-        <h3>Drill 3: Use query parameters</h3>
-        <p>Fetch posts for a user with <code class="inline">GET /posts?userId=1</code>. In Python, pass <code class="inline">{"userId": 1}</code> with the <code class="inline">params=</code> argument instead of concatenating it into the URL.</p>
-        <p>Then print how many posts were returned and the first post's title. Try a different user ID and compare the results.</p>
-      </div>
-      <div class="drill-box">
-        <h3>Drill 4: Diagnose a controlled failure</h3>
-        <p>Change the host to a deliberately invalid domain, then change it back and use a nonexistent path. Observe that a connection error and an HTTP 404 are different kinds of failure. Restore the valid URL when finished.</p>
-      </div>
-      <div class="drill-box">
-        <h3>Knowledge check</h3>
+       <h3>Knowledge check</h3>
         <ol class="checklist">
           <li>In a Python script that calls a weather API, which program is the client?</li>
           <li>What is the difference between a URL path and a query parameter?</li>
