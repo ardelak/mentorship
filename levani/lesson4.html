@@ -448,34 +448,8 @@ if __name__ == "__main__":
     <section class="waypoint" id="mini-cli">
       <span class="stamp-num">8</span>
       <span class="wp-time">Homework · Mini CLI projects</span>
-      <h2>Mini CLI Projects and Extension Activities</h2>
-      <p class="wp-sub">Choose one core project, then complete one or more extensions. Keep the interface in the terminal and build on the HTTP and JSON patterns from this tutorial.</p>
-      <div class="drill-box">
-        <h3>Project A: City Weather Lookup</h3>
-        <p>Turn the weather example into a menu-driven application. Offer at least three cities, let the user choose one, and display current temperature and wind speed with units.</p>
+      <h2>Extension Activities for homework</h2>
         <ol class="checklist">
-          <li>Store city names and coordinates in a dictionary.</li>
-          <li>Reject unknown choices without making an API request.</li>
-          <li>Move the HTTP call into a reusable function and use a timeout.</li>
-          <li>Handle network errors, unsuccessful statuses, and unexpected response data.</li>
-        </ol>
-      </div>
-      <div class="drill-box">
-        <h3>Project B: To-do Explorer</h3>
-        <p>Create a menu that lists a user's todos, shows only incomplete items, or searches titles by a word. Use JSONPlaceholder's <code class="inline">/users/1/todos</code> endpoint.</p>
-        <ol class="checklist">
-          <li>Parse the JSON list and print each matching todo with a clear index.</li>
-          <li>Ask the user for a filter choice or search term.</li>
-          <li>Display a helpful message when no items match.</li>
-          <li>Keep fetching and display logic in separate functions.</li>
-        </ol>
-      </div>
-      <div class="drill-box">
-        <h3>Project C: GitHub Profile Reporter</h3>
-        <p>Ask for a GitHub username, fetch <code class="inline">/users/&lt;username&gt;</code>, and print the account name, public repository count, and profile URL. Treat a 404 as an unknown username rather than a crash.</p>
-      </div>
-      <h3>Extension activities for homework</h3>
-      <ol class="checklist">
         <li><strong>Configuration:</strong> Let the user choose Celsius or Fahrenheit where the API supports units, and label every value accurately.</li>
         <li><strong>History:</strong> Save successful weather lookups to a local JSON file with a timestamp. On startup, add a menu option to view recent searches.</li>
         <li><strong>Input validation:</strong> Normalize city names, handle blank input, and keep invalid menu selections from triggering requests.</li>
