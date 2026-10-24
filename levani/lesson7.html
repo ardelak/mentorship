@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Building Bots with APIs — Mentoring Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{--ink:#17223B;--ink-soft:#4B5670;--paper:#F3F1E7;--card:#fff;--amber:#B8791C;--amber-deep:#8F5D12;--amber-wash:#F1E1BE;--rule:#D8D1BC;--green:#3F7A56;--green-wash:#E1EEE6;--danger:#9C3B2E;--danger-wash:#F5E1DC;--vs-bg:#1E1E1E;--vs-tabs:#252526;--vs-text:#D4D4D4;--term-bg:#111417;--term-text:#D8DEE4;--radius-sm:6px;--radius-md:12px;--shadow:0 1px 2px rgba(23,34,59,.06),0 6px 20px rgba(23,34,59,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper) radial-gradient(circle at 1px 1px,rgba(23,34,59,.05) 1px,transparent 0) 0 0/22px 22px;color:var(--ink);font:16.5px/1.7 'Karla',sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Newsreader',serif;margin:0}h3{margin:1.4rem 0 .3rem}a{color:var(--amber-deep)}::selection{background:var(--amber-wash)}
+.topnav{position:sticky;top:0;z-index:50;background:rgba(243,241,231,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule);padding:.7rem 1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.brand{font:italic 600 1.05rem 'Newsreader',serif;white-space:nowrap}
+.links{display:flex;gap:.35rem;flex-wrap:wrap;margin-left:auto}
+.pill{font-size:.82rem;color:var(--ink-soft);text-decoration:none;padding:.3rem .7rem;border-radius:999px;border:1px solid transparent}
+.pill:hover{border-color:var(--rule);background:var(--card);color:var(--ink)}
+.wrap{max-width:840px;margin:0 auto;padding:0 1.5rem 6rem}
+.hero{padding:3.5rem 0 2.5rem;text-align:center}
+.stamp{width:115px;height:115px;margin:0 auto 1.6rem;border:2px dashed var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-5deg);color:var(--amber-deep);font:.72rem/1.3 'JetBrains Mono',monospace;letter-spacing:.04em;text-align:center}
+.hero h1{font-size:2.8rem;font-style:italic;font-weight:500;max-width:720px;margin:0 auto .6rem;line-height:1.15}
+.for-line{color:var(--ink-soft);font-size:1.1rem;margin-bottom:1.4rem}
+.chips{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.chip{font:.8rem 'JetBrains Mono',monospace;background:var(--card);border:1px solid var(--rule);padding:.32rem .75rem;border-radius:999px;color:var(--ink-soft)}
+.objective,.dossier{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius-md);padding:1.6rem 1.8rem;margin:2rem 0;box-shadow:var(--shadow)}
+.objective h2{font-size:1.25rem;margin-bottom:.5rem}.objective p{color:var(--ink-soft);margin:0}
+.timeline-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin:2.2rem 0 2.6rem}
+.timeline-grid a{text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.8rem .6rem;text-align:center;display:block;transition:all .15s}
+.timeline-grid a:hover{border-color:var(--amber);transform:translateY(-2px)}
+.t-time{font:.72rem 'JetBrains Mono',monospace;color:var(--amber-deep);display:block}.t-label{font-size:.82rem;font-weight:600;line-height:1.25}
+@media(max-width:800px){.timeline-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.timeline-grid{grid-template-columns:repeat(2,1fr)}}
+.trail{position:relative;padding-left:2.6rem}
+.trail::before{content:"";position:absolute;left:1.05rem;top:.4rem;bottom:.4rem;width:2px;background:linear-gradient(var(--rule) 60%,transparent 0) 0 0/2px 10px repeat-y}
+.waypoint{position:relative;margin-bottom:3.8rem}
+.stamp-num{position:absolute;left:-2.6rem;top:.1rem;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font:600 .95rem 'JetBrains Mono',monospace}
+.wp-time{font:.8rem 'JetBrains Mono',monospace;color:var(--amber-deep);display:block;margin-bottom:.2rem}
+.waypoint h2{font-size:1.65rem;margin-bottom:.2rem}.wp-sub{color:var(--ink-soft);margin-bottom:1.2rem;font-size:.98rem}
+.note{border-radius:var(--radius-sm);padding:1rem 1.15rem;margin:1.2rem 0;font-size:.95rem;border:1px solid var(--rule)}
+.note-label{display:block;font:600 .72rem 'JetBrains Mono',monospace;letter-spacing:.03em;margin-bottom:.35rem}
+.note.tip{background:var(--amber-wash);border-color:#e2c98a}.tip .note-label{color:var(--amber-deep)}
+.note.hint{background:#EEF1F7;border-color:#c9d2e6}.hint .note-label{color:#3B4E80}
+.note.watch{background:var(--danger-wash);border-color:#e3b6ac}.watch .note-label{color:var(--danger)}
+.note.win{background:var(--green-wash);border-color:#b9d8c5}.win .note-label{color:var(--green)}
+.note p{margin:0 0 .4rem}.note p:last-child{margin:0}.note ul{margin:.3rem 0 0;padding-left:1.2rem}
+.editor,.term{border-radius:var(--radius-md);overflow:hidden;margin:1.2rem 0;box-shadow:var(--shadow);background:var(--vs-bg)}
+.term{background:var(--term-bg)}
+.tabbar{background:var(--vs-tabs);display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-bottom:1px solid #111}
+.term .tabbar{background:#1a1d21}
+.filename{font:.78rem 'JetBrains Mono',monospace;color:#c9c9c9;background:#1e1e1e;padding:.28rem .7rem;border-radius:6px 6px 0 0}
+.dots{display:flex;gap:.32rem}.dots span{width:10px;height:10px;border-radius:50%}.dots span:nth-child(1){background:#ff5f56}.dots span:nth-child(2){background:#ffbd2e}.dots span:nth-child(3){background:#27c93f}
+.termtitle{font:.75rem 'JetBrains Mono',monospace;color:#9aa4ad}
+.copy-btn{margin-left:auto;background:none;border:1px solid #3c3c3c;color:#c9c9c9;font:.7rem 'JetBrains Mono',monospace;padding:.22rem .55rem;border-radius:5px;cursor:pointer}
+.copy-btn:hover{background:#2d2d2d}
+pre{margin:0;padding:1.1rem 1.3rem;overflow-x:auto;font:.86rem/1.65 'JetBrains Mono',monospace;color:var(--vs-text)}
+.term pre{color:var(--term-text)}
+.kw{color:#569CD6}.str{color:#CE9178}.cm{color:#6A9955;font-style:italic}.fn{color:#DCDCAA}.nm{color:#B5CEA8}
+.drill-box{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--amber);border-radius:var(--radius-sm);padding:1.2rem 1.4rem;margin:1.5rem 0}
+.drill-box h4{font:700 1.05rem 'Karla',sans-serif;margin-bottom:.4rem}.drill-box p{margin:0}
+code.i,.note code,p code,li code{background:#EEEAE0;padding:.12rem .4rem;border-radius:4px;font:.85em 'JetBrains Mono',monospace}
+.dossier{padding:2rem 1.9rem;margin:2.5rem 0;position:relative}
+.dossier::before{content:"HOMEWORK";position:absolute;top:-.75rem;left:1.7rem;background:var(--ink);color:var(--paper);font:.7rem 'JetBrains Mono',monospace;letter-spacing:.06em;padding:.25rem .7rem;border-radius:999px}
+.dossier h2{font-size:1.6rem;margin-bottom:.2rem}.meta{font:.8rem 'JetBrains Mono',monospace;color:var(--ink-soft);margin-bottom:1.4rem}
+.step{margin:1.6rem 0}.step h3{font-size:1.1rem;margin:0 0 .4rem}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--amber-wash);color:var(--amber-deep);font:.85rem 'JetBrains Mono',monospace;margin-right:.5rem}
+.quiz-q{margin-bottom:1.5rem}
+.quiz-opts button{display:block;width:100%;text-align:left;margin:.35rem 0;padding:.7rem 1rem;border:1px solid var(--rule);border-radius:6px;background:var(--card);cursor:pointer;transition:all .2s;font:1rem 'Karla',sans-serif;color:var(--ink)}
+.quiz-opts button:hover{border-color:var(--amber);background:var(--amber-wash)}
+.quiz-opts button.correct{background:var(--green-wash);border-color:var(--green);color:var(--green);font-weight:700}
+.quiz-opts button.wrong{background:var(--danger-wash);border-color:var(--danger);color:var(--danger);text-decoration:line-through}
+.quiz-opts.answered button{pointer-events:none}
+.quiz-score{font-size:1.25rem;font-weight:700;text-align:center;margin-top:1.5rem;padding:1.5rem;background:var(--amber-wash);border-radius:6px;border:2px dashed var(--amber)}
+.divider{display:flex;align-items:center;gap:.8rem;margin:3rem 0 2.4rem;color:var(--ink-soft)}
+.divider::before,.divider::after{content:"";flex:1;border-top:1px dashed var(--rule)}.divider span{font:.78rem 'JetBrains Mono',monospace}
+.closing{text-align:center;padding:3rem 1rem 1rem;color:var(--ink-soft)}.closing h2{font-style:italic;font-size:1.6rem;color:var(--ink);margin-bottom:.6rem}.closing p{max-width:540px;margin:0 auto}
+.scroll-top{position:fixed;bottom:1.6rem;right:1.6rem;background:var(--ink);color:var(--paper);border:none;border-radius:999px;width:42px;height:42px;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+@media(max-width:640px){.trail{padding-left:2.1rem}.stamp-num{left:-2.1rem;width:1.9rem;height:1.9rem;font-size:.82rem}.hero h1{font-size:2.15rem}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">API Masterclass · Block 3</span>
+  <div class="links">
+    <a class="pill" href="#w1">Bot Basics</a><a class="pill" href="#w2">Raw API</a><a class="pill" href="#w3">Library</a><a class="pill" href="#w4">Real Data</a><a class="pill" href="#w5">Hardening</a><a class="pill" href="#quiz">Quiz</a><a class="pill" href="#homework">Homework</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero" id="overview">
+    <div class="stamp">APIs +<br/>BOTS<br/>LESSON 7</div>
+    <h1>Building Bots with APIs</h1>
+    <p class="for-line">Interactive Mentoring Module — from raw HTTP calls to a working Telegram bot</p>
+    <div class="chips">
+      <span class="chip">🤖 Telegram Bot API</span><span class="chip">🔁 Polling</span><span class="chip">⌨️ Commands & Buttons</span><span class="chip">🔐 Secrets</span>
+    </div>
+  </section>
+
+  <div class="objective">
+    <h2>Learning Objectives</h2>
+    <p>So far your scripts have <em>asked</em> APIs for data. A bot flips the direction: it <strong>waits</strong> for people to talk to it, then calls APIs and answers. Today you will see a bot work first through raw <code>requests</code> calls (so there is no magic), then rebuild it with <code>python-telegram-bot</code>, connect it to NASA's API from Lesson 6, and make it crash-proof. Homework: ship your own bot from VS Code.</p>
+  </div>
+
+  <div class="timeline-grid">
+    <a href="#w1"><span class="t-time">Step 1</span><span class="t-label">How Bots Work</span></a>
+    <a href="#w2"><span class="t-time">Step 2</span><span class="t-label">Raw HTTP Bot</span></a>
+    <a href="#w3"><span class="t-time">Step 3</span><span class="t-label">Library & Handlers</span></a>
+    <a href="#w4"><span class="t-time">Step 4</span><span class="t-label">Bot + NASA API</span></a>
+    <a href="#w5"><span class="t-time">Step 5</span><span class="t-label">Errors & Deploy</span></a>
+  </div>
+
+  <div class="trail">
+
+    <section class="waypoint" id="w1">
+      <span class="stamp-num">1</span>
+      <span class="wp-time">Part 1 · Concept Basics (15 min)</span>
+      <h2>What a Bot Really Is</h2>
+      <p class="wp-sub">A bot is just a program with an API token and a loop.</p>
+
+      <p>A Telegram bot is a normal Python program. Telegram's servers hold the chat; your program talks to them over HTTPS. Every message a user sends becomes an <strong>Update</strong> (a JSON object), and every reply you send is one API call. There is no special bot technology — it is the same <code>requests.get</code> you already know.</p>
+
+      <div class="note hint">
+        <span class="note-label">TWO WAYS TO RECEIVE MESSAGES</span>
+        <ul>
+          <li><strong>Long polling:</strong> your program repeatedly asks <code>getUpdates</code> "anything new?". Works on your laptop, no public address needed. <em>We use this.</em></li>
+          <li><strong>Webhooks:</strong> Telegram calls a public URL on your server whenever a message arrives. Better for production hosting.</li>
+        </ul>
+      </div>
+
+      <h3>Getting a token from BotFather</h3>
+      <p>In Telegram, search for <code>@BotFather</code> (the verified one), send <code>/newbot</code>, choose a display name, then a username ending in <code>bot</code>. BotFather replies with a token that looks like <code>123456789:AAH...</code>.</p>
+
+      <div class="note watch">
+        <span class="note-label">TOKEN = PASSWORD</span>
+        <p>Anyone holding the token controls your bot. Never paste it into code that goes to GitHub. We will keep it in a <code>.env</code> file. If it leaks, send <code>/revoke</code> to BotFather.</p>
+      </div>
+
+      <p>Every Bot API URL has the same shape: <code>https://api.telegram.org/bot&lt;TOKEN&gt;/&lt;METHOD&gt;</code>. Let's test the token with the simplest method, <code>getMe</code>:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">step1_getme.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()  # reads BOT_TOKEN from the .env file
+TOKEN = os.getenv("BOT_TOKEN")
+
+url = f"https://api.telegram.org/bot{TOKEN}/getMe"
+data = requests.get(url, timeout=10).json()
+
+print(data)
+# {'ok': True, 'result': {'id': 123456789, 'is_bot': True,
+#   'first_name': 'My Helper Bot', 'username': 'my_helper_bot'}}</code></pre>
+      </div>
+      <p>Every Telegram reply has the same wrapper: <code>"ok"</code> (true/false) and either <code>"result"</code> or <code>"description"</code> (the error). Always check <code>ok</code> first.</p>
+    </section>
+
+    <section class="waypoint" id="w2">
+      <span class="stamp-num">2</span>
+      <span class="wp-time">Part 2 · Engineering Practice (20 min)</span>
+      <h2>A Bot in 20 Lines of Raw HTTP</h2>
+      <p class="wp-sub">Before using any library, see what it hides.</p>
+
+      <p>First send a message to your bot in Telegram (say "hi"), then fetch it. The response is a list of updates, each with an <code>update_id</code> and a <code>message</code>:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">step2_updates.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>updates = requests.get(f"https://api.telegram.org/bot{TOKEN}/getUpdates", timeout=10).json()
+
+# Shape of one update (simplified):
+# {"update_id": 501,
+#  "message": {"message_id": 7,
+#              "from": {"id": 42, "first_name": "Alex"},
+#              "chat": {"id": 42, "type": "private"},
+#              "text": "hi"}}
+
+for u in updates["result"]:
+    print(u["update_id"], u["message"]["text"])</code></pre>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">RISKY CHAIN ALERT</span>
+        <p>Remember Lesson 6? Not every update has <code>"message"</code> — users can edit messages, press buttons, or send photos with no text. <code>u["message"]["text"]</code> would crash. Use your <code>safe_get</code> helper.</p>
+      </div>
+
+      <p>Now the full echo bot. The key idea is <strong>offset</strong>: tell Telegram "I have processed everything up to ID N", so it does not send the same updates again.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">step2_echo_raw.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import os, time
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+API = f"https://api.telegram.org/bot{os.getenv('BOT_TOKEN')}"
+
+def safe_get(d, path, default=None):
+    for key in path:
+        if isinstance(d, dict) and key in d:
+            d = d[key]
+        else:
+            return default
+    return d
+
+def send_message(chat_id, text):
+    requests.post(f"{API}/sendMessage",
+                  json={"chat_id": chat_id, "text": text}, timeout=10)
+
+offset = None  # "next update I want"
+print("Bot is running. Press Ctrl+C to stop.")
+
+while True:
+    params = {"timeout": 30}          # long polling: server waits up to 30s
+    if offset:
+        params["offset"] = offset
+    data = requests.get(f"{API}/getUpdates", params=params, timeout=40).json()
+
+    for update in data.get("result", []):
+        offset = update["update_id"] + 1   # mark as processed
+        chat_id = safe_get(update, ["message", "chat", "id"])
+        text = safe_get(update, ["message", "text"])
+        if chat_id and text:
+            send_message(chat_id, f"You said: {text}")
+    time.sleep(0.2)</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Drill 1: Add commands by hand</h4>
+        <p>Extend the loop: if <code>text == "/start"</code>, reply with a greeting; if it starts with <code>/echo </code>, reply with the rest. Notice how quickly this becomes a tangle of <code>if</code> statements — that is exactly why libraries exist.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill1_commands.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>if text == "/start":
+    send_message(chat_id, "Hello! I am your first bot 🤖")
+elif text.startswith("/echo "):
+    send_message(chat_id, text[len("/echo "):])
+elif text == "/help":
+    send_message(chat_id, "Commands: /start, /echo [text], /help")
+else:
+    send_message(chat_id, "Unknown command. Try /help")</code></pre>
+      </div>
+    </section>
+
+    <section class="waypoint" id="w3">
+      <span class="stamp-num">3</span>
+      <span class="wp-time">Part 3 · Live Practice (30 min)</span>
+      <h2>python-telegram-bot: Handlers</h2>
+      <p class="wp-sub">Let the library run the loop; you write only the reactions.</p>
+
+      <p>The library does polling, offsets, and JSON parsing for you. You register <strong>handlers</strong>: "when X happens, run this function". Install it with <code>pip install python-telegram-bot python-dotenv requests</code>.</p>
+
+      <div class="note tip">
+        <span class="note-label">ASYNC IN ONE SENTENCE</span>
+        <p>Handler functions are written <code>async def</code> and every Telegram call is prefixed with <code>await</code>. That lets one bot talk to many users at once without blocking. Just follow the pattern for now.</p>
+      </div>
+
+      <div class="drill-box">
+        <h4>Drill 2: Minimal bot with /start and /help</h4>
+        <p>Every handler receives <code>update</code> (what happened) and <code>context</code> (tools and arguments).</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">bot_v1.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import os
+from dotenv import load_dotenv
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+load_dotenv()
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    name = update.effective_user.first_name
+    await update.message.reply_text(f"Hi {name}! Send /help to see what I can do.")
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("/start - greet\n/help - this list\n/echo [text] - repeat")
+
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # context.args is the list of words after the command
+    if not context.args:
+        await update.message.reply_text("Usage: /echo hello world")
+        return
+    await update.message.reply_text(" ".join(context.args))
+
+def main():
+    app = Application.builder().token(os.getenv("BOT_TOKEN")).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("echo", echo))
+    print("Bot is running...")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()</code></pre>
+      </div>
+
+      <h3>Reacting to plain text</h3>
+      <p><code>MessageHandler</code> with <code>filters</code> catches non-command text. Handler order matters: the first matching handler wins in its group.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill3_text_handler.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>from telegram.ext import MessageHandler, filters
+
+async def reply_to_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.lower()
+    if "hello" in text or "hi" in text:
+        await update.message.reply_text("Hello there! 👋")
+    else:
+        await update.message.reply_text("I only understand commands. Try /help")
+
+# TEXT = any text message, ~filters.COMMAND = and it is NOT a command
+app.add_handler(MessageHandler(filters.TEXT &amp; ~filters.COMMAND, reply_to_text))</code></pre>
+      </div>
+
+      <h3>Inline keyboards: buttons under a message</h3>
+      <p>Buttons send a <strong>callback_data</strong> string back to your bot when pressed. You must call <code>query.answer()</code> to stop the button's loading spinner.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill4_buttons.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler
+
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [InlineKeyboardButton("🌌 Photo of the day", callback_data="apod"),
+         InlineKeyboardButton("☄️ Asteroids", callback_data="neo")],
+        [InlineKeyboardButton("❌ Close", callback_data="close")],
+    ]
+    await update.message.reply_text("Choose:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+async def on_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()                      # required!
+    if query.data == "close":
+        await query.edit_message_text("Menu closed.")
+    else:
+        await query.edit_message_text(f"You picked: {query.data}")
+
+app.add_handler(CommandHandler("menu", menu))
+app.add_handler(CallbackQueryHandler(on_button))</code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">CHECKPOINT</span>
+        <p>Run <code>bot_v1.py</code>, message your bot, and make all three commands work before moving on. If something fails, read the terminal — the traceback names the exact line.</p>
+      </div>
+    </section>
+
+    <section class="waypoint" id="w4">
+      <span class="stamp-num">4</span>
+      <span class="wp-time">Part 4 · Implementation (25 min)</span>
+      <h2>Bot + NASA API: Real Data in Chat</h2>
+      <p class="wp-sub">Combine Lesson 6's safe parsing with a live bot.</p>
+
+      <p>Now the bot becomes useful: each command calls an external API, safely extracts the useful fields, and formats the answer. Keep API logic in <strong>plain functions</strong> separate from handlers — you can test them without Telegram.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">nasa_service.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import os
+from datetime import date
+import requests
+
+KEY = os.getenv("NASA_API_KEY", "DEMO_KEY")
+
+def safe_get(d, path, default=None):
+    for key in path:
+        if isinstance(d, dict) and key in d:
+            d = d[key]
+        else:
+            return default
+    return d
+
+def fetch_apod():
+    """Astronomy Picture of the Day -> clean dict, or None on failure."""
+    try:
+        r = requests.get("https://api.nasa.gov/planetary/apod",
+                         params={"api_key": KEY}, timeout=10)
+        r.raise_for_status()
+    except requests.RequestException:
+        return None
+    d = r.json()
+    return {"title": d.get("title", "Untitled"),
+            "url": d.get("url"),
+            "type": d.get("media_type", "image"),
+            "text": d.get("explanation", "")[:300]}
+
+def fetch_today_asteroids():
+    today = date.today().isoformat()
+    try:
+        r = requests.get("https://api.nasa.gov/neo/rest/v1/feed",
+                         params={"start_date": today, "end_date": today, "api_key": KEY},
+                         timeout=10)
+        r.raise_for_status()
+    except requests.RequestException:
+        return None
+    rocks = safe_get(r.json(), ["near_earth_objects", today], [])
+    return [{"name": a.get("name", "?"),
+             "hazard": a.get("is_potentially_hazardous_asteroid", False),
+             "size": safe_get(a, ["estimated_diameter", "meters", "estimated_diameter_max"], 0.0)}
+            for a in rocks]</code></pre>
+      </div>
+
+      <div class="note watch">
+        <span class="note-label">BLOCKING CALLS</span>
+        <p><code>requests</code> is <em>blocking</em>: while it waits for NASA, an async bot freezes for every user. Run it in a worker thread with <code>asyncio.to_thread(...)</code> as shown below.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">bot_v2.py (handlers)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import asyncio
+from nasa_service import fetch_apod, fetch_today_asteroids
+
+async def apod(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Contacting NASA... 🛰️")
+    data = await asyncio.to_thread(fetch_apod)      # runs requests in a thread
+
+    if data is None:
+        await update.message.reply_text("NASA is not responding. Try again later.")
+        return
+    caption = f"*{data['title']}*\n\n{data['text']}..."
+    if data["type"] == "image":
+        await update.message.reply_photo(data["url"], caption=caption[:1000],
+                                         parse_mode="Markdown")
+    else:                                            # APOD can also be a video
+        await update.message.reply_text(f"{caption}\n{data['url']}", parse_mode="Markdown")
+
+async def asteroids(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    rocks = await asyncio.to_thread(fetch_today_asteroids)
+    if rocks is None:
+        await update.message.reply_text("Could not reach NASA.")
+        return
+    if not rocks:
+        await update.message.reply_text("No asteroids recorded today.")
+        return
+    rocks.sort(key=lambda a: a["size"], reverse=True)
+    lines = [f"{'⚠️' if a['hazard'] else '✅'} {a['name']} - {a['size']:.0f} m"
+             for a in rocks[:5]]
+    await update.message.reply_text("Top 5 asteroids today:\n" + "\n".join(lines))
+
+# in main():
+# app.add_handler(CommandHandler("apod", apod))
+# app.add_handler(CommandHandler("asteroids", asteroids))</code></pre>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Telegram chat (example)</span></div>
+        <pre><code>You: /asteroids
+Bot: Top 5 asteroids today:
+     ⚠️ (2019 XY) - 412 m
+     ✅ (2024 AB3) - 88 m
+     ✅ (2026 CD) - 31 m</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Drill 5: Command with arguments</h4>
+        <p>Let users pick a date: <code>/apod 2024-07-04</code>. Validate the input before calling the API, since users type anything.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">drill5_args.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>from datetime import datetime
+
+def parse_date(text):
+    try:
+        return datetime.strptime(text, "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return None
+
+async def apod_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("Usage: /apod YYYY-MM-DD")
+        return
+    day = parse_date(context.args[0])
+    if day is None:
+        await update.message.reply_text("That is not a valid date. Example: 2024-07-04")
+        return
+    # TODO: pass `day` to fetch_apod as params={"date": day}</code></pre>
+      </div>
+    </section>
+
+    <section class="waypoint" id="w5">
+      <span class="stamp-num">5</span>
+      <span class="wp-time">Part 5 · Hardening (15 min)</span>
+      <h2>Errors, Secrets, and Staying Online</h2>
+      <p class="wp-sub">What separates a demo from a bot people can rely on.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">hardening.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import logging, os
+from dotenv import load_dotenv
+
+load_dotenv()
+logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO)
+log = logging.getLogger("bot")
+
+TOKEN = os.getenv("BOT_TOKEN")
+if not TOKEN:
+    raise SystemExit("BOT_TOKEN is missing. Create a .env file (see README).")
+
+async def on_error(update, context):
+    # Any exception inside a handler lands here instead of killing the bot
+    log.error("Handler failed", exc_info=context.error)
+    if update and getattr(update, "effective_message", None):
+        await update.effective_message.reply_text("Something went wrong on my side 🛠️")
+
+# in main():  app.add_handler(...)  then:
+# app.add_error_handler(on_error)</code></pre>
+      </div>
+
+      <h3>Rate limits apply to bots too</h3>
+      <p>Telegram allows roughly one message per second per chat. Sending too fast returns HTTP <strong>429</strong> — the same lesson as NASA, with a <code>retry_after</code> value in the response. Do not send long loops of messages; combine lines into one message, as <code>/asteroids</code> does.</p>
+
+      <div class="note tip">
+        <span class="note-label">WHERE DOES A BOT LIVE?</span>
+        <p>While your terminal runs, the bot is online; close VS Code and it goes offline. To keep it running 24/7 you deploy it to a server (a small VPS, Railway, Render, or Fly.io). That is a future lesson — today your laptop is the server.</p>
+      </div>
+    </section>
+
+    <section class="waypoint" id="quiz">
+      <span class="stamp-num">Q</span>
+      <span class="wp-time">Interactive Recap</span>
+      <h2>10-Question Knowledge Check</h2>
+      <p class="wp-sub">Test your mastery of bots, handlers, and safe API use.</p>
+      <div class="drill-box">
+        <p><b>Exercise:</b> Click the correct answer for each question below.</p>
+        <div id="q-container"></div>
+        <div id="score-display" class="quiz-score" style="display:none">🎉 Final Score: <span id="score-val">0</span> / 10</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="divider"><span>SCAFFOLDED HOMEWORK · 2–3 HOURS</span></div>
+
+  <div class="dossier" id="homework">
+    <h2>Build "SpaceBuddy": Your Own Telegram Bot</h2>
+    <p class="meta">Target: new GitHub repository · Estimated time: 120–180 minutes</p>
+    <p>You will create a bot with three commands, connect it to the NASA API, and run it from Visual Studio Code. Work through the steps in order and commit to Git after each one.</p>
+
+    <div class="step">
+      <h3><span class="step-num">1</span>Create the bot with BotFather</h3>
+      <p>In Telegram open <code>@BotFather</code> → <code>/newbot</code> → pick a name and a username ending in <code>bot</code>. Copy the token. Optionally send <code>/setcommands</code> and paste:</p>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">BotFather → /setcommands</span></div>
+        <pre><code>start - Greet the bot
+apod - NASA photo of the day
+asteroids - Today's biggest asteroids
+help - Show all commands</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">2</span>Set up the project in VS Code</h3>
+      <p>Install Python 3.10+ and VS Code (with the <em>Python</em> extension by Microsoft). Then: <strong>File → Open Folder…</strong> and create a new folder called <code>spacebuddy</code>. Open the built-in terminal with <code>Ctrl+`</code> (Mac: <code>Cmd+`</code>) and run:</p>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">VS Code terminal · Windows</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>python -m venv .venv
+.venv\Scripts\activate
+pip install python-telegram-bot python-dotenv requests
+pip freeze > requirements.txt</code></pre>
+      </div>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">VS Code terminal · macOS / Linux</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install python-telegram-bot python-dotenv requests
+pip freeze > requirements.txt</code></pre>
+      </div>
+      <div class="note hint">
+        <span class="note-label">SELECT THE INTERPRETER</span>
+        <p>Press <code>Ctrl+Shift+P</code> → <strong>Python: Select Interpreter</strong> → choose the one inside <code>.venv</code>. Your terminal prompt should start with <code>(.venv)</code>. On Windows, if activation is blocked, run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> in PowerShell once.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">3</span>Protect your secrets</h3>
+      <p>Create two files in the project root. The second one tells Git to never upload the first.</p>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">.env</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>BOT_TOKEN=paste_your_botfather_token_here
+NASA_API_KEY=DEMO_KEY</code></pre>
+      </div>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">.gitignore</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>.env
+.venv/
+__pycache__/</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">4</span>Write the bot (scaffolding)</h3>
+      <p>Create <code>bot.py</code>. Copy <code>safe_get</code> and the NASA functions from today's lesson into <code>nasa_service.py</code>, then complete every <code>TODO</code> below.</p>
+      <div class="editor">
+        <div class="tabbar"><span class="filename">bot.py (Scaffolding)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>import asyncio, logging, os
+from dotenv import load_dotenv
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+from nasa_service import fetch_apod, fetch_today_asteroids
+
+load_dotenv()
+logging.basicConfig(level=logging.INFO)
+TOKEN = os.getenv("BOT_TOKEN")
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # TODO 1: greet the user by first name (update.effective_user.first_name)
+    pass
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # TODO 2: reply with a list of all commands
+    pass
+
+async def apod(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # TODO 3: call fetch_apod with asyncio.to_thread, handle None, send photo + caption
+    pass
+
+async def asteroids(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # TODO 4: call fetch_today_asteroids, sort by size, show the top 5
+    pass
+
+async def on_error(update, context):
+    # TODO 5: log context.error and tell the user something went wrong
+    pass
+
+def main():
+    if not TOKEN:
+        raise SystemExit("BOT_TOKEN missing in .env")
+    app = Application.builder().token(TOKEN).build()
+    # TODO 6: add a CommandHandler for each command + the error handler
+    print("SpaceBuddy is running. Press Ctrl+C to stop.")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">5</span>Run it and test</h3>
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">VS Code terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>python bot.py</code></pre>
+      </div>
+      <p>Open your bot in Telegram, press <strong>Start</strong>, and try each command. Stop the bot with <code>Ctrl+C</code>. Run only <strong>one</strong> copy at a time — two copies with the same token cause a <code>Conflict</code> error.</p>
+      <div class="note tip">
+        <span class="note-label">DEBUG LIKE A PRO (OPTIONAL)</span>
+        <p>Click left of a line number to set a red breakpoint, then press <code>F5</code> → <strong>Python File</strong>. Execution pauses at your breakpoint and you can inspect <code>update</code> and <code>context.args</code> in the left panel.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">6</span>Stretch goals</h3>
+      <p>Pick at least one: (a) an inline <code>/menu</code> with buttons for APOD and asteroids; (b) <code>/apod YYYY-MM-DD</code> with date validation; (c) cache NASA responses for one hour using your Lesson 6 <code>load_from_cache</code>; (d) write <code>test_service.py</code> with mock data for your formatting logic.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">7</span>Submit</h3>
+      <p>Push to GitHub with a <code>README.md</code> explaining setup (steps 2–5 in your own words) and a screenshot of your bot chat. Confirm <code>.env</code> is <strong>not</strong> in the repository. Bring any error messages to our next session.</p>
+    </div>
+  </div>
+
+  <div class="closing">
+    <h2>Your code now talks back.</h2>
+    <p>You can receive messages, call APIs on demand, and keep a bot alive through bad input and server errors. Next lesson: deploying your bot so it runs 24/7 without your laptop.</p>
+  </div>
+</div>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+const qData=[
+{q:"1. What does a Telegram bot use to authenticate with the Bot API?",opts:["A username and password","A secret token from BotFather","Your phone number","An OAuth login page"],ans:1},
+{q:"2. In long polling, what does the bot do?",opts:["Waits for Telegram to call its public URL","Repeatedly asks getUpdates for new messages","Opens a direct database connection","Sends messages to itself"],ans:1},
+{q:"3. Why do we pass offset = update_id + 1 to getUpdates?",opts:["To encrypt the update","To skip updates already processed","To increase the message limit","To switch the chat language"],ans:1},
+{q:"4. Where should a bot token be stored?",opts:["Hard-coded in bot.py","In a README on GitHub","In a .env file listed in .gitignore","In the chat with BotFather"],ans:2},
+{q:"5. What does context.args contain for the message '/echo hello world'?",opts:["['/echo', 'hello', 'world']","['hello', 'world']","'hello world'","None"],ans:1},
+{q:"6. Which call is REQUIRED after a user presses an inline button?",opts:["query.answer()","app.stop()","update.delete()","time.sleep(1)"],ans:0},
+{q:"7. Why use asyncio.to_thread(fetch_apod) inside an async handler?",opts:["To make NASA respond faster","Because requests blocks, and would freeze the bot for all users","To hide the API key","It is required by Python syntax"],ans:1},
+{q:"8. Which filter catches normal text but NOT commands?",opts:["filters.TEXT & ~filters.COMMAND","filters.COMMAND","filters.PHOTO","filters.ALL | filters.TEXT"],ans:0},
+{q:"9. What is the purpose of app.add_error_handler(...)?",opts:["It prevents all errors from happening","It catches exceptions from handlers so the bot keeps running","It restarts your computer","It increases rate limits"],ans:1},
+{q:"10. What happens if you run two copies of the same bot with the same token?",opts:["They share the work equally","The bot becomes faster","Telegram returns a Conflict error","Nothing changes"],ans:2}
+];
+let score=0,answered=0;
+const qc=document.getElementById('q-container'),sd=document.getElementById('score-display'),sv=document.getElementById('score-val');
+qData.forEach((item,i)=>{
+  const div=document.createElement('div');div.className='quiz-q';
+  const b=document.createElement('b');b.textContent=item.q;div.appendChild(b);
+  const od=document.createElement('div');od.className='quiz-opts';div.appendChild(od);
+  item.opts.forEach((opt,oi)=>{
+    const btn=document.createElement('button');btn.textContent=opt;
+    btn.onclick=()=>{
+      if(od.classList.contains('answered'))return;
+      od.classList.add('answered');
+      od.querySelectorAll('button')[item.ans].classList.add('correct');
+      if(oi===item.ans)score++;else btn.classList.add('wrong');
+      if(++answered===qData.length){sv.textContent=score;sd.style.display='block';setTimeout(()=>sd.scrollIntoView({behavior:'smooth',block:'center'}),300)}
+    };
+    od.appendChild(btn);
+  });
+  qc.appendChild(div);
+});
+
+function copyCode(btn){
+  const c=btn.closest('.editor, .term');
+  navigator.clipboard.writeText(c.querySelector('pre code').innerText).then(()=>{
+    const o=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=o,1400);
+  });
+}
+
+/* Lightweight Python syntax highlighter for .editor blocks */
+(function(){
+  const KW='import|from|def|async|await|if|elif|else|for|in|while|return|try|except|as|raise|pass|not|and|or|break|lambda|None|True|False|class|with';
+  const re=new RegExp('(#.*$)|((?:f|r)?"(?:\\\\.|[^"\\\\\\n])*"|(?:f|r)?\'(?:\\\\.|[^\'\\\\\\n])*\')|\\b('+KW+')\\b|\\b(\\d+\\.?\\d*)\\b|\\b([A-Za-z_]\\w*)(?=\\()','gm');
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.querySelectorAll('.editor pre code').forEach(el=>{
+    if(el.closest('.tabbar')) return;
+    const name=(el.closest('.editor').querySelector('.filename')||{}).textContent||'';
+    if(/^\.(env|gitignore)/.test(name)) return;
+    const src=el.textContent;let out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      const cls=m[1]?'cm':m[2]?'str':m[3]?'kw':m[4]?'nm':'fn';
+      out+='<span class="'+cls+'">'+esc(m[0])+'</span>';
+      last=m.index+m[0].length;
+    }
+    el.innerHTML=out+esc(src.slice(last));
+  });
+})();
+</script>
+</body>
+</html>
