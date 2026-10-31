@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formative Quiz 1 — Lessons 1–7</title>
+    <title>Advanced Formative Quiz — Lessons 1–7</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -64,11 +64,7 @@
         font-weight: 600;
         font-size: 1.05rem;
       }
-      .links {
-        display: flex;
-        gap: 0.35rem;
-        flex-wrap: wrap;
-      }
+      .links { display: flex; gap: 0.35rem; flex-wrap: wrap; }
       .pill {
         font-size: 0.82rem;
         color: var(--ink-soft);
@@ -79,12 +75,12 @@
       }
       .pill:hover { border-color: var(--rule); background: var(--card); color: var(--ink); }
 
-      .wrap { max-width: 880px; margin: 0 auto; padding: 0 1.5rem 6rem; }
-      .hero { padding: 3.5rem 0 2.5rem; text-align: center; }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+      .hero { padding: 3.5rem 0 2.2rem; text-align: center; }
       .stamp {
-        width: 118px;
-        height: 118px;
-        margin: 0 auto 1.6rem;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.5rem;
         border: 2px dashed var(--amber);
         border-radius: 50%;
         display: flex;
@@ -128,18 +124,58 @@
         background: var(--card);
         border: 1px solid var(--rule);
         border-radius: var(--radius-md);
-        padding: 1.5rem 1.7rem;
+        padding: 1.5rem 1.75rem;
         margin: 2rem 0;
         box-shadow: var(--shadow);
       }
-      .objective h2, .summary-box h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-      .objective p, .summary-box p { color: var(--ink-soft); margin: 0; }
+      .objective h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+      .objective p { color: var(--ink-soft); margin: 0; }
 
-      .trail { position: relative; padding-left: 2.4rem; }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+        gap: 0.9rem;
+        margin-top: 1.1rem;
+      }
+      .metric {
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        padding: 0.8rem 0.9rem;
+      }
+      .metric-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--ink-soft);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .metric-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-top: 0.25rem;
+      }
+
+      .progress-shell {
+        margin-top: 1rem;
+        height: 12px;
+        background: #f0ebdf;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--rule);
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--amber), var(--amber-deep));
+        transition: width 0.25s ease;
+      }
+
+      .trail { position: relative; padding-left: 2.5rem; }
       .trail::before {
         content: "";
         position: absolute;
-        left: 1.1rem;
+        left: 1.05rem;
         top: 0.4rem;
         bottom: 0.4rem;
         width: 2px;
@@ -149,13 +185,13 @@
       }
       .waypoint {
         position: relative;
-        margin-bottom: 2.2rem;
-        padding: 1.2rem 0 0.3rem;
+        margin-bottom: 2.4rem;
+        padding: 1rem 0 0.25rem;
       }
       .stamp-num {
         position: absolute;
-        left: -2.5rem;
-        top: 0.3rem;
+        left: -2.6rem;
+        top: 0.25rem;
         width: 2.2rem;
         height: 2.2rem;
         border-radius: 50%;
@@ -173,20 +209,33 @@
         align-items: center;
         justify-content: space-between;
         gap: 0.8rem;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.9rem;
       }
       .question-label {
         font-family: "JetBrains Mono", monospace;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         color: var(--amber-deep);
         background: var(--amber-wash);
         border-radius: 999px;
-        padding: 0.2rem 0.55rem;
+        padding: 0.25rem 0.55rem;
       }
       .question-text {
         font-size: 1.05rem;
         margin: 0 0 0.9rem;
         line-height: 1.6;
+      }
+      .code-block {
+        display: block;
+        margin: 0.75rem 0 1rem;
+        background: var(--vs-bg);
+        color: var(--vs-text);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.86rem;
+        line-height: 1.65;
+        border: 1px solid rgba(0,0,0,0.08);
       }
       .options {
         display: grid;
@@ -224,10 +273,8 @@
         border-color: var(--amber);
         background: #fffaf1;
       }
-      .option-btn:disabled {
-        cursor: default;
-        opacity: 1;
-      }
+      .option-btn:disabled { cursor: default; opacity: 1; }
+
       .input-wrap {
         display: flex;
         flex-wrap: wrap;
@@ -270,6 +317,7 @@
         color: var(--danger);
         border: 1px solid #e3b6ac;
       }
+
       details {
         margin-top: 0.8rem;
         border: 1px solid var(--rule);
@@ -323,44 +371,58 @@
       @media (max-width: 640px) {
         .trail { padding-left: 1.9rem; }
         .stamp-num { left: -2rem; width: 1.8rem; height: 1.8rem; font-size: 0.8rem; }
+        .summary-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
     <nav class="topnav">
-      <div class="brand">Formative Quiz 1</div>
+      <div class="brand">Advanced Quiz</div>
       <div class="links">
         <a class="pill" href="#overview">Overview</a>
         <a class="pill" href="#questions">Questions</a>
-        <a class="pill" href="#scoreboard">Scoreboard</a>
+        <a class="pill" href="#scoreboard">Score</a>
       </div>
     </nav>
 
     <div class="wrap">
       <section class="hero" id="overview">
-        <div class="stamp">QUIZ<br />01</div>
-        <h1>Lessons 1–7 Checkpoint</h1>
-        <p class="for-line">21-question formative quiz for the full Python + API + bot track.</p>
+        <div class="stamp">ADV<br />QUIZ</div>
+        <h1>Lessons 1–7 Final Checkpoint</h1>
+        <p class="for-line">A more advanced recap of Python, API work, and Telegram bots.</p>
         <div class="chips">
-          <span class="chip">21 questions</span>
-          <span class="chip">Multiple choice + free answer</span>
-          <span class="chip">Automatic score</span>
+          <span class="chip">24 questions</span>
+          <span class="chip">MCQ + free response</span>
+          <span class="chip">Auto-scoring</span>
         </div>
       </section>
 
       <div class="objective">
-        <h2>How it works</h2>
-        <p>
-          Answer each question. For multiple choice, click the correct option. For free response, type the answer and click “Check”.
-          The score updates automatically, and each question includes a spoiler with the correct answer and explanation.
-        </p>
+        <h2>Progress overview</h2>
+        <div class="summary-grid">
+          <div class="metric">
+            <div class="metric-label">Answered</div>
+            <div class="metric-value" id="answeredCount">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Correct</div>
+            <div class="metric-value" id="correctCount">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Percent</div>
+            <div class="metric-value" id="percentCount">0%</div>
+          </div>
+        </div>
+        <div class="progress-shell">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
       </div>
 
       <div class="trail" id="questions"></div>
 
       <div class="summary-box" id="scoreboard">
         <div class="score-row">
-          <div id="score">Score: 0 / 21</div>
+          <div id="score">Score: 0 / 24</div>
           <div class="actions">
             <button class="ghost-btn" id="showAll">Reveal all answers</button>
             <button class="ghost-btn" id="resetQuiz">Reset quiz</button>
@@ -374,305 +436,314 @@
         {
           type: "mcq",
           lesson: "Lesson 1",
-          prompt: "What is the main purpose of VS Code in this course?",
+          prompt: "Why do developers use VS Code in this course instead of a plain text editor?",
           options: [
-            "A place to store files only",
-            "A code editor where you write and run code",
-            "A browser for GitHub",
-            "A database application"
+            "It only works online",
+            "It helps write, organize, and run code in one environment",
+            "It replaces Python",
+            "It automatically solves every bug"
           ],
           answerIndex: 1,
-          explanation: "VS Code is the editor where students write code, navigate files, and open the integrated terminal."
+          explanation: "VS Code gives a structured environment for editing files and launching the terminal, which is exactly what students need while learning Python."
         },
         {
           type: "mcq",
           lesson: "Lesson 1",
-          prompt: "Which terminal command prints the current folder path?",
-          options: ["ls", "cd", "pwd", "python"],
-          answerIndex: 2,
-          explanation: "pwd means 'print working directory'. It shows the folder you are currently in."
+          prompt: "What does pwd do in the terminal?",
+          options: ["Print a Python file", "Print the current working directory", "Create a new folder", "Run a function"],
+          answerIndex: 1,
+          explanation: "pwd prints the current working directory, helping you know where you are in the filesystem."
         },
         {
           type: "mcq",
           lesson: "Lesson 1",
-          prompt: "What happens when you run: python main.py ?",
+          prompt: "What is the most important reason to use input() in a script?",
           options: [
-            "It opens a browser",
-            "It executes the Python file named main.py",
-            "It creates a new folder",
-            "It deletes the file"
+            "To read a file from disk",
+            "To accept user text while the program is running",
+            "To define a variable",
+            "To open a browser"
           ],
           answerIndex: 1,
-          explanation: "Running python main.py tells Python to execute the script in that file."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 1",
-          prompt: "What is the main use of the input() function?",
-          options: [
-            "To save a file",
-            "To read user input from the terminal",
-            "To install Python",
-            "To open a web page"
-          ],
-          answerIndex: 1,
-          explanation: "input() pauses the program and waits for a user to type something."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 1",
-          prompt: "Which syntax is an f-string?",
-          options: ["'Hello'", "f\"Hello {name}\"", "print(name)", "input()"],
-          answerIndex: 1,
-          explanation: "An f-string uses the letter f before the quote and embeds expressions inside { } ."
+          explanation: "input() lets the program interact with the user by receiving data at runtime."
         },
         {
           type: "free",
           lesson: "Lesson 1",
-          prompt: "Write the exact command used to run a Python file named main.py from the terminal.",
-          answer: "python main.py",
-          accepted: ["python main.py", "python3 main.py"],
-          explanation: "On most systems the command is python main.py. On some machines it is python3 main.py."
+          prompt: "Write the exact command to run a Python file named app.py from the terminal.",
+          answer: "python app.py",
+          accepted: ["python app.py", "python3 app.py"],
+          explanation: "Most systems use python app.py, while some use python3 app.py depending on the installation."
         },
         {
           type: "mcq",
           lesson: "Lesson 2",
-          prompt: "What does a condition like if age >= 18 do?",
+          prompt: "Why do we use if statements?",
           options: [
-            "It always prints a value",
-            "It checks whether a statement is true and runs code only then",
-            "It creates a loop",
-            "It deletes a variable"
+            "To repeat code many times",
+            "To check a condition before running code",
+            "To create variables",
+            "To install packages"
           ],
           answerIndex: 1,
-          explanation: "if checks a condition. If it is true, the indented block runs."
+          explanation: "if statements allow code to run only when a specific condition is true."
         },
         {
           type: "mcq",
           lesson: "Lesson 2",
-          prompt: "Which of these is a loop?",
-          options: ["if", "for", "input", "return"],
+          prompt: "Which of these is a loop structure?",
+          options: ["if", "for", "return", "input"],
           answerIndex: 1,
-          explanation: "A for loop repeats a block of code multiple times."
+          explanation: "for repeats an action multiple times, which is the defining feature of a loop."
         },
         {
           type: "mcq",
           lesson: "Lesson 2",
-          prompt: "Why do we use functions?",
+          prompt: "What is the main advantage of a function?",
           options: [
-            "To make code longer",
-            "To group reusable logic",
-            "To hide errors from Python",
-            "To replace variables"
+            "It makes every file shorter",
+            "It groups repeatable logic in one place",
+            "It prevents all errors",
+            "It deletes variables"
           ],
           answerIndex: 1,
-          explanation: "Functions let us reuse logic instead of repeating the same code over and over."
+          explanation: "Functions make code reusable and easier to maintain by isolating repeatable logic."
         },
         {
           type: "free",
           lesson: "Lesson 2",
-          prompt: "Complete the function header: def ____(name):",
+          prompt: "Complete this function header: def ___(name):",
           answer: "greet",
-          accepted: ["greet", "say_hello", "my_function"],
-          explanation: "The function name is any valid identifier, such as greet or say_hello."
+          accepted: ["greet", "say_hello", "welcome"],
+          explanation: "Any valid function name works, such as greet, say_hello, or welcome."
         },
         {
           type: "mcq",
           lesson: "Lesson 3",
-          prompt: "What is the purpose of a TODO comment in a scaffolded file?",
+          prompt: "What is the purpose of TODO comments in scaffolded code?",
           options: [
-            "It stops the program",
-            "It tells you what still needs to be completed",
-            "It deletes the file",
-            "It only works in the browser"
+            "They stop Python from running",
+            "They mark unfinished work for the developer",
+            "They create new files",
+            "They only work in GitHub"
           ],
           answerIndex: 1,
-          explanation: "TODO comments are instructions left for the developer to complete the missing logic."
+          explanation: "TODO comments act as reminders of missing logic, helping developers complete tasks in order."
         },
         {
           type: "mcq",
           lesson: "Lesson 3",
-          prompt: "Why is it helpful to run the script after each small change?",
+          prompt: "Why should you test the script after each small change?",
           options: [
-            "To confuse the code",
-            "To catch the exact place where a bug appeared",
-            "To make the file bigger",
-            "To delete the terminal"
+            "To hide bugs",
+            "To catch errors early and isolate the last change",
+            "To rename files",
+            "To make code longer"
           ],
           answerIndex: 1,
-          explanation: "Running often makes it easier to find a bug immediately after the last change."
+          explanation: "Frequent testing makes debugging easier because the last change is usually the source of a new problem."
         },
         {
           type: "mcq",
           lesson: "Lesson 4",
-          prompt: "Which data type is best for storing many related values in order?",
-          options: ["String", "List", "Integer", "Dictionary"],
+          prompt: "Which structure is best for storing many values in order?",
+          options: ["String", "List", "Dictionary", "Boolean"],
           answerIndex: 1,
-          explanation: "Lists keep values in order and are useful for collections of related data."
+          explanation: "Lists are ordered collections, making them ideal for sequences of values."
         },
         {
           type: "mcq",
           lesson: "Lesson 4",
           prompt: "What does a dictionary store?",
           options: [
-            "Only numbers",
+            "Only integer values",
             "Key-value pairs",
-            "Only text",
-            "Only booleans"
+            "Only text strings",
+            "Only True/False values"
           ],
           answerIndex: 1,
-          explanation: "A dictionary stores data as key-value pairs, such as {'name': 'Levani'}."
+          explanation: "Dictionaries store data as key-value pairs, such as {'name': 'Levani'}."
         },
         {
           type: "mcq",
           lesson: "Lesson 5",
-          prompt: "What is the purpose of return in a function?",
+          prompt: "What is the purpose of return inside a function?",
           options: [
-            "To print something on the screen",
-            "To send a value back to the caller",
-            "To restart the program",
-            "To skip the function"
+            "To repeat the function",
+            "To give a value back to the caller",
+            "To delete the function",
+            "To print the function name"
           ],
           answerIndex: 1,
-          explanation: "return gives the caller the result that the function computed."
+          explanation: "return sends the produced result back to the place where the function was called."
         },
         {
           type: "free",
           lesson: "Lesson 5",
-          prompt: "Write a valid Python function definition that accepts a name and returns a greeting string.",
+          prompt: "Write a valid function that accepts a name and returns a greeting string.",
           answer: "def greet(name): return f'Hello, {name}'",
-          accepted: ["def greet(name): return f'Hello, {name}'", "def greet(name):\n    return f'Hello, {name}'", "def greet(name):\n    return f\"Hello, {name}\""],
-          explanation: "A function can be defined with def and return a string built with an f-string."
+          accepted: [
+            "def greet(name): return f'Hello, {name}'",
+            "def greet(name):\n    return f'Hello, {name}'",
+            "def greet(name):\n    return f\"Hello, {name}\""
+          ],
+          explanation: "A valid function definition can accept a parameter and return a greeting built with an f-string."
         },
         {
           type: "mcq",
           lesson: "Lesson 6",
-          prompt: "What is the usual purpose of the requests library?",
-          options: [
-            "To create websites",
-            "To send HTTP requests to APIs",
-            "To manage files",
-            "To draw graphics"
-          ],
-          answerIndex: 1,
-          explanation: "requests is used to talk to APIs over HTTP, for example GET and POST requests."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 6",
-          prompt: "What does response.json() usually return?",
-          options: ["A string", "A dictionary/list from JSON", "An image", "A file path"],
-          answerIndex: 1,
-          explanation: "JSON from an API is usually converted into a Python dictionary or list for easier use."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 6",
-          prompt: "Why do we use a safe_get helper?",
-          options: [
-            "To avoid crashes when JSON has missing keys",
-            "To make the code shorter",
-            "To store the API key",
-            "To print the response"
-          ],
-          answerIndex: 0,
-          explanation: "A safe_get helper checks nested keys before trying to read them, preventing KeyError and TypeError issues."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 7",
-          prompt: "What is a Telegram bot?",
-          options: [
-            "A browser extension",
-            "A program that listens for messages and answers them through Telegram",
-            "A database record",
-            "A CSS framework"
-          ],
-          answerIndex: 1,
-          explanation: "A Telegram bot is a program that communicates with Telegram servers and reacts to user messages."
-        },
-        {
-          type: "mcq",
-          lesson: "Lesson 7",
-          prompt: "Who gives you the token that authenticates your bot?",
-          options: ["GitHub", "Reddit", "BotFather", "VS Code"],
+          prompt: "Which library is commonly used to make HTTP requests to an API in Python?",
+          options: ["os", "json", "requests", "math"],
           answerIndex: 2,
+          explanation: "The requests library is the standard tool used to send HTTP requests such as GET and POST."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 6",
+          prompt: "What does response.json() usually produce?",
+          options: ["A file object", "A Python list or dictionary", "A screenshot", "A SQL query"],
+          answerIndex: 1,
+          explanation: "JSON responses are parsed into Python data structures such as dictionaries and lists."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 6",
+          prompt: "Why is a safe_get helper useful when reading nested API data?",
+          options: [
+            "It encrypts responses",
+            "It prevents crashes when keys are missing",
+            "It formats the terminal",
+            "It stores the API key"
+          ],
+          answerIndex: 1,
+          explanation: "safe_get checks nested dictionary keys before accessing them, reducing errors when data is missing or incomplete."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "What is a Telegram bot in the context of this course?",
+          options: [
+            "A browser tab",
+            "A program that waits for messages and reacts to them",
+            "A JSON file",
+            "A database engine"
+          ],
+          answerIndex: 1,
+          explanation: "A Telegram bot is a program that receives Telegram updates and responds through the Bot API."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "Who provides the token that authenticates the bot?",
+          options: ["GitHub", "BotFather", "SQL", "VS Code"],
+          answerIndex: 1,
           explanation: "BotFather creates and manages Telegram bot tokens."
         },
         {
           type: "mcq",
           lesson: "Lesson 7",
-          prompt: "What is the purpose of offset in getUpdates?",
+          prompt: "Why is offset important when polling updates?",
           options: [
-            "To encrypt the API response",
-            "To tell Telegram which updates were already processed",
-            "To slow down the bot",
-            "To hide the token"
+            "It increases the speed of the internet",
+            "It prevents reprocessing old messages",
+            "It creates handlers",
+            "It deletes the token"
           ],
           answerIndex: 1,
-          explanation: "offset helps the bot skip older updates and process only new ones."
+          explanation: "offset tells Telegram which update IDs have already been processed, so older messages are not repeated."
         },
         {
           type: "mcq",
           lesson: "Lesson 7",
           prompt: "Why do async handlers use await?",
           options: [
-            "To block all other actions",
-            "To wait for a Telegram operation to finish before continuing",
-            "To delete the message",
-            "To print a line feed"
+            "To stop the program immediately",
+            "To wait for an operation such as a Telegram response before continuing",
+            "To create a loop",
+            "To print a dictionary"
           ],
           answerIndex: 1,
-          explanation: "await pauses the function until the awaited operation finishes, which is important in async bot code."
+          explanation: "await pauses the handler until the awaited task completes, allowing the bot to continue cleanly."
         },
         {
           type: "free",
           lesson: "Lesson 7",
-          prompt: "Write the command used to install the Python Telegram bot library in a virtual environment.",
+          prompt: "Write the command used to install the Telegram bot library with pip.",
           answer: "pip install python-telegram-bot",
           accepted: ["pip install python-telegram-bot", "pip install python-telegram-bot python-dotenv requests"],
-          explanation: "The library is installed with pip. In the course, it was often installed together with python-dotenv and requests."
+          explanation: "The core library is python-telegram-bot, and in the course it was often installed together with python-dotenv and requests."
         },
         {
           type: "mcq",
-          lesson: "Lesson 7",
-          prompt: "Why should API secrets be stored in a .env file and not committed to GitHub?",
+          lesson: "Cross-topic",
+          prompt: "Which combination is the best practice for API-based projects?",
           options: [
-            "Because GitHub reads .env automatically",
-            "Because tokens are sensitive and can let others control the bot",
-            "Because .env is faster",
-            "Because .env makes the bot crash"
+            "Hard-code secrets in code and push to GitHub",
+            "Store secrets in a .env file and ignore it in Git",
+            "Delete the API key after every request",
+            "Use a browser as a backend"
           ],
           answerIndex: 1,
-          explanation: "A bot token is a secret. If leaked, anyone can control or abuse the bot."
+          explanation: "Secrets should never be committed to GitHub. .env files are used to keep credentials secure while still being accessible to the app."
+        },
+        {
+          type: "mcq",
+          lesson: "Cross-topic",
+          prompt: "Which sequence best describes the learning flow from these lessons?",
+          options: [
+            "API design → loops → GitHub → bot design",
+            "Python basics → functions → collections → API work → bot logic",
+            "Database only → CSS only → JavaScript only",
+            "Loops → binary → cloud → AI"
+          ],
+          answerIndex: 1,
+          explanation: "The course moves from Python fundamentals to structured programming, data handling, API work, and then Telegram bot logic."
+        },
+        {
+          type: "free",
+          lesson: "Cross-topic",
+          prompt: "Name one reason why testing a script after each small change is helpful.",
+          answer: "it helps find bugs early",
+          accepted: ["it helps find bugs early", "to catch errors quickly", "to isolate the last change", "to see where the bug was introduced"],
+          explanation: "Small, frequent testing makes errors easier to localize and fix before they grow larger."
         }
       ];
 
       const quizRoot = document.getElementById("questions");
       const scoreDisplay = document.getElementById("score");
+      const answeredDisplay = document.getElementById("answeredCount");
+      const correctDisplay = document.getElementById("correctCount");
+      const percentDisplay = document.getElementById("percentCount");
+      const progressBar = document.getElementById("progressBar");
       const showAllBtn = document.getElementById("showAll");
       const resetBtn = document.getElementById("resetQuiz");
 
       const state = questions.map(() => ({ answered: false, correct: false, selected: null }));
-
       let score = 0;
 
       function normalize(value) {
         return String(value).trim().toLowerCase().replace(/\s+/g, " ");
       }
 
-      function updateScore() {
+      function updateMetrics() {
+        const answered = state.filter(item => item.answered).length;
+        const correct = state.filter(item => item.correct).length;
+        const percent = Math.round((score / questions.length) * 100);
+
+        answeredDisplay.textContent = answered;
+        correctDisplay.textContent = correct;
+        percentDisplay.textContent = percent + "%";
+        progressBar.style.width = (answered / questions.length * 100) + "%";
         scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
       }
 
       function revealAllAnswers() {
-        document.querySelectorAll("details").forEach((detail) => {
-          detail.open = true;
-        });
+        document.querySelectorAll("details").forEach((detail) => detail.open = true);
       }
 
       function renderQuestions() {
         quizRoot.innerHTML = "";
+
         questions.forEach((q, index) => {
           const section = document.createElement("section");
           section.className = "waypoint";
@@ -685,7 +756,7 @@
           box.innerHTML = `
             <div class="question-head">
               <span class="question-label">${q.lesson}</span>
-              <span class="question-label">${q.type === "mcq" ? "Multiple choice" : "Free answer"}</span>
+              <span class="question-label">${q.type === "mcq" ? "MCQ" : q.type === "code" ? "Code" : "Short answer"}</span>
             </div>
             <p class="question-text">${index + 1}. ${q.prompt}</p>
           `;
@@ -706,38 +777,38 @@
 
               btn.addEventListener("click", () => {
                 if (state[index].answered) return;
-
                 state[index].answered = true;
                 state[index].selected = optionIndex;
                 const isCorrect = optionIndex === q.answerIndex;
-
                 state[index].correct = isCorrect;
 
-                if (isCorrect) {
-                  score += 1;
-                }
+                if (isCorrect) score += 1;
 
-                updateScore();
+                updateMetrics();
 
-                Array.from(optionWrap.children).forEach((childButton, childIndex) => {
+                Array.from(optionWrap.children).forEach((childButton, childIdx) => {
                   childButton.disabled = true;
                   childButton.classList.remove("selected");
-                  if (childIndex === q.answerIndex) {
-                    childButton.classList.add("correct");
-                  }
-                  if (childIndex === optionIndex && childIndex !== q.answerIndex) {
-                    childButton.classList.add("wrong");
-                  }
+                  if (childIdx === q.answerIndex) childButton.classList.add("correct");
+                  if (childIdx === optionIndex && childIdx !== q.answerIndex) childButton.classList.add("wrong");
                 });
 
                 const spoiler = section.querySelector("details");
                 spoiler.open = true;
               });
+
               optionWrap.appendChild(btn);
             });
 
             box.appendChild(optionWrap);
           } else {
+            if (q.code) {
+              const pre = document.createElement("pre");
+              pre.className = "code-block";
+              pre.textContent = q.code;
+              box.appendChild(pre);
+            }
+
             const inputWrap = document.createElement("div");
             inputWrap.className = "input-wrap";
 
@@ -758,31 +829,28 @@
               if (state[index].answered) return;
 
               const userValue = normalize(input.value);
-              const answerValue = normalize(q.answer);
-              const accepted = q.accepted.map(normalize);
-
-              const correct = accepted.includes(userValue) || userValue === answerValue;
+              const accepted = (q.accepted || [q.answer]).map(normalize);
+              const isCorrect = accepted.includes(userValue) || normalize(q.answer) === userValue;
 
               state[index].answered = true;
-              state[index].correct = correct;
+              state[index].correct = isCorrect;
               state[index].selected = userValue;
 
-              if (correct) {
-                score += 1;
-              }
+              if (isCorrect) score += 1;
 
-              feedback.textContent = correct ? "Correct!" : `Not quite — the correct answer is: ${q.answer}`;
+              feedback.textContent = isCorrect ? "Correct!" : `Not quite — the best answer is: ${q.answer}`;
               feedback.classList.remove("correct", "wrong");
-              feedback.classList.add(correct ? "correct" : "wrong");
+              feedback.classList.add(isCorrect ? "correct" : "wrong");
               feedback.style.display = "block";
 
-              updateScore();
+              updateMetrics();
 
               const spoiler = section.querySelector("details");
               spoiler.open = true;
             });
 
-            inputWrap.append(input, btn);
+            inputWrap.appendChild(input);
+            inputWrap.appendChild(btn);
             box.appendChild(inputWrap);
             box.appendChild(feedback);
           }
@@ -803,14 +871,13 @@
       }
 
       function resetQuiz() {
-        state.forEach((s, i) => {
+        state.forEach((s) => {
           s.answered = false;
           s.correct = false;
           s.selected = null;
         });
-
         score = 0;
-        updateScore();
+        updateMetrics();
 
         document.querySelectorAll(".option-btn").forEach((btn) => {
           btn.disabled = false;
@@ -824,6 +891,7 @@
         document.querySelectorAll(".feedback").forEach((feedback) => {
           feedback.style.display = "none";
           feedback.textContent = "";
+          feedback.classList.remove("correct", "wrong");
         });
 
         document.querySelectorAll("details").forEach((detail) => {
@@ -831,13 +899,14 @@
         });
 
         renderQuestions();
+        updateMetrics();
       }
 
       showAllBtn.addEventListener("click", revealAllAnswers);
       resetBtn.addEventListener("click", resetQuiz);
 
       renderQuestions();
-      updateScore();
+      updateMetrics();
     </script>
   </body>
 </html>
