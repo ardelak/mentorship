@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 8: Modular Architecture, Git Workflow &amp; Unit Testing</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,500&family=Karla:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#17223B;--soft:#4B5670;--paper:#F3F1E7;--card:#fff;--amber:#B8791C;--deep:#8F5D12;--wash:#F1E1BE;--rule:#D8D1BC;--green:#3F7A56;--gw:#E1EEE6;--red:#9C3B2E;--rw:#F5E1DC;--sh:0 1px 2px rgba(23,34,59,.06),0 6px 20px rgba(23,34,59,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:4rem}
+body{margin:0;background:var(--paper) radial-gradient(circle at 1px 1px,rgba(23,34,59,.05) 1px,transparent 0) 0 0/22px 22px;color:var(--ink);font:16.5px/1.7 'Karla',sans-serif}
+h1,h2,h3{font-family:'Newsreader',serif;margin:0;line-height:1.2}p{margin:0 0 .9rem}
+.top{position:sticky;top:0;z-index:5;background:rgba(243,241,231,.96);border-bottom:1px solid var(--rule);padding:.6rem 1.1rem;font:italic 600 1rem 'Newsreader',serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem 5rem}
+.hero{padding:2.5rem 0 1.5rem;text-align:center}.hero h1{font-size:2.8rem;font-style:italic;font-weight:500}.hero p{color:var(--soft)}
+.stamp{width:96px;height:96px;margin:0 auto 1.2rem;border:2px dashed var(--amber);border-radius:50%;display:grid;place-items:center;transform:rotate(-5deg);color:var(--deep);font:600 .75rem 'JetBrains Mono',monospace}
+.obj{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.2rem 1.4rem;margin:1rem 0;box-shadow:var(--sh)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:1.5rem 0 2.2rem}
+.grid a{padding:.5rem;text-align:center;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);border-radius:6px;font-size:.78rem;font-weight:700;line-height:1.25}
+.grid a:hover{border-color:var(--amber)}.grid b{display:block;color:var(--deep);font:.68rem 'JetBrains Mono',monospace}
+.trail{position:relative;padding-left:2.6rem}.trail:before{content:"";position:absolute;left:1.05rem;top:.4rem;bottom:.4rem;width:2px;background:repeating-linear-gradient(var(--rule) 0 6px,transparent 6px 11px)}
+.wp{position:relative;margin-bottom:3.2rem}.num{position:absolute;left:-2.6rem;top:0;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:600 .85rem 'JetBrains Mono',monospace}
+.wp h2{font-size:1.65rem;margin-bottom:.3rem}.wp h3,.obj h3{font-size:1.2rem;margin:1.3rem 0 .4rem}.sub{color:var(--soft);font-style:italic}
+.note{border:1px solid var(--rule);border-radius:6px;padding:.8rem 1rem;margin:1rem 0;font-size:.94rem}.note b{display:block;font:600 .68rem 'JetBrains Mono',monospace;margin-bottom:.2rem}
+.tip{background:var(--wash);border-color:#e2c98a}.tip b{color:var(--deep)}.win{background:var(--gw);border-color:#b9d8c5}.win b{color:var(--green)}.watch{background:var(--rw);border-color:#e3b6ac}.watch b{color:var(--red)}
+.win-c{overflow:hidden;margin:1rem 0;border-radius:10px;background:#1e1e1e;box-shadow:var(--sh)}
+.hd{display:flex;align-items:center;padding:.45rem .75rem;background:#252526;border-bottom:1px solid #111}.hd span{color:#ccc;font:.72rem 'JetBrains Mono',monospace}
+.hd button{margin-left:auto;padding:.2rem .55rem;border:1px solid #555;border-radius:4px;background:0;color:#ddd;font:.68rem 'JetBrains Mono',monospace;cursor:pointer}
+.out{background:#111417}.out pre{color:#9fe0b4}
+pre{margin:0;padding:1rem 1.1rem;overflow-x:auto;color:#d4d4d4;font:.78rem/1.6 'JetBrains Mono',monospace;tab-size:4}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}th,td{padding:.5rem .6rem;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}th{color:var(--soft);font:600 .68rem 'JetBrains Mono',monospace}
+code{background:#e9e5da;padding:.1rem .3rem;border-radius:3px;font:.85em 'JetBrains Mono',monospace}
+pre code{background:none;padding:0;border-radius:0;font:inherit;color:inherit}
+.task{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--amber);border-radius:6px;padding:.8rem 1.1rem;margin:1rem 0}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}.top{position:static}.hero h1{font-size:2.1rem}.trail{padding-left:2.1rem}.num{left:-2.1rem;width:1.8rem;height:1.8rem}}
+p code,li code,td code{overflow-wrap:anywhere}
+td:first-child code{overflow-wrap:normal;white-space:nowrap}
+</style></head><body>
+
+<div class="top">API &amp; Architecture Masterclass · Block 2 Capstone (Lesson 8)</div>
+<main class="wrap">
+
+<header class="hero"><div class="stamp">BLOCK 2<br>LESSON 8</div><h1>Engineering Assembly, Git Workflow &amp; Unit Testing</h1><p>Refactor scripts into modular Python packages, master Git feature branches, mock external APIs, and package your project for university admissions.</p></header>
+
+<section class="obj"><h2>The Capstone Goal: Live Data Tracker &amp; Alert Engine</h2>
+<p>You now know <b>secure authentication (<code>.env</code>)</b>, <b>multi-page crawling and nested JSON parsing</b>, <b>local caching</b> and <b>Telegram notifications (<code>POST</code>)</b>. Today we unite them in one production-style package: the <b>NASA NeoWs Live Data Tracker &amp; Alert Engine</b>.</p>
+<p>We also start working like a software engineer: Python packages, isolated <b>Git feature branches</b>, offline tests with <b><code>unittest.mock</code></b>, and a <b>GitHub portfolio showcase</b>.</p></section>
+
+<div class="grid" id="grid"></div>
+
+<div class="trail">
+
+<section class="wp" data-t="Modular Packages">
+<h2>Architectural Refactoring: From Monolith to Packages</h2>
+<p class="sub">Solving the “everything in one file” trap with Separation of Concerns.</p>
+<p>Past about 200 lines, a monolithic <code>main.py</code> causes three problems:</p>
+<ul>
+<li><b>Untestable logic:</b> <code>input()</code>, <code>requests.get()</code> and parsing in one function means you cannot test the parser without the network.</li>
+<li><b>Fragile changes:</b> reformatting a Telegram message can break the NASA pagination loop.</li>
+<li><b>Merge conflicts:</b> one giant file guarantees constant Git conflicts in a team.</li></ul>
+<p>The fix is a <b>Python package</b> <code>tracker/</code>. Any folder with an <code>__init__.py</code> is importable:</p>
+
+<div class="win-c"><div class="hd"><span>Project Directory Tree</span></div><pre><code>live_data_tracker/
+├── .env.example          # Safe template showing required environment keys
+├── .gitignore            # Shields .env, __pycache__/, and cache.json from Git
+├── requirements.txt      # Pinned libraries (requests, python-dotenv)
+├── README.md             # Portfolio showcase &amp; Mermaid architecture diagram
+├── tracker/              # Core application package
+│   ├── __init__.py       # Marks folder as a package &amp; exposes main classes
+│   ├── models.py         # Dataclasses &amp; safe JSON parsing logic
+│   ├── storage.py        # Local JSON caching with TTL
+│   ├── client.py         # NASA API client (GET, Session, pagination)
+│   └── notifier.py       # Telegram Bot API client (POST alerts, error log)
+├── tests/
+│   ├── __init__.py
+│   └── test_tracker.py   # Offline tests with unittest and unittest.mock
+└── main.py               # Entry point: interactive CLI menu</code></pre></div>
+
+<table><thead><tr><th>Module</th><th>Single responsibility</th></tr></thead><tbody>
+<tr><td><code>models.py</code></td><td>Data structures (<code>Asteroid</code>) and pure functions like <code>safe_get()</code>. <b>No</b> network or file I/O.</td></tr>
+<tr><td><code>storage.py</code></td><td>Reads/writes <code>cache.json</code> and checks the TTL. Knows nothing about NASA or Telegram.</td></tr>
+<tr><td><code>client.py</code></td><td><code>requests.Session()</code>, rate limits (<code>429</code>), NASA endpoints. Returns clean objects.</td></tr>
+<tr><td><code>notifier.py</code></td><td>Formats messages and sends HTTP <code>POST</code> payloads to Telegram.</td></tr>
+<tr><td><code>main.py</code></td><td><code>input()</code> and <code>print()</code>: wires the modules together.</td></tr></tbody></table>
+
+<h3>Step 1: Data Models &amp; Safe Parsing (<code>tracker/models.py</code>)</h3>
+<p>A <code>@dataclass</code> replaces raw nested dictionaries. <code>safe_get()</code> sits inside the factory method <code>from_nasa_dict</code>, so a missing key falls back to a default instead of crashing:</p>
+
+<script type="text/x-c" data-f="tracker/models.py">from dataclasses import dataclass
+from typing import Any, List
+
+
+def safe_get(data: Any, path: List[Any], default: Any = None) -> Any:
+    """Safely navigate nested dicts AND lists without KeyError or IndexError."""
+    current = data
+    for key in path:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
+        elif isinstance(current, list) and isinstance(key, int) and 0 <= key < len(current):
+            current = current[key]
+        else:
+            return default
+    return current
+
+
+@dataclass
+class Asteroid:
+    """Clean, strongly-typed representation of a Near-Earth Object."""
+    neo_id: str
+    name: str
+    diameter_max_m: float
+    velocity_km_s: float
+    miss_distance_km: float
+    close_approach_date: str
+    is_hazardous: bool
+
+    @classmethod
+    def from_nasa_dict(cls, raw: dict) -> "Asteroid":
+        """Factory method: converts a raw NASA JSON dict into an Asteroid object."""
+        diameter = safe_get(raw, ["estimated_diameter", "meters", "estimated_diameter_max"], default=0.0)
+        velocity = safe_get(raw, ["close_approach_data", 0, "relative_velocity", "kilometers_per_second"], default="0.0")
+        distance = safe_get(raw, ["close_approach_data", 0, "miss_distance", "kilometers"], default="0.0")
+        date = safe_get(raw, ["close_approach_data", 0, "close_approach_date"], default="Unknown")
+
+        return cls(
+            neo_id=str(raw.get("id", "0")),
+            name=str(raw.get("name", "Unknown Object")),
+            diameter_max_m=round(float(diameter), 2),
+            velocity_km_s=round(float(velocity), 2),
+            miss_distance_km=round(float(distance), 2),
+            close_approach_date=str(date),
+            is_hazardous=bool(raw.get("is_potentially_hazardous_asteroid", False)),
+        )
+
+    def to_telegram_markdown(self) -> str:
+        """Formats the asteroid into a clean Markdown alert card."""
+        status = "🚨 *HAZARDOUS*" if self.is_hazardous else "✅ *Safe Pass*"
+        return (
+            f"☄️ *Asteroid Alert: {self.name}*\n"
+            f"• Status: {status}\n"
+            f"• Approach Date: `{self.close_approach_date}`\n"
+            f"• Max Diameter: `{self.diameter_max_m} m`\n"
+            f"• Velocity: `{self.velocity_km_s} km/s`\n"
+            f"• Miss Distance: `{self.miss_distance_km:,.0f} km`"
+        )</script>
+
+<div class="note tip"><b>WHY @DATACLASS IS A GAME CHANGER</b>It auto-generates <code>__init__()</code>, <code>__repr__()</code> (clean debug prints) and <code>__eq__()</code> (comparing objects in unit tests) with no boilerplate.</div>
+
+<h3>Step 2: Local JSON Cache with TTL (<code>tracker/storage.py</code>)</h3>
+<p>All file operations live here. If the cache is under 1 hour (3,600 s) old we return it immediately and save our API quota:</p>
+
+<script type="text/x-c" data-f="tracker/storage.py">import json
+import os
+import time
+from typing import Optional, List
+
+
+class JsonCacheStorage:
+    """Manages local JSON caching with Time-To-Live (TTL) expiration."""
+
+    def __init__(self, filepath: str = "cache.json", ttl_seconds: int = 3600):
+        self.filepath = filepath
+        self.ttl_seconds = ttl_seconds
+
+    def load_valid_cache(self) -> Optional[List[dict]]:
+        """Returns cached asteroid dicts if the file exists and is not expired."""
+        if not os.path.exists(self.filepath):
+            return None
+
+        try:
+            with open(self.filepath, "r", encoding="utf-8") as file:
+                payload = json.load(file)
+
+            saved_at = payload.get("timestamp", 0)
+            if (time.time() - saved_at) < self.ttl_seconds:
+                return payload.get("data", [])
+            return None
+        except (json.JSONDecodeError, OSError):
+            return None
+
+    def save_cache(self, raw_asteroids: List[dict]) -> bool:
+        """Writes raw asteroid dictionaries to disk with the current UNIX timestamp."""
+        payload = {
+            "timestamp": time.time(),
+            "count": len(raw_asteroids),
+            "data": raw_asteroids,
+        }
+        try:
+            with open(self.filepath, "w", encoding="utf-8") as file:
+                json.dump(payload, file, indent=2)
+            return True
+        except OSError as error:
+            print(f"[Storage Warning] Failed to write cache: {error}")
+            return False</script>
+
+<h3>Step 3: API Client &amp; Telegram Notifier (<code>client.py</code>, <code>notifier.py</code>)</h3>
+<p><code>client.py</code> handles <code>GET</code> calls to NASA; <code>notifier.py</code> handles <code>POST</code> calls to Telegram and logs delivery failures to <code>errors.log</code>:</p>
+
+<script type="text/x-c" data-f="tracker/client.py">import time
+import requests
+from typing import List
+from tracker.models import Asteroid
+
+
+class NasaNeoClient:
+    """Authenticated client for NASA's Near-Earth Object Web Service (NeoWs)."""
+
+    BASE_URL = "https://api.nasa.gov/neo/rest/v1/neo/browse"
+    MAX_RETRIES = 3
+
+    def __init__(self, api_key: str):
+        if not api_key:
+            raise ValueError("NASA_API_KEY is missing! Check your .env file.")
+        self.api_key = api_key
+        self.session = requests.Session()
+        self.session.headers.update({"Accept": "application/json"})
+
+    def fetch_asteroids(self, max_pages: int = 2) -> List[dict]:
+        """Crawls up to max_pages of raw asteroid dicts from NASA NeoWs."""
+        all_raw_items: List[dict] = []
+        url = f"{self.BASE_URL}?api_key={self.api_key}"
+        pages_fetched = 0
+        retries = 0
+
+        while url and pages_fetched < max_pages:
+            response = self.session.get(url, timeout=10)
+
+            if response.status_code == 429:
+                retries += 1
+                if retries > self.MAX_RETRIES:
+                    raise requests.HTTPError("Too many 429 responses, giving up.")
+                retry_wait = int(response.headers.get("Retry-After", 2))
+                print(f"[Rate Limit 429] Waiting {retry_wait}s before retry...")
+                time.sleep(retry_wait)
+                continue
+
+            response.raise_for_status()
+            data = response.json()
+
+            all_raw_items.extend(data.get("near_earth_objects", []))
+            url = data.get("links", {}).get("next")
+            pages_fetched += 1
+
+            if url and pages_fetched < max_pages:
+                time.sleep(0.4)
+
+        return all_raw_items
+
+    @staticmethod
+    def parse_models(raw_items: List[dict]) -> List[Asteroid]:
+        """Converts raw NASA dictionaries into a list of Asteroid model objects."""
+        return [Asteroid.from_nasa_dict(item) for item in raw_items]</script>
+
+<script type="text/x-c" data-f="tracker/notifier.py">from datetime import datetime
+import requests
+
+
+class TelegramNotifier:
+    """Sends formatted alerts to Telegram via Bot API POST requests."""
+
+    def __init__(self, bot_token: str, chat_id: str, error_log: str = "errors.log"):
+        self.bot_token = bot_token
+        self.chat_id = chat_id
+        self.error_log = error_log
+        self.base_url = f"https://api.telegram.org/bot{bot_token}"
+
+    def send_message(self, markdown_text: str) -> bool:
+        """Sends a Markdown alert to Telegram; logs failure details to errors.log."""
+        if not self.bot_token or not self.chat_id:
+            self._log_error("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID.")
+            return False
+
+        endpoint = f"{self.base_url}/sendMessage"
+        payload = {
+            "chat_id": self.chat_id,
+            "text": markdown_text,
+            "parse_mode": "Markdown",
+        }
+
+        try:
+            response = requests.post(endpoint, json=payload, timeout=10)
+            response.raise_for_status()
+            body = response.json()
+            return bool(body.get("ok", False))
+        except requests.RequestException as exc:
+            self._log_error(f"Telegram POST failed: {exc}")
+            return False
+
+    def _log_error(self, message: str) -> None:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            with open(self.error_log, "a", encoding="utf-8") as log_file:
+                log_file.write(f"[{timestamp}] ERROR: {message}\n")
+        except OSError:
+            pass</script>
+
+<h3>Step 4: Package Initializer &amp; CLI Entry Point</h3>
+<p>Exporting the key classes in <code>tracker/__init__.py</code> keeps <code>main.py</code> short and focused on user interaction:</p>
+
+<script type="text/x-c" data-f="tracker/__init__.py">"""Live Data Tracker & Alert Engine package."""
+from tracker.models import Asteroid, safe_get
+from tracker.storage import JsonCacheStorage
+from tracker.client import NasaNeoClient
+from tracker.notifier import TelegramNotifier
+
+__all__ = ["Asteroid", "safe_get", "JsonCacheStorage", "NasaNeoClient", "TelegramNotifier"]</script>
+
+<script type="text/x-c" data-f="main.py">import os
+import sys
+import requests
+from dotenv import load_dotenv
+from tracker import Asteroid, JsonCacheStorage, NasaNeoClient, TelegramNotifier
+
+load_dotenv()   # standard .env filename: cloud-ready
+
+
+def get_asteroids_with_cache(client: NasaNeoClient, cache: JsonCacheStorage) -> list[Asteroid]:
+    """Loads raw data from local cache if fresh; otherwise queries NASA API."""
+    cached_raw = cache.load_valid_cache()
+    if cached_raw is not None:
+        print("⚡ Loaded asteroid dataset from local JSON cache (< 1h old).")
+        return client.parse_models(cached_raw)
+
+    print("🌐 Fetching live data from NASA NeoWs API...")
+    raw_items = client.fetch_asteroids(max_pages=2)
+    cache.save_cache(raw_items)
+    return client.parse_models(raw_items)
+
+
+def main() -> None:
+    api_key = os.getenv("NASA_API_KEY", "")
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
+
+    try:
+        client = NasaNeoClient(api_key=api_key)
+    except ValueError as err:
+        print(f"❌ Startup Error: {err}")
+        sys.exit(1)
+
+    cache = JsonCacheStorage(filepath="cache.json", ttl_seconds=3600)
+    notifier = TelegramNotifier(bot_token=bot_token, chat_id=chat_id)
+
+    while True:
+        print("\n=== 🛰️ NASA Live Data Tracker & Alert Engine ===")
+        print("1. View All Tracked Asteroids (Sorted by Size)")
+        print("2. Filter Potentially Hazardous Asteroids & Send Telegram Alert")
+        print("3. Exit")
+
+        choice = input("\nSelect an option (1-3): ").strip()
+
+        if choice == "1":
+            try:
+                asteroids = get_asteroids_with_cache(client, cache)
+                sorted_list = sorted(asteroids, key=lambda a: a.diameter_max_m, reverse=True)
+                print(f"\nFound {len(sorted_list)} asteroids. Top 5 largest:")
+                for ast in sorted_list[:5]:
+                    flag = "HAZARDOUS" if ast.is_hazardous else "Safe"
+                    print(f" - {ast.name:<22} | {ast.diameter_max_m:>7.1f} m | {flag}")
+            except requests.RequestException as net_err:
+                print(f"⚠️ Network error: {net_err}")
+
+        elif choice == "2":
+            try:
+                asteroids = get_asteroids_with_cache(client, cache)
+                hazardous = [a for a in asteroids if a.is_hazardous]
+                print(f"\n🚨 Found {len(hazardous)} potentially hazardous object(s).")
+
+                if hazardous:
+                    top_threat = max(hazardous, key=lambda a: a.diameter_max_m)
+                    report_md = top_threat.to_telegram_markdown()
+                    print("\n" + report_md.replace("*", "").replace("`", ""))
+
+                    confirm = input("\nSend this alert to Telegram? (y/n): ").strip().lower()
+                    if confirm == "y":
+                        sent = notifier.send_message(report_md)
+                        print("✅ Alert delivered!" if sent else "❌ Delivery failed (see errors.log).")
+            except requests.RequestException as net_err:
+                print(f"⚠️ Network error: {net_err}")
+
+        elif choice == "3":
+            print("👋 Shutting down tracker. Clear skies!")
+            break
+        else:
+            print("⚠️ Invalid choice. Please enter 1, 2, or 3.")
+
+
+if __name__ == "__main__":
+    main()</script>
+
+<div class="task"><b>Task.</b> Run <code>python main.py</code>, choose option 1 twice, and compare the two messages (live fetch vs. local cache). Then delete <code>cache.json</code> and watch the first message return.</div>
+</section>
+
+<section class="wp" data-t="Git Branching">
+<h2>Engineering Practicum: Git Branching &amp; Pull Requests</h2>
+<p class="sub">Protecting <code>main</code> with isolated feature branches and Conventional Commits.</p>
+<p>In professional teams, and for anyone reading your GitHub history, pushing half-finished refactoring straight to <code>main</code> is a red flag. <code>main</code> must always stay stable and runnable.</p>
+<div class="note win"><b>THE FEATURE BRANCH GOLDEN RULE</b>Every feature, bug fix or refactor gets its own branch (<code>git checkout -b</code>). Merge into <code>main</code> only after tests pass and a Pull Request (PR) is reviewed.</div>
+
+<h3>Creating &amp; Pushing a Feature Branch</h3>
+<script type="text/x-c" data-f="terminal_git_workflow.sh"># 1. Verify you are on a clean 'main' branch
+git status
+
+# 2. Create and switch to a new isolated branch
+git checkout -b feature/modular-architecture
+
+# 3. Stage files and verify nothing secret (.env) is staged!
+git add .
+git status
+
+# 4. Commit using Conventional Commits
+git commit -m "refactor: extract API client, models, and storage into tracker package"
+
+# 5. Push the branch to GitHub and set upstream tracking
+git push -u origin feature/modular-architecture</script>
+
+<div class="win-c out"><div class="hd"><span>Terminal Output</span></div><pre><code>Switched to a new branch 'feature/modular-architecture'
+[feature/modular-architecture 8f4a92c] refactor: extract API client, models, and storage into tracker package
+ 7 files changed, 245 insertions(+), 118 deletions(-)
+ create mode 100644 tracker/__init__.py
+ create mode 100644 tracker/client.py
+ create mode 100644 tracker/models.py
+ create mode 100644 tracker/notifier.py
+ create mode 100644 tracker/storage.py
+To https://github.com/Levani131/live-data-tracker.git
+ * [new branch]      feature/modular-architecture -> feature/modular-architecture</code></pre></div>
+<div class="note watch"><b>TRAP: GIT ADD .</b>If <code>.env</code> shows up in <code>git status</code>, stop. Fix <code>.gitignore</code> first. A token committed once stays in history even if you delete it later: revoke it with BotFather.</div>
+
+<h3>Conventional Commits</h3>
+<table><thead><tr><th>Prefix</th><th>When to use it</th><th>Example from our project</th></tr></thead><tbody>
+<tr><td><code>feat:</code></td><td>A brand-new capability</td><td><code>feat: add Telegram markdown alert for hazardous asteroids</code></td></tr>
+<tr><td><code>refactor:</code></td><td>Restructuring without changing behavior</td><td><code>refactor: split monolithic script into modular tracker package</code></td></tr>
+<tr><td><code>fix:</code></td><td>A bug or edge case</td><td><code>fix: check cached_raw is not None to allow empty list caches</code></td></tr>
+<tr><td><code>test:</code></td><td>Adding or updating tests</td><td><code>test: add unittest.mock tests for NasaNeoClient and Notifier</code></td></tr>
+<tr><td><code>docs:</code></td><td>README, docstrings, diagrams</td><td><code>docs: add Mermaid data-flow diagram and setup guide to README</code></td></tr></tbody></table>
+
+<h3>Simulating Code Review with a Pull Request</h3>
+<p>After pushing, open the repository and click <b>“Compare &amp; pull request”</b>:</p>
+<ol>
+<li><b>Title &amp; summary:</b> a clear title and a 3-bullet summary of what changed.</li>
+<li><b>Line-by-line review:</b> your mentor comments on the diff, e.g. <i>“Use the default <code>.env</code> filename in <code>load_dotenv()</code> so cloud deployment works automatically.”</i></li>
+<li><b>Follow-up commits:</b> edit locally, run <code>git commit -am "fix: standardize .env filename"</code> and <code>git push</code>. The open PR updates automatically.</li>
+<li><b>Merge &amp; clean up:</b> click <b>“Merge pull request”</b>, then <code>git checkout main &amp;&amp; git pull</code>.</li></ol>
+<div class="task"><b>Task.</b> Open the PR for <code>feature/modular-architecture</code>, answer two review comments with follow-up commits, merge it, and pull <code>main</code> locally.</div>
+</section>
+
+<section class="wp" data-t="Unit Testing">
+<h2>Automated Unit Testing with <code>unittest.mock</code></h2>
+<p class="sub">How do you test an API &amp; Telegram bot with no Wi-Fi, or with zero API quota left?</p>
+<p>If tests called NASA and Telegram for real, 50 runs a day would: <b>burn your hourly quota</b>, <b>spam your phone</b> with fake alerts, and become <b>flaky</b> whenever Wi-Fi drops, even though your code is correct.</p>
+<div class="note tip"><b>CONCEPT: MOCKING</b>A <b>Mock</b> is a simulated object that stands in for a real service (<code>requests.get</code>, <code>requests.post</code>). With <code>unittest.mock.patch</code> we intercept the call in memory and return a pre-programmed answer.</div>
+
+<h3>How <code>@patch</code> Works</h3>
+<p><code>@patch("tracker.client.requests.Session.get")</code> temporarily swaps <code>get</code> for a controllable <code>MagicMock</code> and passes it to your test as <code>mock_get</code>:</p>
+<ul>
+<li><code>mock_get.return_value.status_code = 200</code>: simulates HTTP 200 OK.</li>
+<li><code>mock_get.return_value.json.return_value = {...}</code>: what <code>response.json()</code> returns.</li>
+<li><code>mock_get.assert_called_once()</code>: proves the HTTP call was attempted exactly once.</li></ul>
+<div class="note watch"><b>PATCH WHERE IT IS USED</b>Point <code>@patch()</code> at the module that uses the function (<code>"tracker.notifier.requests.post"</code>), not just <code>"requests.post"</code>.</div>
+
+<h3>Hands-On Drills: <code>tests/test_tracker.py</code></h3>
+<p><b>Drill 1</b> pure model tests, <b>Drill 2</b> mocking NASA <code>GET</code>, <b>Drill 3</b> mocking Telegram <code>POST</code> and failures:</p>
+
+<script type="text/x-c" data-f="tests/test_tracker.py">import unittest
+from unittest.mock import patch, MagicMock
+import requests
+
+from tracker.models import Asteroid, safe_get
+from tracker.client import NasaNeoClient
+from tracker.notifier import TelegramNotifier
+
+
+class TestModelsAndParser(unittest.TestCase):
+    """DRILL 1: Pure function & model tests (no network, no mocking)."""
+
+    def test_safe_get_extracts_deeply_nested_values(self):
+        sample = {"a": {"b": [{"c": 42.5}]}}
+        self.assertEqual(safe_get(sample, ["a", "b", 0, "c"]), 42.5)
+
+    def test_safe_get_returns_default_on_missing_key_or_bad_index(self):
+        sample = {"a": {"b": []}}
+        self.assertEqual(safe_get(sample, ["a", "b", 5, "c"], default=0.0), 0.0)
+        self.assertEqual(safe_get(sample, ["missing", "key"], default="N/A"), "N/A")
+
+    def test_asteroid_from_nasa_dict_handles_complete_and_partial_json(self):
+        raw_nasa_item = {
+            "id": "3542519",
+            "name": "(2010 PK9)",
+            "is_potentially_hazardous_asteroid": True,
+            "estimated_diameter": {"meters": {"estimated_diameter_max": 265.489}},
+            "close_approach_data": [{
+                "close_approach_date": "2026-11-05",
+                "relative_velocity": {"kilometers_per_second": "18.456"},
+                "miss_distance": {"kilometers": "4500123.8"},
+            }],
+        }
+        asteroid = Asteroid.from_nasa_dict(raw_nasa_item)
+        self.assertEqual(asteroid.neo_id, "3542519")
+        self.assertEqual(asteroid.diameter_max_m, 265.49)
+        self.assertEqual(asteroid.velocity_km_s, 18.46)
+        self.assertTrue(asteroid.is_hazardous)
+
+
+class TestNasaNeoClientMocks(unittest.TestCase):
+    """DRILL 2: Mocking external GET requests (NASA NeoWs API)."""
+
+    @patch("tracker.client.requests.Session.get")
+    def test_fetch_asteroids_single_page_success(self, mock_get):
+        # Arrange: fake HTTP 200 with 1 asteroid and no next page
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "near_earth_objects": [
+                {"id": "101", "name": "Test-Asteroid-Alpha", "is_potentially_hazardous_asteroid": False}
+            ],
+            "links": {"next": None},
+        }
+        mock_get.return_value = mock_response
+
+        # Act: fake API key, no real internet call
+        client = NasaNeoClient(api_key="fake_test_key_123")
+        models = client.parse_models(client.fetch_asteroids(max_pages=2))
+
+        # Assert
+        self.assertEqual(len(models), 1)
+        self.assertEqual(models[0].name, "Test-Asteroid-Alpha")
+        self.assertFalse(models[0].is_hazardous)
+        mock_get.assert_called_once()
+
+    def test_client_raises_value_error_when_api_key_empty(self):
+        with self.assertRaises(ValueError):
+            NasaNeoClient(api_key="")
+
+
+class TestTelegramNotifierMocks(unittest.TestCase):
+    """DRILL 3: Mocking external POST requests (Telegram Bot API)."""
+
+    @patch("tracker.notifier.requests.post")
+    def test_send_message_success_verifies_payload(self, mock_post):
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json.return_value = {"ok": True}
+
+        notifier = TelegramNotifier(bot_token="fake_bot_token", chat_id="999888777")
+        result = notifier.send_message("🚀 *Test Alert*")
+
+        self.assertTrue(result)
+        mock_post.assert_called_once_with(
+            "https://api.telegram.org/botfake_bot_token/sendMessage",
+            json={"chat_id": "999888777", "text": "🚀 *Test Alert*", "parse_mode": "Markdown"},
+            timeout=10,
+        )
+
+    @patch("tracker.notifier.TelegramNotifier._log_error")
+    @patch("tracker.notifier.requests.post")
+    def test_send_message_handles_network_failure_gracefully(self, mock_post, mock_log):
+        mock_post.side_effect = requests.ConnectionError("Simulated offline network")
+
+        notifier = TelegramNotifier(bot_token="fake_token", chat_id="12345")
+        result = notifier.send_message("Alert text")
+
+        self.assertFalse(result)          # must NOT crash
+        mock_log.assert_called_once()     # but must log the error
+
+
+if __name__ == "__main__":
+    unittest.main()</script>
+
+<h3>Running the Suite</h3>
+<div class="win-c out"><div class="hd"><span>python -m unittest discover -s tests -v</span></div><pre><code>test_client_raises_value_error_when_api_key_empty (test_tracker.TestNasaNeoClientMocks) ... ok
+test_fetch_asteroids_single_page_success (test_tracker.TestNasaNeoClientMocks) ... ok
+test_asteroid_from_nasa_dict_handles_complete_and_partial_json (test_tracker.TestModelsAndParser) ... ok
+test_safe_get_extracts_deeply_nested_values (test_tracker.TestModelsAndParser) ... ok
+test_safe_get_returns_default_on_missing_key_or_bad_index (test_tracker.TestModelsAndParser) ... ok
+test_send_message_handles_network_failure_gracefully (test_tracker.TestTelegramNotifierMocks) ... ok
+test_send_message_success_verifies_payload (test_tracker.TestTelegramNotifierMocks) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.014s
+
+OK</code></pre></div>
+<div class="note win"><b>NOTICE THE SPEED: 0.014 SECONDS</b>Mocks intercept network calls in memory, so all 7 tests finish without a single NASA request or Telegram message.</div>
+<div class="task"><b>Task.</b> Add an 8th test: a mocked <code>429</code> response should make <code>fetch_asteroids</code> raise <code>requests.HTTPError</code> after 3 retries. Hint: patch <code>tracker.client.time.sleep</code> so the test does not wait.</div>
+</section>
+
+<section class="wp" data-t="Portfolio &amp; SQL">
+<h2>Portfolio Showcase &amp; The Bridge to Block 3 (Databases)</h2>
+<p class="sub">Packaging your GitHub repository for US university applications, and seeing why SQL is next.</p>
+<p>A reviewer opening your GitHub link spends roughly <b>30 seconds</b> on the repository root: directory cleanliness, commit messages, the <code>tests/</code> folder and the <code>README.md</code>.</p>
+
+<h3>The Anatomy of a Portfolio-Grade <code>README.md</code></h3>
+<p>GitHub renders <b>Mermaid.js</b> diagrams natively inside Markdown. Copy this template into your repository root:</p>
+
+<script type="text/x-c" data-f="README.md"># 🛰️ NASA NeoWs Live Data Tracker & Alert Engine
+
+A modular Python CLI that monitors Near-Earth Objects using the **NASA NeoWs REST API**, caches datasets locally with TTL expiration to preserve rate limits, and sends real-time Markdown alerts for potentially hazardous asteroids via the **Telegram Bot API**.
+
+## 🏗️ System Architecture & Data Flow
+
+```mermaid
+flowchart LR
+    User([User / CLI]) --> Main[main.py]
+    Main --> Cache{storage.py\nCache < 1h old?}
+    Cache -- Yes --> Models[models.py\nAsteroid Dataclasses]
+    Cache -- No --> Client[client.py\nNasaNeoClient GET]
+    Client --> NASA[(NASA NeoWs API)]
+    NASA --> Client
+    Client --> SaveCache[Save cache.json]
+    SaveCache --> Models
+    Models --> Filter{Hazardous\nObject Found?}
+    Filter -- Yes --> Notifier[notifier.py\nTelegramNotifier POST]
+    Notifier --> Telegram([Telegram Bot Alert])
+```
+
+## 📟 Demo
+
+```text
+=== 🛰️ NASA Live Data Tracker & Alert Engine ===
+Select an option (1-3): 2
+🌐 Fetching live data from NASA NeoWs API...
+🚨 Found 3 potentially hazardous object(s).
+Send this alert to Telegram? (y/n): y
+✅ Alert delivered!
+```
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/YOUR-NAME/live-data-tracker.git
+cd live-data-tracker
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env            # then add your NASA key and Telegram token
+python main.py
+```
+
+## 🧪 Tests
+
+`python -m unittest discover -s tests -v` runs 7 offline tests (NASA and Telegram are mocked).
+
+## 🧠 What I Learned
+
+API authentication, pagination, safe JSON parsing, rate limits, caching, mocking, Git feature branches and Pull Requests.
+
+## 🗺️ Roadmap
+
+SQLite storage · multiple subscribers · scheduled daily alerts</script>
+
+<div class="note tip"><b>PORTFOLIO CHECKLIST</b>✔ README with diagram and demo log · ✔ no secrets in history · ✔ meaningful commit messages and one merged PR · ✔ passing tests · ✔ a LICENSE file · ✔ repo pinned on your GitHub profile. Share the link wherever an application invites supplementary work, and be ready to explain <i>why</i> you structured it this way.</div>
+
+<h3>Bridge to Block 3: Where JSON Caching Hurts</h3>
+<ul>
+<li><b>Complex queries:</b> “hazardous asteroids over 200 m from the last 30 days, sorted by miss distance” means loading and looping through everything by hand.</li>
+<li><b>Slow search:</b> the whole file is read into memory for every lookup.</li>
+<li><b>Fragile writes:</b> two processes writing at once, or a crash mid-write, can corrupt <code>cache.json</code>.</li></ul>
+<div class="note win"><b>REMEMBER</b>Relational tables, SQL queries and SQLite solve exactly these limits. That is Block 3.</div>
+<div class="task"><b>Task.</b> Create <code>feature/readme-docs</code>, add the README with your own Mermaid diagram and a real terminal log, commit with <code>docs:</code>, and open a PR.</div>
+</section>
+
+</div>
+
+<section style="text-align:center;color:var(--soft)"><h2 style="font-style:italic">Block 2 complete.</h2><p>You now have a modular, tested, documented project with a real Git history. Next: Block 3, databases with SQL and SQLite.</p></section>
+</main>
+
+<!-- Template script: turns text/x-c blocks into code windows, numbers topics, builds the grid. -->
+<script>
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+document.querySelectorAll('script[type="text/x-c"]').forEach(s=>{
+ const w=document.createElement('div');w.className='win-c';
+ w.innerHTML='<div class="hd"><span>'+s.dataset.f+'</span><button>Copy</button></div><pre><code>'+esc(s.textContent.replace(/^\n/,''))+'</code></pre>';
+ w.querySelector('button').onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(s.textContent.replace(/^\n/,''));e.target.textContent='Done';setTimeout(()=>e.target.textContent='Copy',1200)};
+ s.replaceWith(w)});
+const g=document.getElementById('grid');
+document.querySelectorAll('.wp').forEach((s,i)=>{s.id='t'+(i+1);const n=document.createElement('span');n.className='num';n.textContent=i+1;s.prepend(n);
+ const a=document.createElement('a');a.href='#t'+(i+1);a.innerHTML='<b>'+String(i+1).padStart(2,'0')+'</b>'+s.dataset.t;g.appendChild(a)});
+</script></body></html>
