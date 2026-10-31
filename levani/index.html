@@ -1,1 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Levani Mentorship</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #17223b;
+        --ink-soft: #4b5670;
+        --paper: #f3f1e7;
+        --card: #ffffff;
+        --amber: #b8791c;
+        --amber-deep: #8f5d12;
+        --amber-wash: #f1e1be;
+        --rule: #d8d1bc;
+        --green: #3f7a56;
+        --green-wash: #e1eee6;
+        --danger: #9c3b2e;
+        --danger-wash: #f5e1dc;
+        --shadow: 0 1px 2px rgba(23, 34, 59, 0.06), 0 6px 20px rgba(23, 34, 59, 0.07);
+      }
 
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        background-image: radial-gradient(circle at 1px 1px, rgba(23, 34, 59, 0.05) 1px, transparent 0);
+        background-size: 22px 22px;
+        color: var(--ink);
+        font-family: "Karla", sans-serif;
+        line-height: 1.7;
+      }
+
+      h1, h2, h3, h4 {
+        margin: 0;
+        font-family: "Newsreader", serif;
+        color: var(--ink);
+      }
+
+      a {
+        color: var(--amber-deep);
+        text-decoration: none;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 5rem;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 2rem 0 2.5rem;
+      }
+
+      .stamp {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.4rem;
+        border: 2px dashed var(--amber);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-6deg);
+        color: var(--amber-deep);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        line-height: 1.45;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.4rem, 4vw, 4rem);
+        font-style: italic;
+        font-weight: 500;
+        margin-bottom: 0.6rem;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 1.05rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 1.2rem;
+        margin-top: 2rem;
+      }
+
+      .lesson-card {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        padding: 1.5rem 1.35rem;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .lesson-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--amber), transparent 90%);
+      }
+
+      .number {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--amber-deep);
+        background: var(--amber-wash);
+        border-radius: 999px;
+        padding: 0.3rem 0.6rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .lesson-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .lesson-card p {
+        margin: 0 0 1.2rem;
+        color: var(--ink-soft);
+      }
+
+      .lesson-card a {
+        display: inline-block;
+        font-weight: 700;
+        border: 1px solid var(--rule);
+        background: #fff;
+        border-radius: 999px;
+        padding: 0.52rem 0.9rem;
+        transition: 0.2s ease;
+      }
+
+      .lesson-card a:hover {
+        background: var(--amber-wash);
+        border-color: var(--amber);
+      }
+
+      .summary {
+        margin-top: 2.2rem;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        padding: 1.3rem 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .summary h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .summary p {
+        margin: 0;
+        color: var(--ink-soft);
+      }
+
+      @media (max-width: 700px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <div class="stamp">LEVANI<br />MENTORSHIP</div>
+        <h1>Lesson Index</h1>
+        <p>Python learning path from the first setup lesson to the API bot project.</p>
+      </header>
+
+      <main class="grid">
+        <article class="lesson-card">
+          <span class="number">Lesson 1</span>
+          <h2>Hello, Developer World!</h2>
+          <p>VS Code, terminal basics, running Python, and your first interactive script.</p>
+          <a href="lesson1.html">Open lesson 1</a>
+        </article>
+
+        <article class="lesson-card">
+          <span class="number">Lesson 2</span>
+          <h2>Python Fundamentals</h2>
+          <p>Control flow, variables, loops, and the small building blocks of everyday coding.</p>
+          <a href="lesson2.html">Open lesson 2</a>
+        </article>
+
+        <article class="lesson-card">
+          <span class="number">Lesson 3</span>
+          <h2>Project Practice</h2>
+          <p>Making programs more useful through structure, user input, and debugging habits.</p>
+          <a href="lesson3.html">Open lesson 3</a>
+        </article>
+
+        <article class="lesson-card">
+          <span class="number">Lesson 4</span>
+          <h2>Data & Logic</h2>
+          <p>Working with lists, conditions, and practical automation patterns.</p>
+          <a href="lesson4.html">Open lesson 4</a>
+        </article>
+
+        <article class="lesson-card">
+          <span class="number">Lesson 5</span>
+          <h2>Functions & Reuse</h2>
+          <p>Breaking logic into small, reusable pieces and writing cleaner code.</p>
+          <a href="lesson5.html">Open lesson 5</a>
+        </article>
+
+        <article class="lesson-card">
+          <span class="number">Lesson 6</span>
+          <h2>Working with APIs</h2>
+          <p>Making HTTP requests, parsing JSON, and getting real data into your scripts.</p>
+          <a href="lesson6.html">Open lesson 6</a>
+        </article>
+
+        <article class="lesson-card" style="grid-column: 1 / -1;">
+          <span class="number">Lesson 7</span>
+          <h2>Building Bots with APIs</h2>
+          <p>Turning a script into a Telegram bot that waits for messages, calls APIs, and replies.</p>
+          <a href="lesson7.html">Open lesson 7</a>
+        </article>
+      </main>
+
+      <section class="summary">
+        <h3>Learning path</h3>
+        <p>
+          These lessons move from basic setup and Python habits to API-driven projects and bot development,
+          helping build practical confidence one step at a time.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>
