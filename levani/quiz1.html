@@ -1,1 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formative Quiz 1 — Lessons 1–7</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #17223b;
+        --ink-soft: #4b5670;
+        --paper: #f3f1e7;
+        --card: #ffffff;
+        --amber: #b8791c;
+        --amber-deep: #8f5d12;
+        --amber-wash: #f1e1be;
+        --rule: #d8d1bc;
+        --green: #3f7a56;
+        --green-wash: #e1eee6;
+        --danger: #9c3b2e;
+        --danger-wash: #f5e1dc;
+        --shadow: 0 1px 2px rgba(23, 34, 59, 0.06), 0 6px 20px rgba(23, 34, 59, 0.07);
+      }
 
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        background-image: radial-gradient(circle at 1px 1px, rgba(23, 34, 59, 0.05) 1px, transparent 0);
+        background-size: 22px 22px;
+        color: var(--ink);
+        font-family: "Karla", sans-serif;
+        font-size: 16.5px;
+        line-height: 1.7;
+      }
+      h1, h2, h3, h4 {
+        margin: 0;
+        font-family: "Newsreader", serif;
+        color: var(--ink);
+      }
+      a { color: var(--amber-deep); }
+      ::selection { background: var(--amber-wash); }
+
+      .topnav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(243, 241, 231, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid var(--rule);
+        padding: 0.7rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+      .brand {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .links {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+      .pill {
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+      }
+      .pill:hover { border-color: var(--rule); background: var(--card); color: var(--ink); }
+
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+      .hero { padding: 3.5rem 0 2.5rem; text-align: center; }
+      .stamp {
+        width: 118px;
+        height: 118px;
+        margin: 0 auto 1.6rem;
+        border: 2px dashed var(--amber);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-6deg);
+        color: var(--amber-deep);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-align: center;
+        line-height: 1.35;
+      }
+      .hero h1 {
+        font-size: clamp(2.3rem, 4vw, 3.6rem);
+        font-style: italic;
+        font-weight: 500;
+        line-height: 1.1;
+        max-width: 760px;
+        margin: 0 auto 0.7rem;
+      }
+      .for-line { color: var(--ink-soft); font-size: 1.08rem; margin: 0; }
+      .chips {
+        margin-top: 1.2rem;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .chip {
+        font-size: 0.8rem;
+        font-family: "JetBrains Mono", monospace;
+        background: var(--card);
+        border: 1px solid var(--rule);
+        padding: 0.32rem 0.75rem;
+        border-radius: 999px;
+        color: var(--ink-soft);
+      }
+
+      .objective, .summary-box {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-md);
+        padding: 1.5rem 1.7rem;
+        margin: 2rem 0;
+        box-shadow: var(--shadow);
+      }
+      .objective h2, .summary-box h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+      .objective p, .summary-box p { color: var(--ink-soft); margin: 0; }
+
+      .trail { position: relative; padding-left: 2.4rem; }
+      .trail::before {
+        content: "";
+        position: absolute;
+        left: 1.1rem;
+        top: 0.4rem;
+        bottom: 0.4rem;
+        width: 2px;
+        background-image: linear-gradient(var(--rule) 60%, transparent 0%);
+        background-size: 2px 10px;
+        background-repeat: repeat-y;
+      }
+      .waypoint {
+        position: relative;
+        margin-bottom: 2.2rem;
+        padding: 1.2rem 0 0.3rem;
+      }
+      .stamp-num {
+        position: absolute;
+        left: -2.5rem;
+        top: 0.3rem;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      .question-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+      .question-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--amber-deep);
+        background: var(--amber-wash);
+        border-radius: 999px;
+        padding: 0.2rem 0.55rem;
+      }
+      .question-text {
+        font-size: 1.05rem;
+        margin: 0 0 0.9rem;
+        line-height: 1.6;
+      }
+      .options {
+        display: grid;
+        gap: 0.6rem;
+      }
+      .option-btn, .check-btn, .ghost-btn {
+        appearance: none;
+        border: 1px solid var(--rule);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 10px;
+        padding: 0.72rem 0.9rem;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+        transition: 0.15s ease;
+      }
+      .option-btn:hover, .check-btn:hover, .ghost-btn:hover {
+        border-color: var(--amber);
+        background: var(--amber-wash);
+      }
+      .option-btn.correct {
+        background: var(--green-wash);
+        border-color: var(--green);
+        color: var(--green);
+        font-weight: 700;
+      }
+      .option-btn.wrong {
+        background: var(--danger-wash);
+        border-color: var(--danger);
+        color: var(--danger);
+        text-decoration: line-through;
+      }
+      .option-btn.selected {
+        border-color: var(--amber);
+        background: #fffaf1;
+      }
+      .option-btn:disabled {
+        cursor: default;
+        opacity: 1;
+      }
+      .input-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin-top: 0.5rem;
+      }
+      input[type="text"] {
+        flex: 1 1 280px;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--ink);
+        padding: 0.8rem 0.9rem;
+        font: inherit;
+      }
+      .check-btn {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+        min-width: 110px;
+        text-align: center;
+      }
+      .check-btn:hover { opacity: 0.94; }
+      .feedback {
+        margin-top: 0.8rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: 10px;
+        font-weight: 700;
+        display: none;
+      }
+      .feedback.correct {
+        display: block;
+        background: var(--green-wash);
+        color: var(--green);
+        border: 1px solid #b9d8c5;
+      }
+      .feedback.wrong {
+        display: block;
+        background: var(--danger-wash);
+        color: var(--danger);
+        border: 1px solid #e3b6ac;
+      }
+      details {
+        margin-top: 0.8rem;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        background: #fff;
+      }
+      summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+      }
+      summary::-webkit-details-marker { display: none; }
+      details[open] summary {
+        border-bottom: 1px solid var(--rule);
+        color: var(--ink);
+      }
+      .answer-box {
+        padding: 0.9rem 1rem 1rem;
+        color: var(--ink-soft);
+      }
+      .answer-box strong { color: var(--ink); }
+
+      .summary-box {
+        position: sticky;
+        bottom: 1rem;
+        z-index: 25;
+      }
+      .score-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      #score {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .ghost-btn {
+        background: transparent;
+      }
+
+      @media (max-width: 640px) {
+        .trail { padding-left: 1.9rem; }
+        .stamp-num { left: -2rem; width: 1.8rem; height: 1.8rem; font-size: 0.8rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="topnav">
+      <div class="brand">Formative Quiz 1</div>
+      <div class="links">
+        <a class="pill" href="#overview">Overview</a>
+        <a class="pill" href="#questions">Questions</a>
+        <a class="pill" href="#scoreboard">Scoreboard</a>
+      </div>
+    </nav>
+
+    <div class="wrap">
+      <section class="hero" id="overview">
+        <div class="stamp">QUIZ<br />01</div>
+        <h1>Lessons 1–7 Checkpoint</h1>
+        <p class="for-line">21-question formative quiz for the full Python + API + bot track.</p>
+        <div class="chips">
+          <span class="chip">21 questions</span>
+          <span class="chip">Multiple choice + free answer</span>
+          <span class="chip">Automatic score</span>
+        </div>
+      </section>
+
+      <div class="objective">
+        <h2>How it works</h2>
+        <p>
+          Answer each question. For multiple choice, click the correct option. For free response, type the answer and click “Check”.
+          The score updates automatically, and each question includes a spoiler with the correct answer and explanation.
+        </p>
+      </div>
+
+      <div class="trail" id="questions"></div>
+
+      <div class="summary-box" id="scoreboard">
+        <div class="score-row">
+          <div id="score">Score: 0 / 21</div>
+          <div class="actions">
+            <button class="ghost-btn" id="showAll">Reveal all answers</button>
+            <button class="ghost-btn" id="resetQuiz">Reset quiz</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          type: "mcq",
+          lesson: "Lesson 1",
+          prompt: "What is the main purpose of VS Code in this course?",
+          options: [
+            "A place to store files only",
+            "A code editor where you write and run code",
+            "A browser for GitHub",
+            "A database application"
+          ],
+          answerIndex: 1,
+          explanation: "VS Code is the editor where students write code, navigate files, and open the integrated terminal."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 1",
+          prompt: "Which terminal command prints the current folder path?",
+          options: ["ls", "cd", "pwd", "python"],
+          answerIndex: 2,
+          explanation: "pwd means 'print working directory'. It shows the folder you are currently in."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 1",
+          prompt: "What happens when you run: python main.py ?",
+          options: [
+            "It opens a browser",
+            "It executes the Python file named main.py",
+            "It creates a new folder",
+            "It deletes the file"
+          ],
+          answerIndex: 1,
+          explanation: "Running python main.py tells Python to execute the script in that file."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 1",
+          prompt: "What is the main use of the input() function?",
+          options: [
+            "To save a file",
+            "To read user input from the terminal",
+            "To install Python",
+            "To open a web page"
+          ],
+          answerIndex: 1,
+          explanation: "input() pauses the program and waits for a user to type something."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 1",
+          prompt: "Which syntax is an f-string?",
+          options: ["'Hello'", "f\"Hello {name}\"", "print(name)", "input()"],
+          answerIndex: 1,
+          explanation: "An f-string uses the letter f before the quote and embeds expressions inside { } ."
+        },
+        {
+          type: "free",
+          lesson: "Lesson 1",
+          prompt: "Write the exact command used to run a Python file named main.py from the terminal.",
+          answer: "python main.py",
+          accepted: ["python main.py", "python3 main.py"],
+          explanation: "On most systems the command is python main.py. On some machines it is python3 main.py."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 2",
+          prompt: "What does a condition like if age >= 18 do?",
+          options: [
+            "It always prints a value",
+            "It checks whether a statement is true and runs code only then",
+            "It creates a loop",
+            "It deletes a variable"
+          ],
+          answerIndex: 1,
+          explanation: "if checks a condition. If it is true, the indented block runs."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 2",
+          prompt: "Which of these is a loop?",
+          options: ["if", "for", "input", "return"],
+          answerIndex: 1,
+          explanation: "A for loop repeats a block of code multiple times."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 2",
+          prompt: "Why do we use functions?",
+          options: [
+            "To make code longer",
+            "To group reusable logic",
+            "To hide errors from Python",
+            "To replace variables"
+          ],
+          answerIndex: 1,
+          explanation: "Functions let us reuse logic instead of repeating the same code over and over."
+        },
+        {
+          type: "free",
+          lesson: "Lesson 2",
+          prompt: "Complete the function header: def ____(name):",
+          answer: "greet",
+          accepted: ["greet", "say_hello", "my_function"],
+          explanation: "The function name is any valid identifier, such as greet or say_hello."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 3",
+          prompt: "What is the purpose of a TODO comment in a scaffolded file?",
+          options: [
+            "It stops the program",
+            "It tells you what still needs to be completed",
+            "It deletes the file",
+            "It only works in the browser"
+          ],
+          answerIndex: 1,
+          explanation: "TODO comments are instructions left for the developer to complete the missing logic."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 3",
+          prompt: "Why is it helpful to run the script after each small change?",
+          options: [
+            "To confuse the code",
+            "To catch the exact place where a bug appeared",
+            "To make the file bigger",
+            "To delete the terminal"
+          ],
+          answerIndex: 1,
+          explanation: "Running often makes it easier to find a bug immediately after the last change."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 4",
+          prompt: "Which data type is best for storing many related values in order?",
+          options: ["String", "List", "Integer", "Dictionary"],
+          answerIndex: 1,
+          explanation: "Lists keep values in order and are useful for collections of related data."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 4",
+          prompt: "What does a dictionary store?",
+          options: [
+            "Only numbers",
+            "Key-value pairs",
+            "Only text",
+            "Only booleans"
+          ],
+          answerIndex: 1,
+          explanation: "A dictionary stores data as key-value pairs, such as {'name': 'Levani'}."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 5",
+          prompt: "What is the purpose of return in a function?",
+          options: [
+            "To print something on the screen",
+            "To send a value back to the caller",
+            "To restart the program",
+            "To skip the function"
+          ],
+          answerIndex: 1,
+          explanation: "return gives the caller the result that the function computed."
+        },
+        {
+          type: "free",
+          lesson: "Lesson 5",
+          prompt: "Write a valid Python function definition that accepts a name and returns a greeting string.",
+          answer: "def greet(name): return f'Hello, {name}'",
+          accepted: ["def greet(name): return f'Hello, {name}'", "def greet(name):\n    return f'Hello, {name}'", "def greet(name):\n    return f\"Hello, {name}\""],
+          explanation: "A function can be defined with def and return a string built with an f-string."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 6",
+          prompt: "What is the usual purpose of the requests library?",
+          options: [
+            "To create websites",
+            "To send HTTP requests to APIs",
+            "To manage files",
+            "To draw graphics"
+          ],
+          answerIndex: 1,
+          explanation: "requests is used to talk to APIs over HTTP, for example GET and POST requests."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 6",
+          prompt: "What does response.json() usually return?",
+          options: ["A string", "A dictionary/list from JSON", "An image", "A file path"],
+          answerIndex: 1,
+          explanation: "JSON from an API is usually converted into a Python dictionary or list for easier use."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 6",
+          prompt: "Why do we use a safe_get helper?",
+          options: [
+            "To avoid crashes when JSON has missing keys",
+            "To make the code shorter",
+            "To store the API key",
+            "To print the response"
+          ],
+          answerIndex: 0,
+          explanation: "A safe_get helper checks nested keys before trying to read them, preventing KeyError and TypeError issues."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "What is a Telegram bot?",
+          options: [
+            "A browser extension",
+            "A program that listens for messages and answers them through Telegram",
+            "A database record",
+            "A CSS framework"
+          ],
+          answerIndex: 1,
+          explanation: "A Telegram bot is a program that communicates with Telegram servers and reacts to user messages."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "Who gives you the token that authenticates your bot?",
+          options: ["GitHub", "Reddit", "BotFather", "VS Code"],
+          answerIndex: 2,
+          explanation: "BotFather creates and manages Telegram bot tokens."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "What is the purpose of offset in getUpdates?",
+          options: [
+            "To encrypt the API response",
+            "To tell Telegram which updates were already processed",
+            "To slow down the bot",
+            "To hide the token"
+          ],
+          answerIndex: 1,
+          explanation: "offset helps the bot skip older updates and process only new ones."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "Why do async handlers use await?",
+          options: [
+            "To block all other actions",
+            "To wait for a Telegram operation to finish before continuing",
+            "To delete the message",
+            "To print a line feed"
+          ],
+          answerIndex: 1,
+          explanation: "await pauses the function until the awaited operation finishes, which is important in async bot code."
+        },
+        {
+          type: "free",
+          lesson: "Lesson 7",
+          prompt: "Write the command used to install the Python Telegram bot library in a virtual environment.",
+          answer: "pip install python-telegram-bot",
+          accepted: ["pip install python-telegram-bot", "pip install python-telegram-bot python-dotenv requests"],
+          explanation: "The library is installed with pip. In the course, it was often installed together with python-dotenv and requests."
+        },
+        {
+          type: "mcq",
+          lesson: "Lesson 7",
+          prompt: "Why should API secrets be stored in a .env file and not committed to GitHub?",
+          options: [
+            "Because GitHub reads .env automatically",
+            "Because tokens are sensitive and can let others control the bot",
+            "Because .env is faster",
+            "Because .env makes the bot crash"
+          ],
+          answerIndex: 1,
+          explanation: "A bot token is a secret. If leaked, anyone can control or abuse the bot."
+        }
+      ];
+
+      const quizRoot = document.getElementById("questions");
+      const scoreDisplay = document.getElementById("score");
+      const showAllBtn = document.getElementById("showAll");
+      const resetBtn = document.getElementById("resetQuiz");
+
+      const state = questions.map(() => ({ answered: false, correct: false, selected: null }));
+
+      let score = 0;
+
+      function normalize(value) {
+        return String(value).trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      function updateScore() {
+        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+      }
+
+      function revealAllAnswers() {
+        document.querySelectorAll("details").forEach((detail) => {
+          detail.open = true;
+        });
+      }
+
+      function renderQuestions() {
+        quizRoot.innerHTML = "";
+        questions.forEach((q, index) => {
+          const section = document.createElement("section");
+          section.className = "waypoint";
+
+          const num = document.createElement("span");
+          num.className = "stamp-num";
+          num.textContent = index + 1;
+
+          const box = document.createElement("div");
+          box.innerHTML = `
+            <div class="question-head">
+              <span class="question-label">${q.lesson}</span>
+              <span class="question-label">${q.type === "mcq" ? "Multiple choice" : "Free answer"}</span>
+            </div>
+            <p class="question-text">${index + 1}. ${q.prompt}</p>
+          `;
+
+          if (q.type === "mcq") {
+            const optionWrap = document.createElement("div");
+            optionWrap.className = "options";
+
+            q.options.forEach((option, optionIndex) => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "option-btn";
+              btn.textContent = option;
+
+              if (state[index].selected === optionIndex) {
+                btn.classList.add("selected");
+              }
+
+              btn.addEventListener("click", () => {
+                if (state[index].answered) return;
+
+                state[index].answered = true;
+                state[index].selected = optionIndex;
+                const isCorrect = optionIndex === q.answerIndex;
+
+                state[index].correct = isCorrect;
+
+                if (isCorrect) {
+                  score += 1;
+                }
+
+                updateScore();
+
+                Array.from(optionWrap.children).forEach((childButton, childIndex) => {
+                  childButton.disabled = true;
+                  childButton.classList.remove("selected");
+                  if (childIndex === q.answerIndex) {
+                    childButton.classList.add("correct");
+                  }
+                  if (childIndex === optionIndex && childIndex !== q.answerIndex) {
+                    childButton.classList.add("wrong");
+                  }
+                });
+
+                const spoiler = section.querySelector("details");
+                spoiler.open = true;
+              });
+              optionWrap.appendChild(btn);
+            });
+
+            box.appendChild(optionWrap);
+          } else {
+            const inputWrap = document.createElement("div");
+            inputWrap.className = "input-wrap";
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Type your answer...";
+            input.autocomplete = "off";
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "check-btn";
+            btn.textContent = "Check";
+
+            const feedback = document.createElement("div");
+            feedback.className = "feedback";
+
+            btn.addEventListener("click", () => {
+              if (state[index].answered) return;
+
+              const userValue = normalize(input.value);
+              const answerValue = normalize(q.answer);
+              const accepted = q.accepted.map(normalize);
+
+              const correct = accepted.includes(userValue) || userValue === answerValue;
+
+              state[index].answered = true;
+              state[index].correct = correct;
+              state[index].selected = userValue;
+
+              if (correct) {
+                score += 1;
+              }
+
+              feedback.textContent = correct ? "Correct!" : `Not quite — the correct answer is: ${q.answer}`;
+              feedback.classList.remove("correct", "wrong");
+              feedback.classList.add(correct ? "correct" : "wrong");
+              feedback.style.display = "block";
+
+              updateScore();
+
+              const spoiler = section.querySelector("details");
+              spoiler.open = true;
+            });
+
+            inputWrap.append(input, btn);
+            box.appendChild(inputWrap);
+            box.appendChild(feedback);
+          }
+
+          const details = document.createElement("details");
+          const summary = document.createElement("summary");
+          summary.textContent = "Show correct answer";
+          const answerBox = document.createElement("div");
+          answerBox.className = "answer-box";
+          answerBox.innerHTML = `<strong>Correct answer:</strong> ${q.type === "mcq" ? q.options[q.answerIndex] : q.answer}<br><br>${q.explanation}`;
+          details.append(summary, answerBox);
+
+          section.appendChild(num);
+          section.appendChild(box);
+          section.appendChild(details);
+          quizRoot.appendChild(section);
+        });
+      }
+
+      function resetQuiz() {
+        state.forEach((s, i) => {
+          s.answered = false;
+          s.correct = false;
+          s.selected = null;
+        });
+
+        score = 0;
+        updateScore();
+
+        document.querySelectorAll(".option-btn").forEach((btn) => {
+          btn.disabled = false;
+          btn.classList.remove("correct", "wrong", "selected");
+        });
+
+        document.querySelectorAll("input[type='text']").forEach((input) => {
+          input.value = "";
+        });
+
+        document.querySelectorAll(".feedback").forEach((feedback) => {
+          feedback.style.display = "none";
+          feedback.textContent = "";
+        });
+
+        document.querySelectorAll("details").forEach((detail) => {
+          detail.open = false;
+        });
+
+        renderQuestions();
+      }
+
+      showAllBtn.addEventListener("click", revealAllAnswers);
+      resetBtn.addEventListener("click", resetQuiz);
+
+      renderQuestions();
+      updateScore();
+    </script>
+  </body>
+</html>
