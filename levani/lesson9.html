@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQLite, Relational Databases & Bot UI — Mentoring Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17223B;
+    --ink-soft:#4B5670;
+    --paper:#F3F1E7;
+    --card:#FFFFFF;
+    --amber:#B8791C;
+    --amber-deep:#8F5D12;
+    --amber-wash:#F1E1BE;
+    --rule:#D8D1BC;
+    --green:#3F7A56;
+    --green-wash:#E1EEE6;
+    --danger:#9C3B2E;
+    --danger-wash:#F5E1DC;
+    --vs-bg:#1E1E1E;
+    --vs-tabs:#252526;
+    --vs-text:#D4D4D4;
+    --vs-keyword:#569CD6;
+    --vs-string:#CE9178;
+    --vs-comment:#6A9955;
+    --vs-func:#DCDCAA;
+    --vs-var:#9CDCFE;
+    --vs-num:#B5CEA8;
+    --term-bg:#111417;
+    --term-text:#D8DEE4;
+    --term-prompt:#6FCF97;
+    --radius-sm:6px;
+    --radius-md:12px;
+    --shadow: 0 1px 2px rgba(23,34,59,0.06), 0 6px 20px rgba(23,34,59,0.07);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(23,34,59,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Karla', sans-serif;
+    font-size:16.5px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Newsreader', serif; color:var(--ink); margin:0; }
+  a{ color:var(--amber-deep); }
+  ::selection{ background:var(--amber-wash); }
+
+  /* ---------- top nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(243,241,231,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--rule);
+    padding:0.7rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    flex-wrap:wrap;
+  }
+  .topnav .brand{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:1.05rem; color:var(--ink); white-space:nowrap;
+  }
+  .topnav .links{ display:flex; gap:0.35rem; flex-wrap:wrap; margin-left:auto; }
+  .topnav a.pill{
+    font-size:0.82rem; color:var(--ink-soft); text-decoration:none;
+    padding:0.3rem 0.7rem; border-radius:999px; border:1px solid transparent;
+  }
+  .topnav a.pill:hover{ border-color:var(--rule); background:var(--card); color:var(--ink); }
+
+  /* ---------- layout ---------- */
+  .wrap{ max-width:840px; margin:0 auto; padding:0 1.5rem 6rem; }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:3.5rem 0 2.5rem; text-align:center; }
+  .stamp{
+    width:115px; height:115px; margin:0 auto 1.6rem;
+    border:2px dashed var(--amber);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(-5deg);
+    color:var(--amber-deep);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.04em; text-align:center;
+    line-height:1.3;
+  }
+  .hero h1{
+    font-size:2.8rem; font-style:italic; font-weight:500;
+    max-width:720px; margin:0 auto 0.6rem; line-height:1.15;
+  }
+  .hero .for-line{ color:var(--ink-soft); font-size:1.1rem; margin-bottom:1.4rem; }
+  .hero .for-line strong{ color:var(--ink); font-weight:600; }
+  .chips{ display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+  .chip{
+    font-size:0.8rem; font-family:'JetBrains Mono', monospace;
+    background:var(--card); border:1px solid var(--rule);
+    padding:0.32rem 0.75rem; border-radius:999px; color:var(--ink-soft);
+  }
+
+  /* ---------- objective panel ---------- */
+  .objective{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:1.6rem 1.8rem;
+    margin:2rem 0;
+    box-shadow:var(--shadow);
+  }
+  .objective h2{ font-size:1.25rem; margin-bottom:0.5rem; }
+  .objective p{ color:var(--ink-soft); margin:0 0 0.8rem; }
+  .objective p:last-child{ margin:0; }
+  .objective ul { margin: 0.5rem 0 0; padding-left: 1.2rem; color: var(--ink-soft); }
+  .objective li { margin-bottom: 0.4rem; }
+
+  /* ---------- tables ---------- */
+  table.data-table{
+    width:100%; border-collapse:collapse; margin:1.3rem 0;
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-sm); overflow:hidden; font-size:0.92rem;
+    box-shadow:var(--shadow);
+  }
+  table.data-table th, table.data-table td{
+    padding:0.65rem 0.85rem; border-bottom:1px solid var(--rule);
+    text-align:left; vertical-align:top;
+  }
+  table.data-table th{
+    background:#EFECE1; color:var(--ink);
+    font-family:'JetBrains Mono', monospace; font-size:0.74rem;
+    letter-spacing:0.03em; text-transform:uppercase;
+  }
+  table.data-table tr:last-child td{ border-bottom:none; }
+
+  /* ---------- timeline grid ---------- */
+  .timeline-grid{
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:0.6rem;
+    margin:2.2rem 0 2.6rem;
+  }
+  .timeline-grid a{
+    text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--radius-sm); padding:0.8rem 0.6rem;
+    text-align:center; display:block; transition:all 0.15s ease;
+  }
+  .timeline-grid a:hover{ border-color:var(--amber); transform:translateY(-2px); }
+  .timeline-grid .t-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--amber-deep);
+    display:block; margin-bottom:0.2rem;
+  }
+  .timeline-grid .t-label{ font-size:0.82rem; color:var(--ink); font-weight:600; line-height:1.25; }
+  @media (max-width:800px){ .timeline-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:560px){ .timeline-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ---------- waypoint sections ---------- */
+  .trail{ position:relative; padding-left:2.6rem; }
+  .trail::before{
+    content:""; position:absolute; left:1.05rem; top:0.4rem; bottom:0.4rem;
+    width:2px; background-image:linear-gradient(var(--rule) 60%, transparent 0%);
+    background-size: 2px 10px; background-repeat:repeat-y;
+  }
+  .waypoint{ position:relative; margin-bottom:3.8rem; }
+  .waypoint .stamp-num{
+    position:absolute; left:-2.6rem; top:0.1rem;
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.95rem; font-weight:600;
+  }
+  .waypoint .wp-time{
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--amber-deep);
+    margin-bottom:0.2rem; display:block;
+  }
+  .waypoint h2{ font-size:1.65rem; margin-bottom:0.2rem; }
+  .waypoint h3{ font-size:1.25rem; margin:1.6rem 0 0.4rem; }
+  .waypoint .wp-sub{ color:var(--ink-soft); margin-bottom:1.2rem; font-size:0.98rem; }
+
+  /* ---------- callout cards ---------- */
+  .note{
+    border-radius:var(--radius-sm);
+    padding:1rem 1.15rem;
+    margin:1.2rem 0;
+    font-size:0.95rem;
+    border:1px solid var(--rule);
+  }
+  .note .note-label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.03em; margin-bottom:0.35rem; font-weight:600;
+  }
+  .note.tip{ background:var(--amber-wash); border-color:#e2c98a; }
+  .note.tip .note-label{ color:var(--amber-deep); }
+  .note.hint{ background:#EEF1F7; border-color:#c9d2e6; }
+  .note.hint .note-label{ color:#3B4E80; }
+  .note.watch{ background:var(--danger-wash); border-color:#e3b6ac; }
+  .note.watch .note-label{ color:var(--danger); }
+  .note.win{ background:var(--green-wash); border-color:#b9d8c5; }
+  .note.win .note-label{ color:var(--green); }
+  .note p{ margin:0 0 0.4rem; }
+  .note p:last-child{ margin-bottom:0; }
+  .note code{ background:rgba(0,0,0,0.06); padding:0.1rem 0.35rem; border-radius:4px; }
+
+  /* ---------- code window (VS Code look) ---------- */
+  .editor{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--vs-bg);
+  }
+  .editor .tabbar{
+    background:var(--vs-tabs);
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+    border-bottom:1px solid #111;
+  }
+  .editor .filename{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:#c9c9c9;
+    background:#1e1e1e; padding:0.28rem 0.7rem; border-radius:6px 6px 0 0;
+  }
+  .editor .copy-btn{
+    margin-left:auto; background:none; border:1px solid #3c3c3c; color:#c9c9c9;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .editor .copy-btn:hover{ background:#2d2d2d; }
+  .editor pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.65;
+    color:var(--vs-text);
+  }
+  .kw{ color:var(--vs-keyword); }
+  .str{ color:var(--vs-string); }
+  .cm{ color:var(--vs-comment); font-style:italic; }
+  .fn{ color:var(--vs-func); }
+  .vr{ color:var(--vs-var); }
+  .nm{ color:var(--vs-num); }
+
+  /* ---------- terminal window ---------- */
+  .term{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    margin:1.2rem 0;
+    box-shadow:var(--shadow);
+    background:var(--term-bg);
+  }
+  .term .tabbar{
+    background:#1a1d21;
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+  }
+  .term .dots{ display:flex; gap:0.32rem; }
+  .term .dots span{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .term .dots span:nth-child(1){ background:#ff5f56; }
+  .term .dots span:nth-child(2){ background:#ffbd2e; }
+  .term .dots span:nth-child(3){ background:#27c93f; }
+  .term .termtitle{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#9aa4ad; margin-left:0.3rem; }
+  .term .copy-btn{
+    margin-left:auto; background:none; border:1px solid #33383d; color:#9aa4ad;
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    padding:0.22rem 0.55rem; border-radius:5px; cursor:pointer;
+  }
+  .term .copy-btn:hover{ background:#22262b; }
+  .term pre{
+    margin:0; padding:1.1rem 1.3rem;
+    overflow-x:auto;
+    font-family:'JetBrains Mono', monospace; font-size:0.86rem; line-height:1.7;
+    color:var(--term-text);
+  }
+  .term .prompt{ color:var(--term-prompt); }
+  .term .out{ color:#e7ebee; }
+  .term .cmt{ color:#7d8892; }
+
+  /* ---------- interactive practice box ---------- */
+  .drill-box{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--amber);
+    border-radius:var(--radius-sm);
+    padding:1.2rem 1.4rem;
+    margin:1.5rem 0;
+  }
+  .drill-box h4{ font-family:'Karla', sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:0.4rem; }
+
+  /* ---------- dossier (homework) ---------- */
+  .dossier{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius-md);
+    padding:2rem 1.9rem;
+    margin:2.5rem 0;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .dossier::before{
+    content:"HOMEWORK";
+    position:absolute; top:-0.75rem; left:1.7rem;
+    background:var(--ink); color:var(--paper);
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem; letter-spacing:0.06em;
+    padding:0.25rem 0.7rem; border-radius:999px;
+  }
+  .dossier h2{ font-size:1.6rem; margin-bottom:0.2rem; }
+  .dossier .meta{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); margin-bottom:1.4rem; }
+  .step{ margin:1.6rem 0; }
+  .step h3{ font-size:1.1rem; margin-bottom:0.4rem; }
+  .step .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.6rem; height:1.6rem; border-radius:50%; background:var(--amber-wash);
+    color:var(--amber-deep); font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+    margin-right:0.5rem;
+  }
+
+  /* ---------- quiz ---------- */
+  .quiz-q { margin-bottom: 1.5rem; }
+  .quiz-opts button { display: block; width: 100%; text-align: left; margin: 0.35rem 0; padding: 0.7rem 1rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--card); cursor: pointer; transition: all 0.2s; font-family: 'Karla', sans-serif; font-size: 1rem; color: var(--ink); }
+  .quiz-opts button:hover { border-color: var(--amber); background: var(--amber-wash); }
+  .quiz-opts button.correct { background: var(--green-wash); border-color: var(--green); color: var(--green); font-weight: bold; }
+  .quiz-opts button.wrong { background: var(--danger-wash); border-color: var(--danger); color: var(--danger); text-decoration: line-through; }
+  .quiz-opts.answered button { pointer-events: none; }
+  .quiz-score { font-size: 1.25rem; font-weight: bold; color: var(--ink); text-align: center; margin-top: 1.5rem; padding: 1.5rem; background: var(--amber-wash); border-radius: 6px; border: 2px dashed var(--amber); }
+
+  /* ---------- divider ---------- */
+  .divider{ display:flex; align-items:center; gap:0.8rem; margin:3rem 0 2.4rem; color:var(--ink-soft); }
+  .divider::before, .divider::after{ content:""; flex:1; border-top:1px dashed var(--rule); }
+  .divider span{ font-family:'JetBrains Mono', monospace; font-size:0.78rem; }
+
+  /* ---------- closing ---------- */
+  .closing{
+    text-align:center; padding:3rem 1rem 1rem; color:var(--ink-soft);
+  }
+  .closing h2{ font-style:italic; font-size:1.6rem; color:var(--ink); margin-bottom:0.6rem; }
+  .closing p{ max-width:540px; margin:0 auto; }
+
+  /* ---------- scroll top ---------- */
+  .scroll-top{
+    position:fixed; bottom:1.6rem; right:1.6rem;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:999px;
+    width:42px; height:42px; font-size:1.1rem;
+    cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+  }
+  .scroll-top:hover{ opacity:0.85; }
+
+  code.inline{ background:#EEEAE0; padding:0.12rem 0.4rem; border-radius:4px; font-family:'JetBrains Mono', monospace; font-size:0.85em; }
+
+  @media (max-width:640px){
+    .trail{ padding-left:2.1rem; }
+    .waypoint .stamp-num{ left:-2.1rem; width:1.9rem; height:1.9rem; font-size:0.82rem; }
+    .hero h1{ font-size:2.15rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="brand">Databases &amp; Cloud · Block 3</span>
+  <div class="links">
+    <a class="pill" href="#w1">DB Theory</a>
+    <a class="pill" href="#w2">SQLite Engine</a>
+    <a class="pill" href="#w3">CRUD &amp; Security</a>
+    <a class="pill" href="#w4">APOD Time Machine</a>
+    <a class="pill" href="#w5">Cloud Hosting</a>
+    <a class="pill" href="#quiz">Quiz</a>
+    <a class="pill" href="#homework">Homework</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="overview">
+    <div class="stamp">DB +<br/>CLOUD<br/>LESSON 9</div>
+    <h1>Persistent Memory, Interactive UI &amp; Cloud Hosting</h1>
+    <p class="for-line">Relational Database Theory, SQLite3 in Python, APOD Date Selection &amp; 24/7 Deployment</p>
+    <div class="chips">
+      <span class="chip">🗄️ Relational Theory</span>
+      <span class="chip">🐍 Python sqlite3</span>
+      <span class="chip">🛡️ SQL Injection Defense</span>
+      <span class="chip">📅 APOD Date Picker</span>
+      <span class="chip">☁️ 24/7 Cloud Worker</span>
+    </div>
+  </section>
+
+  <!-- ===================== OBJECTIVES ===================== -->
+  <div class="objective">
+    <h2>Welcome to Block 3: Databases &amp; Cloud Architecture</h2>
+    <p>In Lesson 8, you refactored <strong>Space_Buddy-Bot</strong> into clean packages (<code class="inline">services/</code>, <code class="inline">handlers/</code>, <code class="inline">config.py</code>) and practiced Git feature branches. However, your bot still suffers from <strong>amnesia</strong>: every time you restart the script, it forgets every user who ever talked to it. Today we solve that permanently.</p>
+    <ul>
+      <li><strong>Relational Database Theory:</strong> Understand why file-based storage (JSON/CSV) fails at scale, and master core database concepts: Entities, Primary Keys, Foreign Keys, Referential Integrity, and Normalization (1NF–3NF).</li>
+      <li><strong>SQLite Architecture &amp; Python <code class="inline">sqlite3</code>:</strong> Learn how embedded serverless databases work, how to write DDL (<code class="inline">CREATE TABLE</code>) and DML (<code class="inline">INSERT</code>, <code class="inline">SELECT</code>, <code class="inline">DELETE</code>), and how to block SQL Injection using parameterized queries.</li>
+      <li><strong>Interactive Bot Upgrade:</strong> Add the <strong>APOD Date-Selection</strong> feature (<code class="inline">/apod YYYY-MM-DD</code>) and Telegram Inline Keyboard buttons so users can bookmark their favorite NASA photos into SQLite.</li>
+      <li><strong>24/7 Cloud Deployment:</strong> Package your bot with <code class="inline">requirements.txt</code> and resilient polling so it runs in the cloud even when your laptop is closed.</li>
+    </ul>
+  </div>
+
+  <div class="timeline-grid">
+    <a href="#w1"><span class="t-time">Step 1</span><span class="t-label">Relational DB Theory</span></a>
+    <a href="#w2"><span class="t-time">Step 2</span><span class="t-label">SQLite &amp; DDL Schema</span></a>
+    <a href="#w3"><span class="t-time">Step 3</span><span class="t-label">CRUD &amp; SQL Security</span></a>
+    <a href="#w4"><span class="t-time">Step 4</span><span class="t-label">APOD Time Machine</span></a>
+    <a href="#w5"><span class="t-time">Step 5</span><span class="t-label">24/7 Cloud Hosting</span></a>
+  </div>
+
+  <div class="trail">
+
+    <!-- ===================== WAYPOINT 1 ===================== -->
+    <section class="waypoint" id="w1">
+      <span class="stamp-num">1</span>
+      <span class="wp-time">Part 1 · Computer Science Theory (20 min)</span>
+      <h2>From Flat Files to Relational Databases</h2>
+      <p class="wp-sub">Why professional software uses Relational Database Management Systems (RDBMS) instead of JSON files.</p>
+
+      <p>In Lesson 6, we used a local JSON file (<code class="inline">nasa_cache.json</code>) to cache asteroid data. While flat files (JSON, CSV, TXT) are great for temporary single-user scripts, they break down completely when used as the primary storage for a multi-user application like <strong>Space_Buddy-Bot</strong>.</p>
+
+      <h3>The 4 Limitations of a File-Based Approach</h3>
+      <ul>
+        <li><strong>1. Data Redundancy &amp; Inconsistency:</strong> If you store a user's <code class="inline">username</code> and <code class="inline">first_name</code> inside every saved APOD dictionary in a JSON file, that user's name is duplicated 50 times. If they change their Telegram handle, updating some records but missing others causes <em>data inconsistency</em>.</li>
+        <li><strong>2. Concurrency &amp; Race Conditions:</strong> Imagine User A and User B click "Save Photo" at the exact same millisecond. Both Python threads read <code class="inline">favorites.json</code>, append their item in RAM, and overwrite the file on disk. Whoever finishes 1 millisecond later <strong>completely erases</strong> the first user's save!</li>
+        <li><strong>3. O(N) Full-File Scans:</strong> To check if User <code class="inline">981234</code> saved a photo from <code class="inline">2024-05-12</code>, Python must load the entire JSON file into RAM and loop through thousands of items one by one.</li>
+        <li><strong>4. Lack of Data Integrity &amp; Program-Data Dependence:</strong> A JSON file doesn't stop a bug from saving an integer where a URL string should be. Furthermore, if you change the structure of the JSON file, every Python script that reads it must be rewritten.</li>
+      </ul>
+
+      <div class="note hint">
+        <span class="note-label">ABSTRACTION IN DATABASES</span>
+        <p>A <strong>Database Management System (DBMS)</strong> provides <strong>abstraction</strong>: when you run a query like <code>SELECT title FROM saved_apods WHERE user_id = 42</code>, you only specify <em>what</em> data you want. The DBMS hides the complex physical details of how bytes are indexed on the SSD, how file locks are managed, and how memory buffers are searched.</p>
+      </div>
+
+      <h3>Core Relational Database Terminology</h3>
+      <p>In 1970, Edgar F. Codd invented the <strong>Relational Model</strong>, which organizes data into separate, linked two-dimensional tables (called <em>relations</em>) to eliminate redundancy.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Relational Term</th>
+            <th>Everyday / Table Term</th>
+            <th>Space_Buddy-Bot Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Entity</strong></td>
+            <td>Real-world object being modeled</td>
+            <td>A Telegram User, or a Saved NASA Photo</td>
+          </tr>
+          <tr>
+            <td><strong>Relation / Table</strong></td>
+            <td>Grid of rows and columns</td>
+            <td><code class="inline">users</code> table, <code class="inline">saved_apods</code> table</td>
+          </tr>
+          <tr>
+            <td><strong>Tuple / Record</strong></td>
+            <td>A single horizontal <strong>Row</strong></td>
+            <td><code class="inline">(1049281, 'alex_dev', 'alex', '2026-11-07')</code></td>
+          </tr>
+          <tr>
+            <td><strong>Attribute / Field</strong></td>
+            <td>A single vertical <strong>Column</strong></td>
+            <td><code class="inline">apod_date</code>, <code class="inline">image_url</code>, <code class="inline">username</code></td>
+          </tr>
+          <tr>
+            <td><strong>Primary Key (PK)</strong></td>
+            <td>Unique identifier for a row</td>
+            <td><code class="inline">user_id</code> in <code class="inline">users</code> (never <code class="inline">NULL</code>, always unique)</td>
+          </tr>
+          <tr>
+            <td><strong>Foreign Key (FK)</strong></td>
+            <td>Column linking to another table's PK</td>
+            <td><code class="inline">user_id</code> inside <code class="inline">saved_apods</code> pointing to <code class="inline">users.user_id</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Keys, Relationships &amp; Referential Integrity</h3>
+      <p>How do tables talk to each other without duplicating data? Through <strong>Keys</strong> and <strong>Relationships</strong>:</p>
+      <ul>
+        <li><strong>Candidate Key vs. Primary Key vs. Secondary Key:</strong> Any attribute that could uniquely identify a row is a <em>Candidate Key</em> (e.g., <code class="inline">user_id</code>). The one we choose as the official identifier is the <strong>Primary Key (PK)</strong>. An attribute used frequently for searching (like <code class="inline">apod_date</code>) that has an <strong>Index</strong> attached to speed up lookups from $O(N)$ to $O(\log N)$ is called a <strong>Secondary Key</strong>.</li>
+        <li><strong>One-to-Many (1:M) Relationship:</strong> <em>One</em> user in the <code class="inline">users</code> table can save <em>Many</em> photos in the <code class="inline">saved_apods</code> table. We model this by placing the user's Primary Key (<code class="inline">user_id</code>) into the <code class="inline">saved_apods</code> table as a <strong>Foreign Key (FK)</strong>.</li>
+        <li><strong>Referential Integrity:</strong> A critical DBMS rule stating that every Foreign Key value must match an existing Primary Key in the parent table. You cannot save a favorite APOD for <code class="inline">user_id = 99999</code> if User <code class="inline">99999</code> does not exist in the <code class="inline">users</code> table (preventing "orphan records").</li>
+      </ul>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">schema_erd.txt (Entity-Relationship Diagram &amp; 3NF Design)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm">+---------------------------+          1         M  +----------------------------------+</span>
+<span class="cm">|          users            |-----------------------|           saved_apods            |</span>
+<span class="cm">+---------------------------+                       +----------------------------------+</span>
+<span class="cm">| PK  user_id     (INTEGER) |                       | PK  id          (INTEGER AUTO)   |</span>
+<span class="cm">|     username    (TEXT)    |                       | FK  user_id     (INTEGER)        |</span>
+<span class="cm">|     first_name  (TEXT)    |                       |     apod_date   (TEXT)           |</span>
+<span class="cm">|     joined_at   (TEXT)    |                       |     title       (TEXT)           |</span>
+<span class="cm">+---------------------------+                       |     media_url   (TEXT)           |</span>
+<span class="cm">                                                    |     saved_at    (TEXT)           |</span>
+<span class="cm">                                                    +----------------------------------+</span></code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">NORMALIZATION: WHY OUR DESIGN IS IN 3NF (THIRD NORMAL FORM)</span>
+        <p>Database designers use <strong>Normalization</strong> to remove redundancy:</p>
+        <p>• <strong>1NF (First Normal Form):</strong> Every cell holds a single <em>atomic</em> value (no comma-separated lists like <code>"2024-01-01, 2024-05-12"</code> inside one cell).</p>
+        <p>• <strong>2NF (Second Normal Form):</strong> In 1NF, and every non-key column depends on the <em>whole</em> Primary Key.</p>
+        <p>• <strong>3NF (Third Normal Form):</strong> In 2NF, with <em>no transitive dependencies</em>—meaning non-key columns depend <strong>only</strong> on the Primary Key. In <code class="inline">saved_apods</code>, we do NOT store <code class="inline">username</code> because <code class="inline">username</code> depends on <code class="inline">user_id</code>, not on the bookmark <code class="inline">id</code>. Separating them into two tables achieves clean <strong>3NF</strong>!</p>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 2 ===================== -->
+    <section class="waypoint" id="w2">
+      <span class="stamp-num">2</span>
+      <span class="wp-time">Part 2 · The SQLite Engine &amp; DDL (15 min)</span>
+      <h2>How SQLite Works &amp; Building the Schema</h2>
+      <p class="wp-sub">Serverless architecture, ACID transactions, and Data Definition Language (DDL).</p>
+
+      <p>Most database engines (like PostgreSQL, MySQL, or Oracle) are <strong>Client-Server</strong> systems: they run as a separate background service listening on a network port. <strong>SQLite</strong> is different—it is an <strong>embedded, serverless relational database</strong> built directly into Python's standard library (<code class="inline">import sqlite3</code>).</p>
+
+      <h3>Why SQLite is the World's Most Deployed Database Engine</h3>
+      <ul>
+        <li><strong>Zero Configuration:</strong> No server to install or pay for. The entire database—tables, indices, and datadictionary—lives inside a single cross-platform binary file (<code class="inline">space_buddy.db</code>) right inside your project folder.</li>
+        <li><strong>ACID Transactions:</strong> Even if the power goes out or your Python script crashes mid-save, SQLite guarantees <strong>Atomicity</strong> (all steps of a save succeed, or none do), <strong>Consistency</strong>, <strong>Isolation</strong>, and <strong>Durability</strong>.</li>
+        <li><strong>Real-World Applications:</strong> Every iPhone, Android phone, web browser (Chrome/Firefox history), macOS, and aircraft flight software uses SQLite internally, and it easily handles 100,000+ daily bot requests.</li>
+      </ul>
+
+      <h3>SQL Sub-Languages: DDL vs. DML</h3>
+      <p>Structured Query Language (SQL) is divided into specialized command categories:</p>
+      <ul>
+        <li><strong>DDL (Data Definition Language):</strong> Defines the database structure/schema (<code class="inline">CREATE TABLE</code>, <code class="inline">ALTER TABLE</code>, <code class="inline">DROP TABLE</code>, <code class="inline">CREATE INDEX</code>).</li>
+        <li><strong>DML (Data Manipulation Language):</strong> Reads and modifies rows inside the tables (<code class="inline">INSERT</code>, <code class="inline">SELECT</code>, <code class="inline">UPDATE</code>, <code class="inline">DELETE</code>).</li>
+      </ul>
+
+      <p>Let's create a new package folder <code class="inline">database/</code> in <code class="inline">Space_Buddy-Bot</code> and write our database manager using DDL to initialize our two tables:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">database/db_manager.py (Part 1: Connection &amp; DDL Schema)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> sqlite3
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime, timezone
+
+
+<span class="kw">class</span> <span class="fn">DatabaseManager</span>:
+    <span class="str">"""Manages SQLite connections and table schemas for Space_Buddy-Bot."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">db_path</span>: <span class="fn">str</span> = <span class="str">"space_buddy.db"</span>):
+        <span class="vr">self</span>.db_path = <span class="vr">db_path</span>
+        <span class="vr">self</span>.<span class="fn">_create_tables</span>()
+
+    <span class="kw">def</span> <span class="fn">_get_connection</span>(<span class="vr">self</span>) -&gt; sqlite3.<span class="fn">Connection</span>:
+        <span class="str">"""Opens a connection with Row factory and Foreign Key enforcement."""</span>
+        <span class="vr">conn</span> = sqlite3.<span class="fn">connect</span>(<span class="vr">self</span>.db_path)
+        <span class="cm"># sqlite3.Row allows accessing columns by name: row["title"] instead of row[2]</span>
+        <span class="vr">conn</span>.row_factory = sqlite3.Row
+        <span class="cm"># Enforce Referential Integrity (Foreign Keys) on every connection</span>
+        <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"PRAGMA foreign_keys = ON;"</span>)
+        <span class="kw">return</span> <span class="vr">conn</span>
+
+    <span class="kw">def</span> <span class="fn">_create_tables</span>(<span class="vr">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="str">"""Executes DDL statements to create normalized 3NF tables if missing."""</span>
+        <span class="cm"># Using 'with' automatically commits transactions or rolls back on error!</span>
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">cursor</span> = <span class="vr">conn</span>.<span class="fn">cursor</span>()
+
+            <span class="cm"># Table 1: Telegram Users (Parent Entity)</span>
+            <span class="vr">cursor</span>.<span class="fn">execute</span>(<span class="str">"""
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id     INTEGER PRIMARY KEY,
+                    username    TEXT,
+                    first_name  TEXT NOT NULL,
+                    joined_at   TEXT NOT NULL
+                );
+            """</span>)
+
+            <span class="cm"># Table 2: Saved APOD Favorites (Child Entity with Foreign Key &amp; UNIQUE constraint)</span>
+            <span class="vr">cursor</span>.<span class="fn">execute</span>(<span class="str">"""
+                CREATE TABLE IF NOT EXISTS saved_apods (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id     INTEGER NOT NULL,
+                    apod_date   TEXT NOT NULL,
+                    title       TEXT NOT NULL,
+                    media_url   TEXT NOT NULL,
+                    saved_at    TEXT NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+                    UNIQUE (user_id, apod_date)
+                );
+            """</span>)</code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">PRO PATTERN: COMPOSITE UNIQUE CONSTRAINT</span>
+        <p>Notice <code>UNIQUE (user_id, apod_date)</code> at the bottom of <code class="inline">saved_apods</code>. This tells SQLite: <em>"User A and User B can both save the photo from 2024-05-12, and User A can save 100 different dates, but User A cannot save 2024-05-12 twice!"</em></p>
+      </div>
+    </section>
+    
+<!-- ===================== WAYPOINT: LOCAL SQLITE LAB & TESTING ===================== -->
+    <section class="waypoint" id="w-local">
+      <span class="stamp-num">LAB</span>
+      <span class="wp-time">Hands-On Lab · Local SQLite Server &amp; Sandbox Testing (15 min)</span>
+      <h2>Local SQLite Deployment, Web UI Server &amp; Testing</h2>
+      <p class="wp-sub">How to spin up a local SQLite environment, inspect live tables in your browser, and run isolated test databases without touching production data.</p>
+
+      <p>Unlike heavy client-server databases (like PostgreSQL or MySQL) that require installing a background Windows/macOS service and configuring ports, SQLite is an <strong>embedded database engine</strong>. However, when developing <strong>Space_Buddy-Bot</strong> locally, you still need a way to:</p>
+      <ul>
+        <li><strong>Separately manage environments:</strong> Keep your local testing database (<code class="inline">dev_space_buddy.db</code>) separate from live user data (<code class="inline">space_buddy.db</code>) via <code class="inline">.env</code> configuration.</li>
+        <li><strong>Visually browse tables in real time:</strong> Run a lightweight local SQLite web server (<code class="inline">sqlite-web</code>) on <code class="inline">http://127.0.0.1:8080</code> or use the VS Code SQLite Viewer to watch rows appear the moment you message your Telegram bot.</li>
+        <li><strong>Seed &amp; reset test data:</strong> Populate fake users and NASA APOD bookmarks with one command so you can test <code class="inline">/favorites</code> without clicking buttons 20 times.</li>
+      </ul>
+
+      <h3>Comparing the 3 Local SQLite Modes</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Database Target</th>
+            <th>Connection String</th>
+            <th>Where Data Lives</th>
+            <th>Best Used For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. In-Memory Sandbox</strong></td>
+            <td><code class="inline">":memory:"</code></td>
+            <td>RAM only (vanishes when script ends)</td>
+            <td>Automated <code class="inline">unittest</code> suites &amp; instant query experiments</td>
+          </tr>
+          <tr>
+            <td><strong>2. Local Dev File + Web Server</strong></td>
+            <td><code class="inline">"dev_space_buddy.db"</code></td>
+            <td>Local project folder (ignored by Git)</td>
+            <td>Interactive bot testing, seeding fake users &amp; visual inspection</td>
+          </tr>
+          <tr>
+            <td><strong>3. Production Bot File</strong></td>
+            <td><code class="inline">"space_buddy.db"</code></td>
+            <td>Cloud host disk (persistent 24/7)</td>
+            <td>Live Telegram users interacting with the deployed bot</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Step 1: Environment-Based Database Switching &amp; WAL Concurrency</h3>
+      <p>When you run your bot AND open a database viewer (or local SQLite web server) at the same time, two programs access the <code class="inline">.db</code> file simultaneously. By default, SQLite locks the entire file during writes, which can trigger <code class="inline">sqlite3.OperationalError: database is locked</code>.</p>
+      <p>To prevent this during local testing and production, we enable <strong>WAL (Write-Ahead Logging)</strong> mode (<code class="inline">PRAGMA journal_mode = WAL;</code>), which allows multiple readers and a writer to work concurrently:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">config.py &amp; database/db_manager.py (Local Dev Ready)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm"># --- In config.py ---</span>
+<span class="kw">import</span> os
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+
+<span class="fn">load_dotenv</span>()
+
+<span class="vr">NASA_API_KEY</span> = os.<span class="fn">getenv</span>(<span class="str">"NASA_API_KEY"</span>, <span class="str">"DEMO_KEY"</span>)
+<span class="vr">TELEGRAM_BOT_TOKEN</span> = os.<span class="fn">getenv</span>(<span class="str">"TELEGRAM_BOT_TOKEN"</span>, <span class="str">""</span>)
+<span class="cm"># Defaults to dev_space_buddy.db locally; override in .env for production</span>
+<span class="vr">DATABASE_PATH</span> = os.<span class="fn">getenv</span>(<span class="str">"DATABASE_PATH"</span>, <span class="str">"dev_space_buddy.db"</span>)
+
+
+<span class="cm"># --- Inside DatabaseManager._get_connection() in database/db_manager.py ---</span>
+<span class="kw">def</span> <span class="fn">_get_connection</span>(<span class="vr">self</span>) -&gt; sqlite3.<span class="fn">Connection</span>:
+    <span class="cm"># timeout=10.0 tells SQLite to wait up to 10s if another process is writing</span>
+    <span class="vr">conn</span> = sqlite3.<span class="fn">connect</span>(<span class="vr">self</span>.db_path, timeout=<span class="nm">10.0</span>)
+    <span class="vr">conn</span>.row_factory = sqlite3.Row
+    <span class="cm"># Enable WAL mode so our local SQLite Web Server and Bot can run side-by-side!</span>
+    <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"PRAGMA journal_mode = WAL;"</span>)
+    <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"PRAGMA foreign_keys = ON;"</span>)
+    <span class="kw">return</span> <span class="vr">conn</span></code></pre>
+      </div>
+
+      <h3>Step 2: Creating a Local Seeder &amp; Diagnostics Script (<code class="inline">scripts/seed_local_db.py</code>)</h3>
+      <p>Before launching the full Telegram bot, professional backend developers run a <strong>seeder script</strong>. This script initializes <code class="inline">dev_space_buddy.db</code>, populates realistic test users and NASA APOD records, and prints an ASCII table so you can verify your SQL queries immediately.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">scripts/seed_local_db.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="str">"""
+Local SQLite Seeder &amp; Diagnostic Runner.
+Run with: python -m scripts.seed_local_db
+"""</span>
+<span class="kw">from</span> config <span class="kw">import</span> DATABASE_PATH
+<span class="kw">from</span> database.db_manager <span class="kw">import</span> DatabaseManager
+
+
+<span class="kw">def</span> <span class="fn">seed_and_verify</span>() -&gt; <span class="kw">None</span>:
+    <span class="fn">print</span>(<span class="kw">f</span><span class="str">"🛠️  Connecting to local SQLite database: {DATABASE_PATH}"</span>)
+    <span class="vr">db</span> = <span class="fn">DatabaseManager</span>(<span class="vr">DATABASE_PATH</span>)
+
+    <span class="cm"># 1. Seed sample Telegram users</span>
+    <span class="vr">sample_users</span> = [
+        (<span class="nm">1001</span>, <span class="str">"alex_131"</span>, <span class="str">"alex"</span>),
+        (<span class="nm">1002</span>, <span class="str">"astro_nino"</span>, <span class="str">"Nino"</span>),
+        (<span class="nm">1003</span>, <span class="str">"cosmos_gio"</span>, <span class="str">"Giorgi"</span>),
+    ]
+    <span class="kw">for</span> <span class="vr">uid</span>, <span class="vr">uname</span>, <span class="vr">fname</span> <span class="kw">in</span> <span class="vr">sample_users</span>:
+        <span class="vr">db</span>.<span class="fn">register_user</span>(<span class="vr">uid</span>, <span class="vr">uname</span>, <span class="vr">fname</span>)
+
+    <span class="cm"># 2. Seed sample APOD bookmarks</span>
+    <span class="vr">sample_apods</span> = [
+        (<span class="nm">1001</span>, <span class="str">"1995-06-16"</span>, <span class="str">"Neutron Star Earth"</span>, <span class="str">"https://apod.nasa.gov/apod/image/neutron.gif"</span>),
+        (<span class="nm">1001</span>, <span class="str">"2024-05-12"</span>, <span class="str">"Aurora over Caucasus"</span>, <span class="str">"https://apod.nasa.gov/apod/image/aurora.jpg"</span>),
+        (<span class="nm">1002</span>, <span class="str">"2023-10-14"</span>, <span class="str">"Ring of Fire Eclipse"</span>, <span class="str">"https://apod.nasa.gov/apod/image/eclipse.jpg"</span>),
+    ]
+    <span class="kw">for</span> <span class="vr">uid</span>, <span class="vr">apod_date</span>, <span class="vr">title</span>, <span class="vr">url</span> <span class="kw">in</span> <span class="vr">sample_apods</span>:
+        <span class="vr">inserted</span> = <span class="vr">db</span>.<span class="fn">save_apod</span>(<span class="vr">uid</span>, <span class="vr">apod_date</span>, <span class="vr">title</span>, <span class="vr">url</span>)
+        <span class="vr">status</span> = <span class="str">"NEW ROW"</span> <span class="kw">if</span> <span class="vr">inserted</span> <span class="kw">else</span> <span class="str">"SKIPPED (DUPLICATE)"</span>
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"   [{status}] User {uid} -&gt; {apod_date} ({title})"</span>)
+
+    <span class="cm"># 3. Query back via INNER JOIN to verify relational integrity</span>
+    <span class="fn">print</span>(<span class="str">"\n📊 Live INNER JOIN Query (saved_apods ⋈ users):"</span>)
+    <span class="fn">print</span>(<span class="str">"-"</span> * <span class="nm">68</span>)
+    <span class="fn">print</span>(<span class="kw">f</span><span class="str">"{'User':&lt;12} | {'Handle':&lt;14} | {'APOD Date':&lt;10} | {'Title'}"</span>)
+    <span class="fn">print</span>(<span class="str">"-"</span> * <span class="nm">68</span>)
+    <span class="kw">for</span> <span class="vr">row</span> <span class="kw">in</span> <span class="vr">db</span>.<span class="fn">get_recent_community_saves</span>(limit=<span class="nm">10</span>):
+        <span class="fn">print</span>(<span class="kw">f</span><span class="str">"{row['first_name']:&lt;12} | @{row['username']:&lt;13} | {row['apod_date']:&lt;10} | {row['title']}"</span>)
+    <span class="fn">print</span>(<span class="str">"-"</span> * <span class="nm">68</span>)
+
+
+<span class="kw">if</span> <span class="vr">__name__</span> == <span class="str">"__main__"</span>:
+    <span class="fn">seed_and_verify</span>()</code></pre>
+      </div>
+
+      <h3>Step 3: Launching a Local SQLite Web Server (<code class="inline">sqlite-web</code>)</h3>
+      <p>Want a full browser dashboard (like phpMyAdmin or pgAdmin) running on <code class="inline">localhost</code> so you can click through tables, view foreign keys, and test raw SQL queries live? Python has a lightweight package called <code class="inline">sqlite-web</code> that spins up a local HTTP server for any <code class="inline">.db</code> file in one command!</p>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — Seeding &amp; Starting the Local SQLite Web Server</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cmt"># 1. Run our seeder script to create dev_space_buddy.db and populate test rows</span>
+<span class="prompt">$</span> python -m scripts.seed_local_db
+<span class="out">🛠️  Connecting to local SQLite database: dev_space_buddy.db
+   [NEW ROW] User 1001 -&gt; 1995-06-16 (Neutron Star Earth)
+   [NEW ROW] User 1001 -&gt; 2024-05-12 (Aurora over Caucasus)
+   [NEW ROW] User 1002 -&gt; 2023-10-14 (Ring of Fire Eclipse)
+
+📊 Live INNER JOIN Query (saved_apods ⋈ users):
+--------------------------------------------------------------------
+User         | Handle         | APOD Date  | Title
+--------------------------------------------------------------------
+Nino         | @astro_nino    | 2023-10-14 | Ring of Fire Eclipse
+alex       | @alex_131    | 2024-05-12 | Aurora over Caucasus
+alex       | @alex_131    | 1995-06-16 | Neutron Star Earth
+--------------------------------------------------------------------</span>
+
+<span class="cmt"># 2. Install and launch the local SQLite Web Server on port 8080</span>
+<span class="prompt">$</span> pip install sqlite-web
+<span class="prompt">$</span> sqlite_web dev_space_buddy.db --port 8080
+<span class="out"> * Serving Flask app "sqlite_web.sqlite_web"
+ * Running on http://127.0.0.1:8080/ (Press CTRL+C to quit)</span></code></pre>
+      </div>
+
+      <div class="note tip">
+        <span class="note-label">TWO WAYS TO INSPECT YOUR LOCAL DATABASE</span>
+        <p>• <strong>Option A (Browser Dashboard):</strong> Keep <code>sqlite_web dev_space_buddy.db --port 8080</code> running in Terminal Tab 1, open <code>http://127.0.0.1:8080</code> in Chrome, and run <code>python main.py</code> in Terminal Tab 2. Every time you click "⭐ Save to Favorites" in Telegram, refresh the browser tab to see the new row!</p>
+        <p>• <strong>Option B (VS Code Extension):</strong> Install the free <strong>"SQLite Viewer"</strong> extension (by Florian Klampfer) in VS Code, then simply click on <code>dev_space_buddy.db</code> in your file explorer to inspect tables without leaving your editor.</p>
+      </div>
+
+      <h3>Step 4: True In-Memory (<code class="inline">:memory:</code>) Testing Architecture</h3>
+      <p>There is one subtle catch with <code class="inline">sqlite3.connect(":memory:")</code>: every time you call <code class="inline">sqlite3.connect(":memory:")</code>, SQLite creates a <strong>brand-new, blank RAM database</strong>—and the moment that connection closes, the RAM database is wiped! If your <code class="inline">DatabaseManager</code> opens a new connection inside every method, <code class="inline">:memory:</code> would forget its tables between <code class="inline">_create_tables()</code> and <code class="inline">register_user()</code>.</p>
+      <p>To support both <strong>disk files</strong> and <strong>persistent <code class="inline">:memory:</code> unit testing</strong>, we keep a single shared connection alive when <code class="inline">db_path == ":memory:"</code>:</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">database/db_manager.py (Supporting Both Disk &amp; :memory: Mode)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">class</span> <span class="fn">DatabaseManager</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="vr">self</span>, <span class="vr">db_path</span>: <span class="fn">str</span> = <span class="str">"space_buddy.db"</span>):
+        <span class="vr">self</span>.db_path = <span class="vr">db_path</span>
+        <span class="cm"># If using ":memory:" for fast unit tests, keep one persistent connection open</span>
+        <span class="vr">self</span>._memory_conn: sqlite3.Connection | <span class="kw">None</span> = <span class="kw">None</span>
+        <span class="kw">if</span> <span class="vr">self</span>.db_path == <span class="str">":memory:"</span>:
+            <span class="vr">self</span>._memory_conn = <span class="vr">self</span>.<span class="fn">_create_raw_connection</span>()
+        <span class="vr">self</span>.<span class="fn">_create_tables</span>()
+
+    <span class="kw">def</span> <span class="fn">_create_raw_connection</span>(<span class="vr">self</span>) -&gt; sqlite3.<span class="fn">Connection</span>:
+        <span class="vr">conn</span> = sqlite3.<span class="fn">connect</span>(<span class="vr">self</span>.db_path, timeout=<span class="nm">10.0</span>)
+        <span class="vr">conn</span>.row_factory = sqlite3.Row
+        <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"PRAGMA journal_mode = WAL;"</span>)
+        <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"PRAGMA foreign_keys = ON;"</span>)
+        <span class="kw">return</span> <span class="vr">conn</span>
+
+    <span class="kw">def</span> <span class="fn">_get_connection</span>(<span class="vr">self</span>) -&gt; sqlite3.<span class="fn">Connection</span>:
+        <span class="kw">if</span> <span class="vr">self</span>._memory_conn <span class="kw">is not</span> <span class="kw">None</span>:
+            <span class="kw">return</span> <span class="vr">self</span>._memory_conn
+        <span class="kw">return</span> <span class="vr">self</span>.<span class="fn">_create_raw_connection</span>()
+
+    <span class="kw">def</span> <span class="fn">close</span>(<span class="vr">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="str">"""Closes the persistent in-memory connection after unit tests finish."""</span>
+        <span class="kw">if</span> <span class="vr">self</span>._memory_conn <span class="kw">is not</span> <span class="kw">None</span>:
+            <span class="vr">self</span>._memory_conn.<span class="fn">close</span>()
+            <span class="vr">self</span>._memory_conn = <span class="kw">None</span></code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Zero-Disk Unit Testing with <code class="inline">DatabaseManager(":memory:")</code></h4>
+        <p>With that upgrade in place, your unit tests in <code class="inline">tests/test_db.py</code> don't even need temporary files on your SSD—they execute 100% in RAM in under 2 milliseconds:</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">tests/test_in_memory_db.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> sqlite3
+<span class="kw">import</span> unittest
+<span class="kw">from</span> database.db_manager <span class="kw">import</span> DatabaseManager
+
+
+<span class="kw">class</span> <span class="fn">TestInMemorySQLite</span>(unittest.<span class="fn">TestCase</span>):
+    <span class="kw">def</span> <span class="fn">setUp</span>(<span class="vr">self</span>):
+        <span class="cm"># Spins up a fresh, isolated RAM database before every single test!</span>
+        <span class="vr">self</span>.db = <span class="fn">DatabaseManager</span>(<span class="str">":memory:"</span>)
+
+    <span class="kw">def</span> <span class="fn">tearDown</span>(<span class="vr">self</span>):
+        <span class="cm"># Destroys the RAM database cleanly after each test</span>
+        <span class="vr">self</span>.db.<span class="fn">close</span>()
+
+    <span class="kw">def</span> <span class="fn">test_foreign_key_blocks_orphan_apod_save</span>(<span class="vr">self</span>):
+        <span class="str">"""Proves PRAGMA foreign_keys = ON blocks saving for an unregistered user."""</span>
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">assertRaises</span>(sqlite3.IntegrityError):
+            <span class="cm"># User 99999 was never registered in the 'users' parent table!</span>
+            <span class="vr">self</span>.db.<span class="fn">save_apod</span>(<span class="nm">99999</span>, <span class="str">"2024-05-12"</span>, <span class="str">"Orphan Photo"</span>, <span class="str">"https://nasa.gov/x.jpg"</span>)
+
+
+<span class="kw">if</span> <span class="vr">__name__</span> == <span class="str">"__main__"</span>:
+    unittest.<span class="fn">main</span>()</code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 3 ===================== -->
+    <section class="waypoint" id="w3">
+      <span class="stamp-num">3</span>
+      <span class="wp-time">Part 3 · DML, CRUD &amp; Security (20 min)</span>
+      <h2>CRUD Operations &amp; SQL Injection Defense</h2>
+      <p class="wp-sub">Writing safe Data Manipulation Language (DML) queries in Python.</p>
+
+      <p>Every database-driven feature in software engineering maps to the four <strong>CRUD</strong> operations:</p>
+      <ul>
+        <li><strong>C — Create:</strong> <code class="inline">INSERT INTO table ...</code> (Registering a user or saving an APOD photo).</li>
+        <li><strong>R — Read:</strong> <code class="inline">SELECT ... FROM table WHERE ...</code> (Fetching a user's saved collection or joining tables).</li>
+        <li><strong>U — Update:</strong> <code class="inline">UPDATE table SET ... WHERE ...</code> (Updating a user's Telegram username if it changed).</li>
+        <li><strong>D — Delete:</strong> <code class="inline">DELETE FROM table WHERE ...</code> (Removing a bookmark).</li>
+      </ul>
+
+      <div class="note watch">
+        <span class="note-label">SECURITY CRITICAL: NEVER USE F-STRINGS IN SQL QUERIES!</span>
+        <p>If you format user input into a SQL string using an f-string, a malicious user can set their Telegram name to <code>Robert'); DROP TABLE users; --</code>. The database will execute their text as a command and destroy your tables! This attack is called <strong>SQL Injection (SQLi)</strong>.</p>
+        <p>Always use <strong>Parameterized Queries</strong> with <code class="inline">?</code> placeholders and pass variables as a separate tuple: <code>cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))</code>.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">sql_injection_comparison.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cm"># ❌ VULNERABLE TO SQL INJECTION (Never write this!)</span>
+<span class="vr">cursor</span>.<span class="fn">execute</span>(<span class="kw">f</span><span class="str">"SELECT * FROM saved_apods WHERE apod_date = '{user_input}'"</span>)
+
+<span class="cm"># ✅ SAFE PARAMETERIZED QUERY (The SQLite driver neutralizes any malicious symbols)</span>
+<span class="cm"># Note the trailing comma in (user_input,) to make a 1-element Python tuple!</span>
+<span class="vr">cursor</span>.<span class="fn">execute</span>(<span class="str">"SELECT * FROM saved_apods WHERE apod_date = ?"</span>, (<span class="vr">user_input</span>,))</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Implementing Full CRUD + Relational JOIN in <code class="inline">DatabaseManager</code></h4>
+        <p>Let's add methods to register users (<code class="inline">INSERT OR UPDATE</code>), bookmark APODs (<code class="inline">INSERT OR IGNORE</code>), fetch a user's saved gallery (<code class="inline">SELECT</code>), delete bookmarks (<code class="inline">DELETE</code>), and run an analytical <code class="inline">INNER JOIN</code> across both tables.</p>
+      </div>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">database/db_manager.py (Part 2: CRUD &amp; JOIN Methods)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>    <span class="kw">def</span> <span class="fn">register_user</span>(<span class="vr">self</span>, <span class="vr">user_id</span>: <span class="fn">int</span>, <span class="vr">username</span>: <span class="fn">str</span>, <span class="vr">first_name</span>: <span class="fn">str</span>) -&gt; <span class="kw">None</span>:
+        <span class="str">"""Inserts a new user or updates their username if they already exist."""</span>
+        <span class="vr">now</span> = datetime.<span class="fn">now</span>(timezone.utc).<span class="fn">strftime</span>(<span class="str">"%Y-%m-%d %H:%M:%S"</span>)
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"""
+                INSERT INTO users (user_id, username, first_name, joined_at)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(user_id) DO UPDATE SET
+                    username = excluded.username,
+                    first_name = excluded.first_name;
+            """</span>, (<span class="vr">user_id</span>, <span class="vr">username</span> <span class="kw">or</span> <span class="str">"anonymous"</span>, <span class="vr">first_name</span>, <span class="vr">now</span>))
+
+    <span class="kw">def</span> <span class="fn">save_apod</span>(<span class="vr">self</span>, <span class="vr">user_id</span>: <span class="fn">int</span>, <span class="vr">apod_date</span>: <span class="fn">str</span>, <span class="vr">title</span>: <span class="fn">str</span>, <span class="vr">media_url</span>: <span class="fn">str</span>) -&gt; <span class="fn">bool</span>:
+        <span class="str">"""Saves an APOD to favorites. Returns True if newly saved, False if duplicate."""</span>
+        <span class="vr">now</span> = datetime.<span class="fn">now</span>(timezone.utc).<span class="fn">strftime</span>(<span class="str">"%Y-%m-%d %H:%M:%S"</span>)
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">cursor</span> = <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"""
+                INSERT OR IGNORE INTO saved_apods (user_id, apod_date, title, media_url, saved_at)
+                VALUES (?, ?, ?, ?, ?);
+            """</span>, (<span class="vr">user_id</span>, <span class="vr">apod_date</span>, <span class="vr">title</span>, <span class="vr">media_url</span>, <span class="vr">now</span>))
+            <span class="cm"># rowcount is 1 if a new row was inserted, or 0 if ignored due to duplicate</span>
+            <span class="kw">return</span> <span class="vr">cursor</span>.rowcount &gt; <span class="nm">0</span>
+
+    <span class="kw">def</span> <span class="fn">get_user_favorites</span>(<span class="vr">self</span>, <span class="vr">user_id</span>: <span class="fn">int</span>, <span class="vr">limit</span>: <span class="fn">int</span> = <span class="nm">5</span>) -&gt; <span class="fn">list</span>[<span class="fn">dict</span>]:
+        <span class="str">"""Fetches a user's most recently saved APODs as a list of dictionaries."""</span>
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">cursor</span> = <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"""
+                SELECT id, apod_date, title, media_url, saved_at
+                FROM saved_apods
+                WHERE user_id = ?
+                ORDER BY apod_date DESC
+                LIMIT ?;
+            """</span>, (<span class="vr">user_id</span>, <span class="vr">limit</span>))
+            <span class="kw">return</span> [<span class="fn">dict</span>(<span class="vr">row</span>) <span class="kw">for</span> <span class="vr">row</span> <span class="kw">in</span> <span class="vr">cursor</span>.<span class="fn">fetchall</span>()]
+
+    <span class="kw">def</span> <span class="fn">delete_favorite</span>(<span class="vr">self</span>, <span class="vr">user_id</span>: <span class="fn">int</span>, <span class="vr">apod_date</span>: <span class="fn">str</span>) -&gt; <span class="fn">bool</span>:
+        <span class="str">"""Deletes a specific APOD date from a user's favorites."""</span>
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">cursor</span> = <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"""
+                DELETE FROM saved_apods
+                WHERE user_id = ? AND apod_date = ?;
+            """</span>, (<span class="vr">user_id</span>, <span class="vr">apod_date</span>))
+            <span class="kw">return</span> <span class="vr">cursor</span>.rowcount &gt; <span class="nm">0</span>
+
+    <span class="kw">def</span> <span class="fn">get_recent_community_saves</span>(<span class="vr">self</span>, <span class="vr">limit</span>: <span class="fn">int</span> = <span class="nm">5</span>) -&gt; <span class="fn">list</span>[<span class="fn">dict</span>]:
+        <span class="str">"""Uses an INNER JOIN to combine user names with their saved APOD titles."""</span>
+        <span class="kw">with</span> <span class="vr">self</span>.<span class="fn">_get_connection</span>() <span class="kw">as</span> <span class="vr">conn</span>:
+            <span class="vr">cursor</span> = <span class="vr">conn</span>.<span class="fn">execute</span>(<span class="str">"""
+                SELECT u.first_name, u.username, s.apod_date, s.title
+                FROM saved_apods s
+                INNER JOIN users u ON s.user_id = u.user_id
+                ORDER BY s.saved_at DESC
+                LIMIT ?;
+            """</span>, (<span class="vr">limit</span>,))
+            <span class="kw">return</span> [<span class="fn">dict</span>(<span class="vr">row</span>) <span class="kw">for</span> <span class="vr">row</span> <span class="kw">in</span> <span class="vr">cursor</span>.<span class="fn">fetchall</span>()]</code></pre>
+      </div>
+
+      <p>Let's test our <code class="inline">DatabaseManager</code> directly in the terminal before hooking it up to Telegram:</p>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — Testing DatabaseManager</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="prompt">$</span> python -c "
+from database.db_manager import DatabaseManager
+db = DatabaseManager()
+db.register_user(101, 'alex_131', 'alex')
+db.save_apod(101, '2024-05-12', 'Aurora over Georgia', 'https://apod.nasa.gov/aurora.jpg')
+print(db.get_recent_community_saves())
+"
+<span class="out">[{'first_name': 'alex', 'username': 'alex_131', 'apod_date': '2024-05-12', 'title': 'Aurora over Georgia'}]</span></code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 4 ===================== -->
+    <section class="waypoint" id="w4">
+      <span class="stamp-num">4</span>
+      <span class="wp-time">Part 4 · Bot Feature Upgrade (20 min)</span>
+      <h2>The APOD Time Machine &amp; Inline Buttons</h2>
+      <p class="wp-sub">Adding historical date validation in <code class="inline">nasa_service.py</code> and interactive Telegram buttons.</p>
+
+      <p>One of our key goals for <strong>Space_Buddy-Bot</strong> is allowing users to explore astronomy pictures from any date in history (for example, their birthday: <code class="inline">/apod 2005-08-19</code>) and bookmarking them with a single tap.</p>
+
+      <h3>Step A: Validating APOD Dates in <code class="inline">services/nasa_service.py</code></h3>
+      <p>NASA's APOD archive launched on <strong>June 16, 1995</strong> (<code class="inline">1995-06-16</code>). If a user requests a date before that, or a date in the future, we should catch it cleanly in Python before wasting an API request.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">services/nasa_service.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">from</span> datetime <span class="kw">import</span> date, datetime
+<span class="kw">import</span> requests
+<span class="kw">from</span> config <span class="kw">import</span> NASA_API_KEY
+
+<span class="vr">APOD_FIRST_DATE</span> = <span class="fn">date</span>(<span class="nm">1995</span>, <span class="nm">6</span>, <span class="nm">16</span>)
+
+
+<span class="kw">def</span> <span class="fn">validate_apod_date</span>(<span class="vr">date_str</span>: <span class="fn">str</span>) -&gt; <span class="fn">tuple</span>[<span class="fn">bool</span>, <span class="fn">str</span>]:
+    <span class="str">"""
+    Validates a YYYY-MM-DD string against NASA APOD archive bounds.
+    Returns (is_valid, clean_date_or_error_message).
+    """</span>
+    <span class="kw">try</span>:
+        <span class="vr">parsed_date</span> = datetime.<span class="fn">strptime</span>(<span class="vr">date_str</span>.<span class="fn">strip</span>(), <span class="str">"%Y-%m-%d"</span>).<span class="fn">date</span>()
+    <span class="kw">except</span> <span class="fn">ValueError</span>:
+        <span class="kw">return</span> <span class="kw">False</span>, <span class="str">"⚠️ Invalid format! Please use YYYY-MM-DD (e.g., `/apod 2024-05-12`)."</span>
+
+    <span class="vr">today</span> = date.<span class="fn">today</span>()
+    <span class="kw">if</span> <span class="vr">parsed_date</span> &lt; <span class="vr">APOD_FIRST_DATE</span>:
+        <span class="kw">return</span> <span class="kw">False</span>, <span class="str">"🔭 NASA's APOD archive started on 1995-06-16! Pick a later date."</span>
+    <span class="kw">if</span> <span class="vr">parsed_date</span> &gt; <span class="vr">today</span>:
+        <span class="kw">return</span> <span class="kw">False</span>, <span class="str">"🚀 Even NASA can't photograph the future yet! Pick today or earlier."</span>
+
+    <span class="kw">return</span> <span class="kw">True</span>, <span class="vr">parsed_date</span>.<span class="fn">isoformat</span>()
+
+
+<span class="kw">def</span> <span class="fn">fetch_apod</span>(<span class="vr">apod_date</span>: <span class="fn">str</span> | <span class="kw">None</span> = <span class="kw">None</span>) -&gt; <span class="fn">dict</span>:
+    <span class="str">"""Fetches APOD data from NASA API for today or a specific YYYY-MM-DD date."""</span>
+    <span class="vr">url</span> = <span class="str">"https://api.nasa.gov/planetary/apod"</span>
+    <span class="vr">params</span> = {<span class="str">"api_key"</span>: <span class="vr">NASA_API_KEY</span>}
+    <span class="kw">if</span> <span class="vr">apod_date</span>:
+        <span class="vr">params</span>[<span class="str">"date"</span>] = <span class="vr">apod_date</span>
+
+    <span class="vr">response</span> = requests.<span class="fn">get</span>(<span class="vr">url</span>, params=<span class="vr">params</span>, timeout=<span class="nm">10</span>)
+    <span class="vr">response</span>.<span class="fn">raise_for_status</span>()
+    <span class="kw">return</span> <span class="vr">response</span>.<span class="fn">json</span>()</code></pre>
+      </div>
+
+      <h3>Step B: Connecting Inline Buttons to SQLite in <code class="inline">handlers/apod_handler.py</code></h3>
+      <p>Telegram's <code class="inline">InlineKeyboardMarkup</code> lets us attach clickable buttons directly beneath a photo message. Because Telegram limits <code class="inline">callback_data</code> to 64 bytes, we pass a compact string like <code class="inline">"save_apod:2024-05-12"</code> and handle the click in a callback query handler.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">handlers/apod_handler.py</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">from</span> telebot <span class="kw">import</span> TeleBot
+<span class="kw">from</span> telebot.types <span class="kw">import</span> InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
+<span class="kw">from</span> services.nasa_service <span class="kw">import</span> validate_apod_date, fetch_apod
+<span class="kw">from</span> database.db_manager <span class="kw">import</span> DatabaseManager
+
+
+<span class="kw">def</span> <span class="fn">register_apod_handlers</span>(<span class="vr">bot</span>: <span class="fn">TeleBot</span>, <span class="vr">db</span>: <span class="fn">DatabaseManager</span>) -&gt; <span class="kw">None</span>:
+    <span class="str">"""Registers /apod, /favorites, and inline button callback handlers."""</span>
+
+    <span class="kw">@bot.message_handler</span>(commands=[<span class="str">"apod"</span>])
+    <span class="kw">def</span> <span class="fn">handle_apod_command</span>(<span class="vr">message</span>: <span class="fn">Message</span>):
+        <span class="cm"># 1. Automatically register/update the user in SQLite</span>
+        <span class="vr">user</span> = <span class="vr">message</span>.from_user
+        <span class="vr">db</span>.<span class="fn">register_user</span>(<span class="vr">user</span>.id, <span class="vr">user</span>.username, <span class="vr">user</span>.first_name)
+
+        <span class="cm"># 2. Parse optional date argument: "/apod 2024-05-12"</span>
+        <span class="vr">parts</span> = <span class="vr">message</span>.text.<span class="fn">split</span>(maxsplit=<span class="nm">1</span>)
+        <span class="vr">target_date</span> = <span class="kw">None</span>
+
+        <span class="kw">if</span> <span class="fn">len</span>(<span class="vr">parts</span>) == <span class="nm">2</span>:
+            <span class="vr">is_valid</span>, <span class="vr">result</span> = <span class="fn">validate_apod_date</span>(<span class="vr">parts</span>[<span class="nm">1</span>])
+            <span class="kw">if</span> <span class="kw">not</span> <span class="vr">is_valid</span>:
+                <span class="vr">bot</span>.<span class="fn">reply_to</span>(<span class="vr">message</span>, <span class="vr">result</span>, parse_mode=<span class="str">"Markdown"</span>)
+                <span class="kw">return</span>
+            <span class="vr">target_date</span> = <span class="vr">result</span>
+
+        <span class="cm"># 3. Fetch APOD from NASA</span>
+        <span class="vr">apod</span> = <span class="fn">fetch_apod</span>(<span class="vr">target_date</span>)
+        <span class="vr">apod_date</span> = <span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"date"</span>, <span class="str">"Unknown"</span>)
+        <span class="vr">title</span> = <span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"title"</span>, <span class="str">"Untitled"</span>)
+        <span class="vr">url</span> = <span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"url"</span>, <span class="str">""</span>)
+        <span class="vr">explanation</span> = <span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"explanation"</span>, <span class="str">""</span>)[:<span class="nm">600</span>] + <span class="str">"..."</span>
+
+        <span class="cm"># 4. Build Inline Keyboard with a "Save to Favorites" button</span>
+        <span class="vr">markup</span> = <span class="fn">InlineKeyboardMarkup</span>()
+        <span class="vr">save_btn</span> = <span class="fn">InlineKeyboardButton</span>(
+            text=<span class="str">"⭐ Save to Favorites"</span>,
+            callback_data=<span class="kw">f</span><span class="str">"save_apod:{apod_date}"</span>
+        )
+        <span class="vr">markup</span>.<span class="fn">add</span>(<span class="vr">save_btn</span>)
+
+        <span class="vr">caption</span> = <span class="kw">f</span><span class="str">"🌌 *{title}*\n📅 Date: `{apod_date}`\n\n{explanation}"</span>
+        <span class="vr">bot</span>.<span class="fn">send_photo</span>(<span class="vr">message</span>.chat.id, photo=<span class="vr">url</span>, caption=<span class="vr">caption</span>,
+                       parse_mode=<span class="str">"Markdown"</span>, reply_markup=<span class="vr">markup</span>)
+
+    <span class="kw">@bot.callback_query_handler</span>(func=<span class="kw">lambda</span> <span class="vr">call</span>: <span class="vr">call</span>.data.<span class="fn">startswith</span>(<span class="str">"save_apod:"</span>))
+    <span class="kw">def</span> <span class="fn">handle_save_callback</span>(<span class="vr">call</span>: <span class="fn">CallbackQuery</span>):
+        <span class="vr">apod_date</span> = <span class="vr">call</span>.data.<span class="fn">split</span>(<span class="str">":"</span>, <span class="nm">1</span>)[<span class="nm">1</span>]
+        <span class="vr">user</span> = <span class="vr">call</span>.from_user
+        <span class="vr">db</span>.<span class="fn">register_user</span>(<span class="vr">user</span>.id, <span class="vr">user</span>.username, <span class="vr">user</span>.first_name)
+
+        <span class="cm"># Fetch metadata and persist to SQLite</span>
+        <span class="vr">apod</span> = <span class="fn">fetch_apod</span>(<span class="vr">apod_date</span>)
+        <span class="vr">was_inserted</span> = <span class="vr">db</span>.<span class="fn">save_apod</span>(
+            user_id=<span class="vr">user</span>.id,
+            apod_date=<span class="vr">apod_date</span>,
+            title=<span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"title"</span>, <span class="str">"Untitled"</span>),
+            media_url=<span class="vr">apod</span>.<span class="fn">get</span>(<span class="str">"url"</span>, <span class="str">""</span>)
+        )
+
+        <span class="kw">if</span> <span class="vr">was_inserted</span>:
+            <span class="vr">bot</span>.<span class="fn">answer_callback_query</span>(<span class="vr">call</span>.id, <span class="str">"✅ Saved to your SQLite Favorites!"</span>)
+        <span class="kw">else</span>:
+            <span class="vr">bot</span>.<span class="fn">answer_callback_query</span>(<span class="vr">call</span>.id, <span class="str">"ℹ️ Already in your Favorites!"</span>)</code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== WAYPOINT 5 ===================== -->
+    <section class="waypoint" id="w5">
+      <span class="stamp-num">5</span>
+      <span class="wp-time">Part 5 · Cloud Deployment (15 min)</span>
+      <h2>Preparing for 24/7 Cloud Hosting</h2>
+      <p class="wp-sub">Packaging dependencies, protecting <code class="inline">.gitignore</code>, and running resilient polling in the cloud.</p>
+
+      <p>Right now, if you close VS Code or shut down your computer, <strong>Space_Buddy-Bot</strong> goes offline. To keep it running 24/7, we deploy our repository to a cloud Linux container (such as <strong>PythonAnywhere</strong>, <strong>Railway</strong>, or <strong>Render</strong>).</p>
+
+      <h3>The 3 Golden Rules of Cloud Bot Deployment</h3>
+      <ul>
+        <li><strong>1. Freeze Your Dependencies (<code class="inline">requirements.txt</code>):</strong> The cloud server starts as a blank Linux machine. It reads <code class="inline">requirements.txt</code> to know which packages (<code class="inline">pyTelegramBotAPI</code>, <code class="inline">requests</code>, <code class="inline">python-dotenv</code>) to install.</li>
+        <li><strong>2. Never Commit <code class="inline">.db</code> or <code class="inline">.env</code> Files to GitHub:</strong> Your <code class="inline">space_buddy.db</code> file contains live user data, and <code class="inline">.env</code> contains secret keys. Both belong in <code class="inline">.gitignore</code>! Your Python code will automatically create <code class="inline">space_buddy.db</code> on the server the first time <code class="inline">DatabaseManager()</code> runs.</li>
+        <li><strong>3. Resilient Polling &amp; Structured Logging:</strong> Cloud networks occasionally drop connections for a second. We wrap <code class="inline">bot.infinity_polling()</code> with <code class="inline">logging</code> so we can inspect server logs anytime.</li>
+      </ul>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">main.py (Production Cloud Entry Point)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> logging
+<span class="kw">from</span> telebot <span class="kw">import</span> TeleBot
+<span class="kw">from</span> config <span class="kw">import</span> TELEGRAM_BOT_TOKEN
+<span class="kw">from</span> database.db_manager <span class="kw">import</span> DatabaseManager
+<span class="kw">from</span> handlers.apod_handler <span class="kw">import</span> register_apod_handlers
+
+<span class="cm"># Configure structured console logging for cloud server logs</span>
+logging.<span class="fn">basicConfig</span>(
+    level=logging.INFO,
+    format=<span class="str">"%(asctime)s [%(levelname)s] %(name)s: %(message)s"</span>
+)
+<span class="vr">logger</span> = logging.<span class="fn">getLogger</span>(<span class="str">"SpaceBuddy"</span>)
+
+
+<span class="kw">def</span> <span class="fn">main</span>() -&gt; <span class="kw">None</span>:
+    <span class="vr">logger</span>.<span class="fn">info</span>(<span class="str">"Initializing SQLite DatabaseManager..."</span>)
+    <span class="vr">db</span> = <span class="fn">DatabaseManager</span>(<span class="str">"space_buddy.db"</span>)
+
+    <span class="vr">bot</span> = <span class="fn">TeleBot</span>(<span class="vr">TELEGRAM_BOT_TOKEN</span>)
+    <span class="fn">register_apod_handlers</span>(<span class="vr">bot</span>, <span class="vr">db</span>)
+
+    <span class="vr">logger</span>.<span class="fn">info</span>(<span class="str">"🚀 Space_Buddy-Bot is online and polling 24/7..."</span>)
+    <span class="vr">bot</span>.<span class="fn">infinity_polling</span>(timeout=<span class="nm">20</span>, long_polling_timeout=<span class="nm">10</span>)
+
+
+<span class="kw">if</span> <span class="vr">__name__</span> == <span class="str">"__main__"</span>:
+    <span class="fn">main</span>()</code></pre>
+      </div>
+
+      <div class="term">
+        <div class="tabbar"><div class="dots"><span></span><span></span><span></span></div><span class="termtitle">Terminal — Generating requirements.txt &amp; Checking .gitignore</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="cmt"># 1. Ensure .db files are ignored by Git</span>
+<span class="prompt">$</span> echo "*.db" &gt;&gt; .gitignore
+
+<span class="cmt"># 2. Export exact package versions for the cloud server</span>
+<span class="prompt">$</span> pip freeze &gt; requirements.txt
+
+<span class="cmt"># 3. Verify git status is clean of secrets and .db files</span>
+<span class="prompt">$</span> git status</code></pre>
+      </div>
+    </section>
+
+<!-- ===================== WAYPOINT: 10 AI CO-PILOT PROMPTS FOR SQLITE INTEGRATION & VERIFICATION ===================== -->
+    <section class="waypoint" id="w-prompts">
+      <span class="stamp-num">AI</span>
+      <span class="wp-time">Engineering Co-Pilot · 10 Prompts to Build, Verify &amp; Test SQLite</span>
+      <h2>10 Structured Prompts: Implementing &amp; Auditing SQLite in Space_Buddy-Bot</h2>
+      <p class="wp-sub">Use these 10 step-by-step prompts in Cursor, GitHub Copilot, or ChatGPT/Gemini to scaffold your SQLite layer, wire it into your Telegram bot handlers, and rigorously verify and test the result.</p>
+
+      <div class="note tip">
+        <span class="note-label">HOW TO USE THIS PROMPT PLAYBOOK</span>
+        <p>Don't just ask an AI <em>"add a database to my bot"</em>—vague prompts produce messy, insecure code that breaks your modular package structure. Instead, copy these <strong>10 targeted engineering prompts</strong> in order: <strong>Prompts 1–4</strong> build the database and bot features, <strong>Prompts 5–7</strong> audit security and relational integrity, and <strong>Prompts 8–10</strong> generate automated verification scripts and unit tests.</p>
+      </div>
+
+      <div class="drill-box">
+        <h4>Phase 1: Building &amp; Wiring the SQLite Layer (Prompts 1–4)</h4>
+        <p>Use these first four prompts to create the 3NF schema, CRUD methods, APOD date-selection command, and inline bookmark buttons inside your modular architecture.</p>
+      </div>
+
+      <!-- PROMPT 1 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 1 — Generate 3NF SQLite Schema &amp; DatabaseManager Class</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>I am upgrading my modular Python Telegram bot (`Space_Buddy-Bot`) to use a local `sqlite3` relational database.
+Create `database/db_manager.py` with a `DatabaseManager` class that:
+1. Accepts `db_path: str = "space_buddy.db"` (and supports `":memory:"` by keeping a single persistent connection open when `db_path == ":memory:"`).
+2. Configures every connection with `conn.row_factory = sqlite3.Row`, `PRAGMA foreign_keys = ON;`, and `PRAGMA journal_mode = WAL;` (when not in memory).
+3. Creates two 3NF tables using DDL (`CREATE TABLE IF NOT EXISTS`):
+   - `users`: `user_id INTEGER PRIMARY KEY`, `username TEXT`, `first_name TEXT NOT NULL`, `joined_at TEXT NOT NULL`
+   - `saved_apods`: `id INTEGER PRIMARY KEY AUTOINCREMENT`, `user_id INTEGER NOT NULL`, `apod_date TEXT NOT NULL`, `title TEXT NOT NULL`, `media_url TEXT NOT NULL`, `saved_at TEXT NOT NULL`, with a Foreign Key referencing `users(user_id) ON DELETE CASCADE` and a composite `UNIQUE(user_id, apod_date)` constraint.
+Show me the complete `database/db_manager.py` code with type hints and docstrings.</code></pre>
+      </div>
+
+      <!-- PROMPT 2 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 2 — Implement Parameterized CRUD &amp; INNER JOIN Methods</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Add the following CRUD and analytical methods to my `DatabaseManager` class in `database/db_manager.py`:
+1. `register_user(user_id: int, username: str | None, first_name: str) -> None`: Uses `INSERT INTO users ... ON CONFLICT(user_id) DO UPDATE` so existing users get their username updated without crashing.
+2. `save_apod(user_id: int, apod_date: str, title: str, media_url: str) -> bool`: Uses `INSERT OR IGNORE` and returns `True` if a new row was inserted (`cursor.rowcount > 0`) or `False` if it was a duplicate.
+3. `get_user_favorites(user_id: int, limit: int = 10) -> list[dict]`: Returns the user's saved APODs ordered by `apod_date DESC` as a list of Python dictionaries.
+4. `delete_favorite(user_id: int, apod_date: str) -> bool`: Deletes a specific bookmark and returns `True` if a row was removed.
+5. `get_recent_community_saves(limit: int = 5) -> list[dict]`: Uses an `INNER JOIN` between `saved_apods` and `users` to return `first_name`, `username`, `apod_date`, and `title`.
+Strictly use `?` parameterized placeholders (zero f-strings in SQL).</code></pre>
+      </div>
+
+      <!-- PROMPT 3 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 3 — Wire APOD Date-Selection (/apod YYYY-MM-DD) &amp; Inline Save Button</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Here is my current `services/nasa_service.py` and `handlers/apod_handler.py`.
+Upgrade them so that:
+1. `validate_apod_date(date_str: str) -> tuple[bool, str]` checks that the date is in `YYYY-MM-DD` format and falls between `1995-06-16` (APOD launch date) and today's date.
+2. The `/apod` command accepts an optional date argument (e.g., `/apod 2024-05-12`), registers the user in SQLite via `db.register_user(...)`, and attaches an `InlineKeyboardMarkup` button `"⭐ Save to Favorites"` with `callback_data=f"save_apod:{apod_date}"`.
+3. Add a callback query handler for `"save_apod:"` that saves the APOD into SQLite using `db.save_apod(...)` and shows a popup toast via `bot.answer_callback_query` indicating whether it was newly saved or already in favorites.
+4. Handle `media_type == "video"` gracefully (if NASA returns a YouTube video URL instead of an image, send it with `bot.send_message` instead of `bot.send_photo`).</code></pre>
+      </div>
+
+      <!-- PROMPT 4 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 4 — Add /favorites, /remove_fav &amp; /my_stats Commands</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>In `handlers/apod_handler.py`, add three SQLite-powered commands to my Telegram bot:
+1. `/favorites`: Calls `db.get_user_favorites(message.from_user.id)` and replies with a formatted Markdown list of saved APOD dates and clickable links `[title](media_url)`. If empty, reply with a friendly hint on how to save photos.
+2. `/remove_fav`: Parses a date argument (`/remove_fav 2024-05-12`), calls `db.delete_favorite(user_id, apod_date)`, and confirms whether the bookmark was deleted or not found.
+3. `/my_stats`: Queries SQLite using `SELECT COUNT(*)` to tell the user how many NASA photos they have bookmarked and the date they first joined the bot.</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Phase 2: Checking &amp; Verifying Security, Schema &amp; Edge Cases (Prompts 5–7)</h4>
+        <p>Once your code is written, paste your files alongside these three verification prompts to catch hidden bugs before pushing to GitHub.</p>
+      </div>
+
+      <!-- PROMPT 5 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 5 — Security &amp; SQL Injection (SQLi) Code Audit</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Act as a Senior Backend Security Auditor. Review my `database/db_manager.py` and `handlers/apod_handler.py` files pasted below and verify the following 5 checkpoints:
+1. Are there ANY f-strings, `.format()`, or `%` string interpolations inside `cursor.execute()` or `conn.execute()` that could allow SQL Injection?
+2. Are all single-element parameter tuples properly formatted with a trailing comma `(value,)`?
+3. Is `PRAGMA foreign_keys = ON;` executed on every new SQLite connection so orphan records in `saved_apods` are impossible?
+4. Are database connections properly managed using context managers (`with self._get_connection() as conn:`) so transactions commit or roll back atomically?
+5. Does `callback_data` in the Telegram inline buttons stay strictly under Telegram's 64-byte limit?
+Provide a pass/fail checklist and show exact line fixes for any issues found.</code></pre>
+      </div>
+
+      <!-- PROMPT 6 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 6 — Generate a Local CLI Verification &amp; Inspection Script</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Write a standalone diagnostic script `scripts/verify_sqlite.py` that I can run in my VS Code terminal (`python -m scripts.verify_sqlite`) to verify my database setup without launching the Telegram bot.
+The script should:
+1. Connect to `dev_space_buddy.db` using `DatabaseManager`.
+2. Query `sqlite_master` and `PRAGMA table_info(...)` to print the exact columns and types of `users` and `saved_apods`.
+3. Verify and print the active `PRAGMA foreign_keys` and `PRAGMA journal_mode` values.
+4. Insert 2 test users and 3 test APOD bookmarks, deliberately attempt to insert 1 duplicate bookmark to verify `save_apod()` returns `False`, and print the output of `get_recent_community_saves()` as a clean ASCII table.</code></pre>
+      </div>
+
+      <!-- PROMPT 7 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 7 — Verify Environment Configuration &amp; Git Safety</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Review my `config.py`, `.env.example`, `requirements.txt`, and `.gitignore` files pasted below.
+Verify that:
+1. `load_dotenv()` loads the standard `.env` file and `DATABASE_PATH` defaults cleanly to `"dev_space_buddy.db"` or `"space_buddy.db"`.
+2. `.gitignore` blocks `.env`, `*.env`, `*.db`, `*.db-wal`, `*.db-shm`, `__pycache__/`, and `venv/` so I never leak API keys or SQLite binary files to GitHub.
+3. Give me the exact terminal commands (`git status`, `git diff`) to verify no sensitive or binary `.db` files are staged before I commit.</code></pre>
+      </div>
+
+      <div class="drill-box">
+        <h4>Phase 3: Automated Testing &amp; Stress Verification (Prompts 8–10)</h4>
+        <p>Use these final three prompts to prove your SQLite database and Telegram handlers work offline under every edge case.</p>
+      </div>
+
+      <!-- PROMPT 8 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 8 — Generate Offline Unit Tests Using In-Memory SQLite (:memory:)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Write a complete `unittest` test suite in `tests/test_db.py` that tests `DatabaseManager(":memory:")` completely in RAM without creating files on disk.
+Include 5 test methods:
+1. `test_register_and_update_user`: Verifies registering a user and updating their username via `ON CONFLICT(user_id) DO UPDATE`.
+2. `test_save_apod_and_block_duplicate`: Verifies the first save returns `True`, saving the exact same `(user_id, apod_date)` a second time returns `False`, and total saved count remains 1.
+3. `test_foreign_key_blocks_unregistered_user`: Uses `self.assertRaises(sqlite3.IntegrityError)` to prove saving an APOD for a non-existent `user_id` is blocked by `PRAGMA foreign_keys = ON`.
+4. `test_delete_favorite`: Verifies deleting an existing bookmark returns `True` and deleting a non-existent bookmark returns `False`.
+5. `test_inner_join_community_saves`: Verifies `get_recent_community_saves()` accurately joins `first_name` and `username` from `users` with `title` and `apod_date` from `saved_apods`.</code></pre>
+      </div>
+
+      <!-- PROMPT 9 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 9 — Mock Telegram Bot &amp; NASA API Interaction with SQLite</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>Using `unittest` and `unittest.mock.patch`, write an integration test in `tests/test_handlers.py` that verifies my Telegram bot's `"save_apod:2024-05-12"` callback flow offline:
+1. Use `DatabaseManager(":memory:")` for the database.
+2. Mock `services.nasa_service.requests.get` (or `fetch_apod`) to return a fake NASA APOD dictionary (`{"date": "2024-05-12", "title": "Mock Nebula", "url": "https://nasa.gov/nebula.jpg"}`).
+3. Create a `MagicMock()` simulating a Telegram `CallbackQuery` with `call.data = "save_apod:2024-05-12"` and `call.from_user.id = 42`.
+4. Trigger the callback handler and assert that the photo is stored in the `:memory:` SQLite database (`len(db.get_user_favorites(42)) == 1`) and `bot.answer_callback_query` was called once with the success message.</code></pre>
+      </div>
+
+      <!-- PROMPT 10 -->
+      <div class="editor">
+        <div class="tabbar"><span class="filename">Prompt 10 — Pre-PR Final Readiness &amp; Edge-Case Verification</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code>I am ready to open a Pull Request from my `feature/sqlite-memory` branch into `main` for `Space_Buddy-Bot`.
+Here is the output of `python -m unittest discover -s tests -v` and my current `git status`.
+1. Check if any edge cases are still untested (such as invalid dates like `/apod 1985-01-01`, future dates, malformed strings like `/apod tomorrow`, or users with `username = None` in Telegram).
+2. Generate a clean Pull Request title, Conventional Commit messages (`feat:`, `test:`, `docs:`), and a Markdown PR description summarizing the 3NF SQLite schema, CRUD operations, and unit test coverage for my mentor's code review.</code></pre>
+      </div>
+
+      <div class="note win">
+        <span class="note-label">PRO WORKFLOW TIP: VERIFY IN THE TERMINAL AFTER PROMPT 8 &amp; 9</span>
+        <p>After running Prompts 8 and 9, always verify the generated tests yourself by running <code>python -m unittest discover -s tests -v</code> in your VS Code terminal. Seeing <strong>OK</strong> across all database and mock tests proves your SQLite implementation is production-ready!</p>
+      </div>
+    </section>
+
+
+    <!-- ===================== QUIZ ===================== -->
+    <section class="waypoint" id="quiz">
+      <span class="stamp-num">Q</span>
+      <span class="wp-time">Interactive Recap</span>
+      <h2>10-Question Knowledge Check</h2>
+      <p class="wp-sub">Test your mastery of Relational Database Theory, SQLite, Security, and Bot Persistence.</p>
+
+      <div class="drill-box" id="quiz-wrapper">
+          <p><b>Exercise:</b> Click the correct answer for each question below.</p>
+          <div id="q-container"></div>
+          <div id="score-display" class="quiz-score" style="display: none;">🎉 Final Score: <span id="score-val">0</span> / 10</div>
+      </div>
+    </section>
+
+  </div><!-- /.trail -->
+
+  <div class="divider"><span>SCAFFOLDED HOMEWORK · 1.5–2 HOURS</span></div>
+
+  <!-- ===================== HOMEWORK ===================== -->
+  <div class="dossier" id="homework">
+    <h2>SQLite Persistence, APOD Time Machine &amp; In-Memory Unit Tests</h2>
+    <p class="meta">Target: Space_Buddy-Bot Repository &nbsp;·&nbsp; Branch: feature/sqlite-memory &nbsp;·&nbsp; Estimated time: 90–120 minutes</p>
+
+    <p>In this assignment, you will upgrade <code class="inline">Space_Buddy-Bot</code> with a normalized 3NF SQLite database, add the <code class="inline">/apod [YYYY-MM-DD]</code> and <code class="inline">/favorites</code> commands, and write fast offline unit tests using SQLite's <code class="inline">:memory:</code> engine.</p>
+
+    <div class="step">
+      <h3><span class="step-num">1</span>Create Feature Branch &amp; Build <code class="inline">database/db_manager.py</code></h3>
+      <p>Create a new Git branch <code class="inline">git checkout -b feature/sqlite-memory</code>. Create the <code class="inline">database/</code> package with <code class="inline">__init__.py</code> and <code class="inline">db_manager.py</code> implementing the <code class="inline">users</code> and <code class="inline">saved_apods</code> tables from Waypoint 2 &amp; 3.</p>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">2</span>Implement <code class="inline">/favorites</code> and <code class="inline">/remove_fav [YYYY-MM-DD]</code></h3>
+      <p>In <code class="inline">handlers/apod_handler.py</code>, add a <code class="inline">/favorites</code> command that queries <code class="inline">db.get_user_favorites(message.from_user.id)</code> and formats a numbered list with clickable links to each saved NASA photo. Add <code class="inline">/remove_fav 2024-05-12</code> so users can delete a bookmark.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">handlers/apod_handler.py (Homework Scaffolding)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">@bot.message_handler</span>(commands=[<span class="str">"favorites"</span>])
+<span class="kw">def</span> <span class="fn">handle_favorites</span>(<span class="vr">message</span>: <span class="fn">Message</span>):
+    <span class="vr">favs</span> = <span class="vr">db</span>.<span class="fn">get_user_favorites</span>(<span class="vr">message</span>.from_user.id, limit=<span class="nm">10</span>)
+    <span class="kw">if</span> <span class="kw">not</span> <span class="vr">favs</span>:
+        <span class="vr">bot</span>.<span class="fn">reply_to</span>(<span class="vr">message</span>, <span class="str">"📭 Your favorites gallery is empty! Use `/apod` and click ⭐ Save."</span>)
+        <span class="kw">return</span>
+
+    <span class="vr">lines</span> = [<span class="str">"⭐ *Your Saved NASA APOD Gallery:*\n"</span>]
+    <span class="kw">for</span> <span class="vr">idx</span>, <span class="vr">item</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="vr">favs</span>, start=<span class="nm">1</span>):
+        <span class="vr">lines</span>.<span class="fn">append</span>(<span class="kw">f</span><span class="str">"{idx}. `{item['apod_date']}` — [{item['title']}]({item['media_url']})"</span>)
+
+    <span class="vr">bot</span>.<span class="fn">reply_to</span>(<span class="vr">message</span>, <span class="str">"\n"</span>.<span class="fn">join</span>(<span class="vr">lines</span>), parse_mode=<span class="str">"Markdown"</span>)</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">3</span>Write Fast Offline Unit Tests with <code class="inline">:memory:</code> SQLite</h3>
+      <p>Professional engineers test database logic without polluting their real <code class="inline">space_buddy.db</code> file. Complete <code class="inline">tests/test_db.py</code> using a temporary file or in-memory database to verify CRUD and duplicate prevention.</p>
+
+      <div class="editor">
+        <div class="tabbar"><span class="filename">tests/test_db.py (Scaffolding)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><code><span class="kw">import</span> os
+<span class="kw">import</span> tempfile
+<span class="kw">import</span> unittest
+<span class="kw">from</span> database.db_manager <span class="kw">import</span> DatabaseManager
+<span class="kw">from</span> services.nasa_service <span class="kw">import</span> validate_apod_date
+
+
+<span class="kw">class</span> <span class="fn">TestDatabaseAndValidation</span>(unittest.<span class="fn">TestCase</span>):
+    <span class="kw">def</span> <span class="fn">setUp</span>(<span class="vr">self</span>):
+        <span class="cm"># Create a fresh temporary database file before each test</span>
+        <span class="vr">self</span>.temp_db = tempfile.<span class="fn">NamedTemporaryFile</span>(suffix=<span class="str">".db"</span>, delete=<span class="kw">False</span>)
+        <span class="vr">self</span>.temp_db.<span class="fn">close</span>()
+        <span class="vr">self</span>.db = <span class="fn">DatabaseManager</span>(<span class="vr">self</span>.temp_db.name)
+
+    <span class="kw">def</span> <span class="fn">tearDown</span>(<span class="vr">self</span>):
+        <span class="cm"># Clean up the temporary database file after each test</span>
+        <span class="kw">if</span> os.path.<span class="fn">exists</span>(<span class="vr">self</span>.temp_db.name):
+            os.<span class="fn">remove</span>(<span class="vr">self</span>.temp_db.name)
+
+    <span class="kw">def</span> <span class="fn">test_save_and_prevent_duplicate_apod</span>(<span class="vr">self</span>):
+        <span class="vr">self</span>.db.<span class="fn">register_user</span>(<span class="nm">777</span>, <span class="str">"alex"</span>, <span class="str">"alex"</span>)
+        <span class="vr">first_save</span> = <span class="vr">self</span>.db.<span class="fn">save_apod</span>(<span class="nm">777</span>, <span class="str">"2024-05-12"</span>, <span class="str">"Nebula"</span>, <span class="str">"https://nasa.gov/1.jpg"</span>)
+        <span class="vr">second_save</span> = <span class="vr">self</span>.db.<span class="fn">save_apod</span>(<span class="nm">777</span>, <span class="str">"2024-05-12"</span>, <span class="str">"Nebula"</span>, <span class="str">"https://nasa.gov/1.jpg"</span>)
+
+        <span class="vr">self</span>.<span class="fn">assertTrue</span>(<span class="vr">first_save</span>, <span class="str">"First save should return True"</span>)
+        <span class="vr">self</span>.<span class="fn">assertFalse</span>(<span class="vr">second_save</span>, <span class="str">"Duplicate save of same date should return False"</span>)
+        <span class="vr">self</span>.<span class="fn">assertEqual</span>(<span class="fn">len</span>(<span class="vr">self</span>.db.<span class="fn">get_user_favorites</span>(<span class="nm">777</span>)), <span class="nm">1</span>)
+
+    <span class="kw">def</span> <span class="fn">test_apod_date_validation</span>(<span class="vr">self</span>):
+        <span class="vr">ok</span>, <span class="vr">_</span> = <span class="fn">validate_apod_date</span>(<span class="str">"2020-01-15"</span>)
+        <span class="vr">too_old</span>, <span class="vr">_</span> = <span class="fn">validate_apod_date</span>(<span class="str">"1990-01-01"</span>)
+        <span class="vr">self</span>.<span class="fn">assertTrue</span>(<span class="vr">ok</span>)
+        <span class="vr">self</span>.<span class="fn">assertFalse</span>(<span class="vr">too_old</span>)
+
+
+<span class="kw">if</span> <span class="vr">__name__</span> == <span class="str">"__main__"</span>:
+    unittest.<span class="fn">main</span>()</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3><span class="step-num">4</span>Push Branch &amp; Open a Pull Request</h3>
+      <p>Run <code class="inline">python -m unittest discover tests</code> to verify all tests pass. Ensure <code class="inline">*.db</code> is in <code class="inline">.gitignore</code>, generate <code class="inline">requirements.txt</code>, push <code class="inline">feature/sqlite-memory</code> to GitHub, and open a Pull Request for review!</p>
+    </div>
+
+  </div>
+
+  <div class="closing">
+    <h2>Your bot now remembers.</h2>
+    <p>By replacing volatile memory and flat files with a normalized 3NF SQLite database, you have crossed the threshold from simple scripting into real backend engineering. In Lesson 10, we will explore advanced SQL analytics, aggregations, and scheduled automated digests.</p>
+  </div>
+
+</div><!-- /.wrap -->
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- QUIZ SCRIPT -->
+<script>
+const qData = [
+  { q: "1. Which of the following is a major limitation of storing multi-user bot data in a flat JSON file?", opts: ["JSON files cannot store strings", "Race conditions when two users save at the same time and O(N) full-file scans", "Python does not have a built-in json module", "JSON files automatically delete themselves on restart"], ans: 1 },
+  { q: "2. In Relational Database terminology, what are a 'Tuple' and an 'Attribute'?", opts: ["A Tuple is a database file; an Attribute is a SQL query", "A Tuple is a Row (record); an Attribute is a Column (field)", "A Tuple is a Primary Key; an Attribute is a Foreign Key", "A Tuple is a Table; an Attribute is an Index"], ans: 1 },
+  { q: "3. What is the role of a Foreign Key (FK) and Referential Integrity?", opts: ["It encrypts the database password", "It links a child row to a valid Primary Key in a parent table and prevents orphan records", "It sorts the table alphabetically", "It converts SQL tables into JSON files"], ans: 1 },
+  { q: "4. Why did we separate 'users' and 'saved_apods' into two tables instead of putting 'username' inside every saved_apods row?", opts: ["Because SQLite only allows 3 columns per table", "To achieve 3NF (Third Normal Form) and eliminate data redundancy and update anomalies", "To make queries run slower", "Because TEXT columns cannot be stored with INTEGER columns"], ans: 1 },
+  { q: "5. Which SQL category do CREATE TABLE, ALTER TABLE, and DROP TABLE belong to?", opts: ["DML (Data Manipulation Language)", "DDL (Data Definition Language)", "HTML (HyperText Markup Language)", "JSON (JavaScript Object Notation)"], ans: 1 },
+  { q: "6. Why must you NEVER use Python f-strings to insert user input directly into a SQL query string?", opts: ["f-strings are syntax errors in Python 3", "It exposes the database to SQL Injection (SQLi) attacks where user input executes as destructive SQL commands", "SQLite only accepts uppercase strings", "f-strings slow down network requests"], ans: 1 },
+  { q: "7. Which syntax correctly executes a safe parameterized query in Python's sqlite3?", opts: ["cursor.execute(f'SELECT * FROM users WHERE user_id = {uid}')", "cursor.execute('SELECT * FROM users WHERE user_id = ?', (uid,))", "cursor.execute('SELECT * FROM users WHERE user_id = %s' % uid)", "cursor.query('users', uid)"], ans: 1 },
+  { q: "8. What does the constraint UNIQUE (user_id, apod_date) on the saved_apods table enforce?", opts: ["Only one user in the entire world can save a given APOD date", "A user can only save one photo in their lifetime", "The same user cannot save the exact same APOD date more than once, though different users can save that date", "Every APOD date must be today's date"], ans: 2 },
+  { q: "9. Why is NASA's APOD date validator checking that the requested date is >= 1995-06-16?", opts: ["Python's datetime module cannot represent dates before 1995", "June 16, 1995 is the launch date of NASA's first APOD entry", "Telegram bots were invented in 1995", "SQLite cannot store dates from the 1980s"], ans: 1 },
+  { q: "10. Should you commit your live 'space_buddy.db' file to your public GitHub repository?", opts: ["Yes, so everyone can read your users' private IDs", "No, '*.db' should be added to .gitignore; the database file is generated automatically by DDL on the server", "Yes, GitHub requires a .db file to run unit tests", "Only on Fridays"], ans: 1 }
+];
+
+let score = 0;
+let answered = 0;
+const qContainer = document.getElementById('q-container');
+const scoreDisplay = document.getElementById('score-display');
+const scoreVal = document.getElementById('score-val');
+
+qData.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.innerHTML = `<b>${item.q}</b><div class="quiz-opts" id="opts-${index}"></div>`;
+    qContainer.appendChild(div);
+
+    const optsDiv = div.querySelector('.quiz-opts');
+    item.opts.forEach((opt, optIndex) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => handleAnswer(btn, optsDiv, optIndex, item.ans);
+        optsDiv.appendChild(btn);
+    });
+});
+
+function handleAnswer(btn, container, selected, correct) {
+    if (container.classList.contains('answered')) return;
+    container.classList.add('answered');
+
+    const buttons = container.querySelectorAll('button');
+    buttons[correct].classList.add('correct');
+
+    if (selected === correct) {
+        score++;
+    } else {
+        btn.classList.add('wrong');
+    }
+
+    answered++;
+    if (answered === qData.length) {
+        scoreVal.textContent = score;
+        scoreDisplay.style.display = 'block';
+        setTimeout(() => scoreDisplay.scrollIntoView({behavior: 'smooth', block: 'center'}), 300);
+    }
+}
+</script>
+
+<script>
+  function copyCode(btn){
+    const container = btn.closest('.editor, .term');
+    const codeEl = container.querySelector('pre code');
+    const text = codeEl.innerText;
+    navigator.clipboard.writeText(text).then(function(){
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(function(){ btn.textContent = original; }, 1400);
+    });
+  }
+</script>
+
+</body>
+</html>
