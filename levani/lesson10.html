@@ -262,25 +262,29 @@ docker run --rm --mount type=volume,source=lesson10-demo-data,target=/data lesso
       </div>
       <p>Before any real deployment, check the provider's current worker support, storage, sleep/restart behavior, pricing, account requirements, and logs. A free tier or 24/7 availability is not guaranteed. Ask the mentor before creating a paid account or exposing the bot publicly.</p>
       <h3>Adapt the idea to SpaceBuddy</h3>
+      <p>Your SpaceBuddy project has a clear structure: a <code>bot.py</code> entry point that imports handlers, a <code>config.py</code> for environment variables, and a <code>requirements.txt</code> listing dependencies like <code>python-telegram-bot</code> and <code>requests</code>.</p>
       <ol>
-        <li>First run the real project locally and identify its actual startup command, Python version, dependency file, and Telegram library. Lessons 7 and 9 show different libraries; use the one your project actually uses.</li>
-        <li>Write a <code>Dockerfile</code> for that project: choose a compatible Python base, install the project's existing dependencies, copy the required source, and use its real startup command. Test it before considering hosting.</li>
-        <li>Use a <code>.dockerignore</code> to exclude at least <code>.env</code>, virtual environments, Git metadata, and local database files from the build context. Pass secrets at runtime using the host's secret settings; for a local test, <code>docker run --env-file .env ...</code> can supply a correctly formatted local environment file. Do not copy secrets into the image or commit them.</li>
-        <li>Identify the actual SQLite path. A volume mounted at <code>/data</code> only preserves the database if the application is configured to write its database there. Check permissions and verify persistence with non-sensitive test data.</li>
-        <li>Stop the existing polling instance before starting another with the same bot token. Check logs and send a test message; a running process alone is not proof the bot works.</li>
+        <li><strong>Verify the real startup:</strong> Run your project locally with <code>python bot.py</code> and confirm it prints the polling message. Note the exact Python version you're using (check <code>python --version</code>) and which dependencies it needs. Your <code>requirements.txt</code> already lists them.</li>
+        <li><strong>Write a working Dockerfile:</strong> Use a Python base image matching your version (e.g., <code>FROM python:3.11-slim</code>), set <code>WORKDIR /app</code>, copy your entire source tree including <code>handlers/</code>, <code>services/</code>, <code>config.py</code>, and <code>requirements.txt</code>. Install dependencies with <code>pip install -r requirements.txt</code>, then use <code>CMD ["python", "bot.py"]</code> as the entry point. Test locally first: <code>docker build -t spacebuddy-bot . && docker run --rm --env-file .env spacebuddy-bot</code>.</li>
+        <li><strong>Use .dockerignore:</strong> Create a <code>.dockerignore</code> file excluding <code>.env</code>, <code>.venv/</code>, <code>.git/</code>, <code>__pycache__/</code>, <code>*.pyc</code>, and test files. This keeps the build context clean and prevents accidental secret inclusion.</li>
+        <li><strong>Handle secrets safely:</strong> Do not copy your real <code>.env</code> into the image. Instead, pass environment variables at runtime: <code>docker run --rm --env-file .env spacebuddy-bot</code> for local testing, or use your host's secret management for production. Your <code>config.py</code> already loads from environment variables via <code>python-dotenv</code>; verify it raises errors if required keys like <code>BOT_TOKEN</code> are missing.</li>
+        <li><strong>Consider data persistence:</strong> Your bot uses long polling (not webhooks), so it does not currently store user data or cached APOD images persistently. If you add caching or logging, identify the path and mount a volume at that location. For now, a stateless bot is simpler.</li>
+        <li><strong>Test the containerized bot:</strong> Stop your local polling instance first (Ctrl+C), then run the container with <code>--env-file .env</code>. Send a test message via Telegram and watch the container logs. If it crashes, check that <code>config.py</code> finds all required environment variables.</li>
       </ol>
-      <p>Keep <code>.env</code> and live databases out of Git too. A <code>.gitignore</code> does not remove a file already tracked or erase it from history; if a token was exposed, revoke or rotate it and ask the mentor for help.</p>
+      <p>Keep <code>.env</code> and any local test data out of Git. A <code>.gitignore</code> does not remove a file already tracked or erase it from history; if a token was exposed, revoke or rotate it and ask the mentor for help.</p>
     </section>
 
     <section class="waypoint" id="ai" data-step="4">
       <span class="eyebrow">AI as a teammate, not an autopilot</span>
       <h2>Ask, inspect, verify, explain</h2>
       <p>Give an assistant a narrow problem and constraints. Share only sanitized snippets: never paste tokens, private user data, or an entire secret file.</p>
-      <div class="code-window"><span class="code-title">Example prompt · adapt to your project</span><pre><code>I have a Python Telegram bot that uses [actual library] and SQLite.
-It starts with [actual command] and stores its database at [path].
-Suggest a simple Dockerfile and .dockerignore. Explain each instruction,
-how runtime configuration is supplied, and what happens to the database
-when the container is replaced. Do not include real secrets.</code></pre></div>
+      <div class="code-window"><span class="code-title">Example prompt · for your SpaceBuddy project</span><pre><code>I have a Python Telegram bot using python-telegram-bot library.
+It starts with "python bot.py" and imports config, handlers, and services.
+My dependencies are in requirements.txt.
+Suggest a Dockerfile and .dockerignore for this project.
+Explain how to pass BOT_TOKEN and NASA_API_KEY at runtime without
+copying them into the image. The bot uses long polling, not webhooks.
+Do not include my real secrets in the response.</code></pre></div>
       <p><strong>Your review:</strong> Does the suggestion use your real entry point and dependency file? Are secrets excluded from the build context? Does the database path match the proposed mount? Can you build, run, and test it? If any answer is unclear, ask a follow-up or inspect the <a href="https://docs.docker.com/get-started/">Docker documentation</a>.</p>
       <div class="note tip"><strong>Practice:</strong> Ask AI to explain one line of the lab Dockerfile. Check its explanation against the observed result and be ready to describe it in your own words.</div>
     </section>
@@ -300,22 +304,23 @@ when the container is replaced. Do not include real secrets.</code></pre></div>
     <section class="panel" id="homework" aria-labelledby="homework-title">
       <span class="eyebrow">Homework · 90–120 minutes</span>
       <h2 id="homework-title">Make a reproducible run</h2>
-      <p><strong>Core goal:</strong> complete and explain the offline lab. If your SpaceBuddy project already runs locally and there is time, adapt the approach to it. Do not deploy publicly or pay for hosting just to complete this assignment.</p>
+      <p><strong>Core goal:</strong> complete and explain the offline lab. Your SpaceBuddy bot is already built and working locally—now document how to run it in a container and what to do before deploying.</p>
       <ol>
-        <li><strong>Build and test (40–50 min):</strong> create the demo files, build the image, and run both pairs of commands. Record the observed counts and explain the difference.</li>
-        <li><strong>Document (20–25 min):</strong> add a short README with prerequisites, build and run commands, expected results, and what the volume preserves. Include the Dockerfile and app source in your homework branch or repository.</li>
-        <li><strong>Plan the real project (20–25 min):</strong> sketch SpaceBuddy's components and write down its actual startup command, dependency file, secret names <em>without values</em>, database path, and one possible hosting option. State what you still need to verify about storage, worker support, and cost.</li>
-        <li><strong>Review (10–20 min):</strong> use AI for one focused question, check its answer, run <code>git status</code>, and commit only the intended demo and documentation files. Share the branch or PR with your mentor.</li>
+        <li><strong>Build and test the offline lab (40–50 min):</strong> create the demo files in a folder named <code>lesson10-docker-demo</code>, build the image, and run both pairs of commands. Record the observed counts and explain the difference between <code>--rm</code> and a named volume.</li>
+        <li><strong>Containerize SpaceBuddy (30–40 min):</strong> create a <code>Dockerfile</code> and <code>.dockerignore</code> for your bot. Follow the checklist above: use your real Python version, copy all source files (<code>handlers/</code>, <code>services/</code>, <code>config.py</code>), install dependencies, and set <code>CMD ["python", "bot.py"]</code>. Build the image and test locally with <code>docker run --rm --env-file .env spacebuddy-bot</code>. Send a test message via Telegram and verify the container receives and responds to it. Stop the container and your local polling process before testing the image again.</li>
+        <li><strong>Document (20–25 min):</strong> write a <code>DEPLOYMENT.md</code> in your project explaining: prerequisites (Docker), build command, run command with <code>--env-file</code>, how to supply BOT_TOKEN and NASA_API_KEY, and what you observed when testing. Include the working Dockerfile and .dockerignore. Explain in your own words what each line of the Dockerfile does.</li>
+        <li><strong>Plan deployment (15–20 min):</strong> sketch your ideal deployment scenario. Answer: (a) Where should the bot run always-on? (Options: laptop in background, virtual server, container orchestration platform.) (b) Where should secrets be stored? (c) What would go wrong if you moved the .env file to the same folder as your repository? (d) How would you verify the bot is working remotely if you cannot see its terminal?</li>
+        <li><strong>Review and commit (10–15 min):</strong> run <code>git status</code>, ensure your <code>.env</code> and <code>__pycache__/</code> are in <code>.gitignore</code>, and commit only the Dockerfile, .dockerignore, app source, and your documentation. Do not commit <code>.env</code>, database files, or local configuration. Share the branch or PR with your mentor.</li>
       </ol>
       <h3>Definition of done</h3>
       <ul class="checklist">
-        <li><input type="checkbox" id="done-build" /><label for="done-build">I built the image and observed the two different persistence behaviors.</label></li>
-        <li><input type="checkbox" id="done-readme" /><label for="done-readme">Someone else can follow my README to run the demo.</label></li>
-        <li><input type="checkbox" id="done-plan" /><label for="done-plan">I can explain a deployment choice and its data, secrets, and cost risks.</label></li>
-        <li><input type="checkbox" id="done-ai" /><label for="done-ai">I checked an AI answer and can explain what I accepted or changed.</label></li>
-        <li><input type="checkbox" id="done-git" /><label for="done-git">My commit contains no tokens, private database, or local environment file.</label></li>
+        <li><input type="checkbox" id="done-build" /><label for="done-build">I built the offline lab image and observed the two different persistence behaviors.</label></li>
+        <li><input type="checkbox" id="done-readme" /><label for="done-readme">Someone else can follow my DEPLOYMENT.md to build and run the SpaceBuddy container.</label></li>
+        <li><input type="checkbox" id="done-bot" /><label for="done-bot">My containerized SpaceBuddy received a test Telegram message and responded correctly.</label></li>
+        <li><input type="checkbox" id="done-plan" /><label for="done-plan">I can sketch a deployment scenario and explain what I still need to verify about always-on hosting.</label></li>
+        <li><input type="checkbox" id="done-git" /><label for="done-git">My commit contains the Dockerfile and .dockerignore, but no tokens, live .env, or local cache files.</label></li>
       </ul>
-      <div class="note info"><strong>Optional stretch:</strong> Containerize the actual bot using the adaptation checklist above. Use test data and stop the existing polling process first. Record a successful test message; do not assume that the demo's <code>/data</code> path or startup command matches your project.</div>
+      <div class="note success"><strong>Stretch goal:</strong> Research one free or low-cost always-on hosting option that supports Docker or Python (e.g., Railway, Render, Heroku Eco Plans). Read its documentation about worker processes, environment variables, and logs. Write a short summary of whether it fits SpaceBuddy and what you'd still need to do before deploying there.</div>
       <div class="note warning"><strong>Stuck?</strong> After 10 minutes, note the command, the exact error, and what you tried; ask your mentor. Remove tokens, personal data, and other secrets before sharing logs or screenshots.</div>
     </section>
 
