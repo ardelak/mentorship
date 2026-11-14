@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A practical lesson on product thinking, project scope, and AI-assisted planning." />
+  <title>Lesson 11: Product Thinking &amp; Project Planning — Levani Mentorship</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17223b;
+      --soft: #4b5670;
+      --paper: #f3f1e7;
+      --card: #fff;
+      --amber: #b8791c;
+      --amber-deep: #70480e;
+      --amber-wash: #f1e1be;
+      --rule: #d8d1bc;
+      --green: #245c3b;
+      --green-wash: #e1eee6;
+      --danger-wash: #f5e1dc;
+      --blue-wash: #eef1f7;
+      --code: #1e1e1e;
+      --code-bar: #303033;
+      --shadow: 0 1px 2px rgb(23 34 59 / 6%), 0 6px 20px rgb(23 34 59 / 7%);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      background-image: radial-gradient(circle at 1px 1px, rgb(23 34 59 / 5%) 1px, transparent 0);
+      background-size: 22px 22px;
+      color: var(--ink);
+      font: 1.03rem/1.7 "Karla", sans-serif;
+    }
+    h1, h2, h3 { margin: 0; font-family: "Newsreader", Georgia, serif; line-height: 1.2; }
+    p { margin: 0 0 1rem; }
+    a { color: var(--amber-deep); text-underline-offset: 0.18em; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #9a5d00; outline-offset: 3px; }
+    code { font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.88em; overflow-wrap: anywhere; }
+    :not(pre) > code { background: #eae6d9; padding: 0.1em 0.3em; border-radius: 4px; }
+    .skip-link {
+      position: absolute; top: 0.5rem; left: 0.5rem; z-index: 20;
+      padding: 0.5rem 0.8rem; background: var(--card); transform: translateY(-200%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .topnav {
+      border-bottom: 1px solid var(--rule); background: var(--paper);
+      padding: 0.75rem max(1rem, calc((100% - 1040px) / 2));
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem;
+    }
+    .brand { color: var(--ink); font: italic 600 1.1rem "Newsreader", Georgia, serif; }
+    .topnav nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; margin-left: auto; }
+    .topnav nav a { font-size: 0.88rem; font-weight: 700; }
+    .wrap { max-width: 900px; margin: auto; padding: 0 1.25rem 5rem; }
+    .hero { text-align: center; padding: 3rem 0 2rem; }
+    .stamp {
+      width: 110px; height: 110px; margin: 0 auto 1.5rem; border: 2px dashed var(--amber);
+      border-radius: 50%; display: grid; place-items: center; transform: rotate(-5deg);
+      color: var(--amber-deep); font: 600 0.72rem/1.4 "JetBrains Mono", monospace;
+    }
+    .hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-style: italic; font-weight: 500; }
+    .hero p { max-width: 650px; margin: 0.8rem auto 1.2rem; color: var(--soft); font-size: 1.12rem; }
+    .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    .chip, .eyebrow { font: 600 0.73rem/1.4 "JetBrains Mono", monospace; letter-spacing: 0.02em; }
+    .chip { padding: 0.3rem 0.7rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--card); }
+    .panel, .card, details {
+      background: var(--card); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow);
+    }
+    .panel { padding: clamp(1.2rem, 4vw, 2rem); margin: 1.5rem 0; }
+    .panel h2 { font-size: 1.5rem; margin-bottom: 0.7rem; }
+    .panel h3 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+    .panel > :last-child, .note > :last-child, .card > :last-child { margin-bottom: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.8rem; }
+    .card { padding: 1rem 1.1rem; }
+    .card h3 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .card p { color: var(--soft); font-size: 0.95rem; }
+    .eyebrow { display: block; color: var(--amber-deep); margin-bottom: 0.4rem; text-transform: uppercase; }
+    .session { margin: 1.8rem 0 3rem; }
+    .session ol { margin: 0; padding-left: 1.4rem; }
+    .session li + li { margin-top: 0.35rem; }
+    .waypoint { position: relative; margin: 0 0 3.5rem; padding-left: 3rem; }
+    .waypoint::before {
+      content: attr(data-step); position: absolute; left: 0; top: 0;
+      width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center;
+      color: var(--paper); background: var(--ink); font: 600 0.9rem "JetBrains Mono", monospace;
+    }
+    .waypoint h2 { font-size: clamp(1.65rem, 3vw, 2rem); margin-bottom: 0.5rem; }
+    .waypoint h3 { font-size: 1.3rem; margin: 1.6rem 0 0.5rem; }
+    .sub { color: var(--soft); }
+    .note { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.15rem; margin: 1.2rem 0; }
+    .note.tip { background: var(--amber-wash); border-color: #e2c98a; }
+    .note.info { background: var(--blue-wash); border-color: #c9d2e6; }
+    .note.warning { background: var(--danger-wash); border-color: #e3b6ac; }
+    .note.success { background: var(--green-wash); border-color: #b9d8c5; }
+    .note strong:first-child { color: var(--ink); }
+    .table-wrap { overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--rule); border-radius: 8px; }
+    table { width: 100%; min-width: 540px; border-collapse: collapse; background: var(--card); font-size: 0.95rem; }
+    th, td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+    th { background: #eeeade; font-size: 0.85rem; }
+    tr:last-child td { border-bottom: 0; }
+    .code-window { margin: 1rem 0; background: var(--code); color: #f0f0f0; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+    .code-title { display: block; padding: 0.5rem 0.9rem; background: var(--code-bar); color: #f0f0f0; font: 0.75rem "JetBrains Mono", monospace; }
+    pre { margin: 0; padding: 1rem; overflow-x: auto; line-height: 1.55; tab-size: 4; }
+    pre code { overflow-wrap: normal; font-size: 0.85rem; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 0.65rem; margin: 0.65rem 0; }
+    .checklist input { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; margin: 0.35rem 0 0; accent-color: var(--green); }
+    details { margin: 0.7rem 0; padding: 0.85rem 1rem; }
+    summary { cursor: pointer; font-weight: 700; }
+    details p { margin: 0.7rem 0 0; }
+    .closing { text-align: center; color: var(--soft); padding: 1rem 0 0; }
+    .closing h2 { color: var(--ink); font-size: 2rem; font-style: italic; margin-bottom: 0.5rem; }
+    @media (max-width: 600px) {
+      .topnav nav { margin-left: 0; }
+      .hero { padding-top: 2rem; }
+      .waypoint { padding-left: 0; }
+      .waypoint::before { position: static; margin-bottom: 0.7rem; }
+      .wrap { padding-inline: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      .topnav, .skip-link { display: none; }
+      body { background: white; }
+      .wrap { max-width: none; padding: 0; }
+      .waypoint, .panel, .card { break-inside: avoid; }
+      details > * { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to lesson content</a>
+  <header class="topnav">
+    <a class="brand" href="index.html">Levani Mentorship</a>
+    <nav aria-label="Lesson sections">
+      <a href="#problem">Problem</a>
+      <a href="#scope">MVP</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#ai">AI review</a>
+      <a href="#homework">Homework</a>
+    </nav>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="hero">
+      <div class="stamp">BLOCK 3<br />LESSON 11</div>
+      <h1>Think Like a Product Builder</h1>
+      <p>Before writing more code, choose a real problem, design a small useful experience, and make a plan you can actually finish.</p>
+      <div class="chips" aria-label="Lesson topics">
+        <span class="chip">User needs</span><span class="chip">MVP &amp; scope</span>
+        <span class="chip">Acceptance criteria</span><span class="chip">AI-assisted planning</span>
+      </div>
+    </header>
+
+    <section class="panel" aria-labelledby="outcomes-title">
+      <span class="eyebrow">The mission</span>
+      <h2 id="outcomes-title">Turn an idea into an actionable plan</h2>
+      <p>In <a href="lesson10.html">lesson 10</a> we asked how a project runs. Today we ask a question that comes even earlier: <strong>what should we build, for whom, and why?</strong> You may extend SpaceBuddy or choose another idea that interests you.</p>
+      <ul>
+        <li>Describe a specific user, their problem, and an outcome worth testing.</li>
+        <li>Choose a small minimum viable product (MVP) and explain what is deliberately excluded.</li>
+        <li>Break one user journey into 3–5 prioritized tasks and write testable acceptance criteria.</li>
+        <li>Use AI to challenge the plan while keeping the decisions and verification yours.</li>
+      </ul>
+    </section>
+
+    <section class="panel session" aria-labelledby="session-title">
+      <span class="eyebrow">One-hour session</span>
+      <h2 id="session-title">Our route today</h2>
+      <ol>
+        <li><strong>10 min — Review:</strong> show lesson 10's demo or describe where you got stuck; identify what is already working.</li>
+        <li><strong>15 min — Discover:</strong> choose a user, problem, and one desired outcome.</li>
+        <li><strong>25 min — Plan together:</strong> map a journey, cut scope, and write tasks and acceptance criteria.</li>
+        <li><strong>10 min — Challenge and explain:</strong> review an AI suggestion, name a risk, and agree on homework.</li>
+      </ol>
+      <p>Keep this as a conversation and a short written plan. You do not need a finished bot or cloud deployment to take part.</p>
+    </section>
+
+    <section class="waypoint" id="problem" data-step="1">
+      <span class="eyebrow">Start with the person</span>
+      <h2>Find the problem behind the feature</h2>
+      <p>“Build an AI-powered space app” names a solution, not a user need. A stronger starting point describes who is trying to do what, why it is difficult, and how you could learn whether your idea helps.</p>
+      <div class="grid">
+        <article class="card"><h3>User</h3><p>Who has the problem? Start with one specific type of person, not “everyone.”</p></article>
+        <article class="card"><h3>Problem</h3><p>What are they trying to do, and what makes it inconvenient or confusing today?</p></article>
+        <article class="card"><h3>Outcome</h3><p>What observable result would show that this small version is useful?</p></article>
+      </div>
+      <h3>Worked example: SpaceBuddy</h3>
+      <div class="note info">
+        <p><strong>User:</strong> A student interested in astronomy who already uses Telegram.</p>
+        <p><strong>Problem:</strong> They want to find and revisit NASA's Astronomy Picture of the Day for a particular date without searching through multiple pages.</p>
+        <p><strong>Proposed outcome:</strong> In a supervised demo, the student can request one valid date and find that image again in their favorites.</p>
+      </div>
+      <p>This is a <strong>hypothesis</strong>, not proof that all astronomy students need the feature. Ask the mentor or a willing tester whether the problem and journey make sense. Record what you observed rather than claiming broad demand from one conversation.</p>
+      <div class="note warning"><strong>Respect privacy:</strong> Ask permission before testing with another person. Use fictional or non-sensitive examples in notes and AI prompts; do not collect personal information just to validate an idea.</div>
+      <div class="note tip"><strong>Your turn:</strong> Write one sentence: “For <em>[user]</em>, it is difficult to <em>[goal]</em> because <em>[problem]</em>.” What would you ask a potential user to check your assumption?</div>
+    </section>
+
+    <section class="waypoint" id="scope" data-step="2">
+      <span class="eyebrow">Make the first version smaller</span>
+      <h2>Map one journey, then define the MVP</h2>
+      <p>An <strong>MVP</strong> is a small version that can test an important idea with a user. “Minimum” does not mean ignoring basic safety or obvious errors: it means leaving out features that are not needed for this particular learning goal.</p>
+      <h3>One possible SpaceBuddy journey</h3>
+      <ol>
+        <li>The user sends a date to the bot.</li>
+        <li>The bot checks the date and retrieves the corresponding NASA image.</li>
+        <li>The user saves it as a favorite and later asks to see their saved items.</li>
+      </ol>
+      <p>If any of this already exists, inspect and reuse it rather than rebuilding it. If the current bot is incomplete, the plan can focus on completing just this journey. A different project can use a similarly small journey.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Decision</th><th scope="col">Worked example</th><th scope="col">Why?</th></tr></thead>
+          <tbody>
+            <tr><td>Include</td><td>Valid date lookup, save and list favorites, clear errors</td><td>Needed to complete or safely test the journey.</td></tr>
+            <tr><td>Defer</td><td>Recommendations, social sharing, daily digests</td><td>Interesting, but not necessary to test the first journey.</td></tr>
+            <tr><td>Constraint</td><td>Use the current bot and local test data; avoid paid services</td><td>Reduces setup, cost, and privacy risk.</td></tr>
+            <tr><td>Success check</td><td>One willing tester completes the journey in a demo and explains the result</td><td>Observable feedback, not a claim about a whole market.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note tip"><strong>Scope challenge:</strong> A suggested feature sounds exciting but adds a week of work. Ask: “Does the user need this to complete the chosen journey?” If not, place it in a later list.</div>
+    </section>
+
+    <section class="waypoint" id="tasks" data-step="3">
+      <span class="eyebrow">Make the plan executable</span>
+      <h2>From journey to prioritized tasks</h2>
+      <p>Tasks are small pieces of work; acceptance criteria describe observable behavior that must be true when a feature is done. Sort by user value and prerequisites, then estimate roughly. Estimates are guesses to revisit, not promises.</p>
+      <h3>Example backlog</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Order</th><th scope="col">Task</th><th scope="col">Why now?</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Inspect the existing bot and list what works</td><td>Avoid duplicating lesson 9 work; discover gaps.</td></tr>
+            <tr><td>2</td><td>Complete or verify date lookup and validation</td><td>The user needs an image before saving it.</td></tr>
+            <tr><td>3</td><td>Complete or verify save and list favorites</td><td>Closes the main user journey.</td></tr>
+            <tr><td>4</td><td>Test happy path and failure cases with safe test data</td><td>Checks that the journey is reliable enough to demo.</td></tr>
+            <tr><td>5</td><td>Document and demonstrate the journey</td><td>A tester can understand and try the result.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>These are planning examples, not claims about the current code. Break any item that feels too large into smaller steps; mark completed work instead of implementing it again. Keep the first implementation slice small enough for your available time.</p>
+      <h3>Write criteria someone else can check</h3>
+      <p>For the date lookup feature, a simple <strong>Given / When / Then</strong> format separates the starting condition, action, and expected result:</p>
+      <div class="code-window"><span class="code-title">Example acceptance criteria · date lookup</span><pre><code>Given a valid date with an available image
+When the user requests that date
+Then the bot displays the image and its title.
+
+Given a date that is invalid or outside the supported range
+When the user requests it
+Then the bot explains the problem and does not request NASA data.
+
+Given the NASA service is unavailable
+When the user requests an otherwise valid date
+Then the bot reports the failure and remains usable.</code></pre></div>
+      <p>Pick a specific supported date range when implementing, based on the API's documentation. Test the normal path and failure behavior with controlled responses where practical, rather than relying only on a live API.</p>
+      <div class="note success"><strong>Try it:</strong> Rewrite “make favorites better” as one user-facing story and two observable acceptance criteria. How will you tell whether each criterion passed?</div>
+      <h3>Pick a planning tool</h3>
+      <div class="grid">
+        <article class="card"><h3>Markdown checklist</h3><p>Good for a small solo plan next to the code. Easy to review in a pull request.</p></article>
+        <article class="card"><h3>GitHub Issues</h3><p>Useful for tracking individual tasks, decisions, and discussion. <a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue">See GitHub's guide</a>.</p></article>
+        <article class="card"><h3>Project board</h3><p>A visual way to move tasks through “to do,” “in progress,” and “done.” Helpful when the list gets harder to follow.</p></article>
+      </div>
+      <p>Choose one; the tool is not the goal. A simple checklist is enough for this lesson. Whether a task is on a board or in a file, keep its purpose and acceptance criteria clear.</p>
+    </section>
+
+    <section class="waypoint" id="ai" data-step="4">
+      <span class="eyebrow">AI-assisted planning</span>
+      <h2>Ask for options, then make the decisions</h2>
+      <p>AI can suggest user stories, missing cases, and smaller tasks. It cannot know your user's needs or your existing code unless you provide accurate context, and its confident estimates may be wrong.</p>
+      <div class="code-window"><span class="code-title">Example prompt · replace the brackets</span><pre><code>I am planning [one-sentence project idea] for [specific user].
+The user wants to [goal]. My current project already has [known facts].
+I have [available time] and want to avoid [constraints].
+
+Suggest a single small user journey, 3–5 prioritized tasks, and
+two testable acceptance criteria for one task. List assumptions,
+one risk, and features to defer. Do not write code.</code></pre></div>
+      <h3>Review a hypothetical suggestion</h3>
+      <p>Suppose AI proposes “add social accounts, recommendation AI, and paid cloud hosting before the first demo.” Compare that with the original user journey and constraints. Which suggestions add cost, dependencies, or complexity without proving the core idea?</p>
+      <ol>
+        <li><strong>Inspect:</strong> separate facts you verified from assumptions AI invented.</li>
+        <li><strong>Cut:</strong> keep only what supports the chosen journey and constraints; defer the rest.</li>
+        <li><strong>Verify:</strong> check project state, relevant documentation, and feasibility with the mentor or a safe prototype.</li>
+        <li><strong>Explain:</strong> record one suggestion you accepted or changed and why.</li>
+      </ol>
+      <div class="note warning"><strong>Do not share secrets or private information:</strong> Use placeholders for tokens, private messages, user data, and other sensitive context. AI output is a draft, not evidence that a feature is needed or an estimate is accurate.</div>
+    </section>
+
+    <section class="waypoint" id="check" data-step="5">
+      <span class="eyebrow">Knowledge check</span>
+      <h2>Can you defend the plan?</h2>
+      <p>Answer aloud first; then open each explanation.</p>
+      <details><summary>1. How is a problem different from a feature?</summary><p>A problem describes a user's difficulty or goal. A feature is one possible way to address it; other solutions may work better.</p></details>
+      <details><summary>2. Why exclude a feature from the MVP?</summary><p>If it is not needed to test the chosen journey, deferring it saves time and reduces complexity. Record it for later rather than silently losing the idea.</p></details>
+      <details><summary>3. Is “make the bot user-friendly” a testable acceptance criterion?</summary><p>Not by itself. Describe an observable action and result, such as a clear error message for an invalid date, and agree how to check it.</p></details>
+      <details><summary>4. What should happen if a task is already implemented?</summary><p>Inspect and verify the existing behavior, then mark the task done or revise the plan. Do not rebuild it merely to match an example backlog.</p></details>
+      <details><summary>5. Does an AI-generated estimate guarantee a task will fit?</summary><p>No. It may miss project details or dependencies. Treat it as a rough hypothesis, check the actual project, and adjust as you learn.</p></details>
+      <details><summary>6. What can one tester tell you?</summary><p>They can reveal a problem or give feedback about their experience. One successful demo does not prove broad demand or represent every user.</p></details>
+    </section>
+
+    <section class="panel" id="homework" aria-labelledby="homework-title">
+      <span class="eyebrow">Homework · 90–120 minutes</span>
+      <h2 id="homework-title">Write your one-page project brief</h2>
+      <p><strong>Core goal:</strong> plan one small SpaceBuddy extension or a project of your choice. Write in a Markdown file in your project repository, or use a document if the repository is not ready. This is a planning assignment: implementation is optional.</p>
+      <ol>
+        <li><strong>Choose and investigate (20–25 min):</strong> describe the user, problem, and current project state. List one assumption and how you could check it with a willing person or a small test.</li>
+        <li><strong>Define the MVP (20–25 min):</strong> write one user journey, an observable success check, constraints, and at least one feature you are deferring.</li>
+        <li><strong>Plan the work (25–30 min):</strong> write 3–5 prioritized tasks and rough time estimates. Add testable acceptance criteria for one feature, including a failure or edge case. Identify one risk and a practical response.</li>
+        <li><strong>Challenge and share (25–40 min):</strong> ask AI for feedback using sanitized context; record one suggestion you accepted or changed and why. Review the brief with your mentor, or share it for the next lesson.</li>
+      </ol>
+      <h3>Brief template</h3>
+      <p>Copy this outline into your own document and replace the prompts with your decisions. Keep it short enough to explain in a few minutes.</p>
+      <div class="code-window"><span class="code-title">Project brief · template</span><pre><code># Project: [name]
+User and problem: [...]
+What already works / what is unknown: [...]
+Assumption and how to check it: [...]
+MVP journey: [first action → result → next action]
+Success check: [...]
+Constraints and out of scope: [...]
+
+Prioritized tasks and rough estimates:
+1. [...]
+2. [...]
+3. [...]
+
+Acceptance criteria for [feature]:
+- Given [...], when [...], then [...]
+- Given [...], when [...], then [...]
+Risk and response: [...]
+AI suggestion accepted or changed, and why: [...]
+Next question for my mentor: [...]</code></pre></div>
+      <h3>Definition of done</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="done-user" /><label for="done-user">I can explain a specific user, problem, and an assumption to check.</label></li>
+        <li><input type="checkbox" id="done-scope" /><label for="done-scope">My MVP describes one journey, a success check, and at least one excluded feature.</label></li>
+        <li><input type="checkbox" id="done-tasks" /><label for="done-tasks">I have 3–5 ordered tasks, rough estimates, and testable criteria for one feature.</label></li>
+        <li><input type="checkbox" id="done-risk" /><label for="done-risk">I named a risk, a response, and an AI suggestion I evaluated.</label></li>
+        <li><input type="checkbox" id="done-share" /><label for="done-share">My brief is ready to share without secrets or private user data.</label></li>
+      </ul>
+      <div class="note info"><strong>Optional stretch:</strong> Turn one task into a GitHub issue or try a tiny prototype that tests your riskiest assumption. Note what you learned; do not expand the MVP just because a tool suggested it.</div>
+      <div class="note tip"><strong>Stuck?</strong> Pick the SpaceBuddy example, make a reasonable assumption, and label it as unverified. Bring the assumption and your question to the mentor rather than trying to perfect the whole project alone.</div>
+    </section>
+
+    <footer class="closing">
+      <h2>A good plan is a learning tool.</h2>
+      <p>Explain what you chose and why, then update the plan as evidence changes. Next: map the architecture and decide where the data should live.</p>
+      <p><a href="index.html">Back to lesson index</a> · <a href="lesson10.html">Review lesson 10</a></p>
+    </footer>
+  </main>
+</body>
+</html>

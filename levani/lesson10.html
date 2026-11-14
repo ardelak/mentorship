@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A practical lesson on Docker, deployment choices, persistence, and responsible AI-assisted development." />
+  <title>Lesson 10: Docker &amp; Deployment Thinking — Levani Mentorship</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17223b;
+      --soft: #4b5670;
+      --paper: #f3f1e7;
+      --card: #fff;
+      --amber: #b8791c;
+      --amber-deep: #70480e;
+      --amber-wash: #f1e1be;
+      --rule: #d8d1bc;
+      --green: #245c3b;
+      --green-wash: #e1eee6;
+      --danger: #812c22;
+      --danger-wash: #f5e1dc;
+      --blue-wash: #eef1f7;
+      --code: #1e1e1e;
+      --code-bar: #303033;
+      --shadow: 0 1px 2px rgb(23 34 59 / 6%), 0 6px 20px rgb(23 34 59 / 7%);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      background-image: radial-gradient(circle at 1px 1px, rgb(23 34 59 / 5%) 1px, transparent 0);
+      background-size: 22px 22px;
+      color: var(--ink);
+      font: 1.03rem/1.7 "Karla", sans-serif;
+    }
+    h1, h2, h3 { margin: 0; font-family: "Newsreader", Georgia, serif; line-height: 1.2; }
+    p { margin: 0 0 1rem; }
+    a { color: var(--amber-deep); text-underline-offset: 0.18em; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #9a5d00; outline-offset: 3px; }
+    code { font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.88em; overflow-wrap: anywhere; }
+    :not(pre) > code { background: #eae6d9; padding: 0.1em 0.3em; border-radius: 4px; }
+    .skip-link {
+      position: absolute; top: 0.5rem; left: 0.5rem; z-index: 20;
+      padding: 0.5rem 0.8rem; background: var(--card); transform: translateY(-200%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .topnav {
+      border-bottom: 1px solid var(--rule); background: var(--paper);
+      padding: 0.75rem max(1rem, calc((100% - 1040px) / 2));
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem;
+    }
+    .brand { color: var(--ink); font: italic 600 1.1rem "Newsreader", Georgia, serif; }
+    .topnav nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; margin-left: auto; }
+    .topnav nav a { font-size: 0.88rem; font-weight: 700; }
+    .wrap { max-width: 900px; margin: auto; padding: 0 1.25rem 5rem; }
+    .hero { text-align: center; padding: 3rem 0 2rem; }
+    .stamp {
+      width: 110px; height: 110px; margin: 0 auto 1.5rem; border: 2px dashed var(--amber);
+      border-radius: 50%; display: grid; place-items: center; transform: rotate(-5deg);
+      color: var(--amber-deep); font: 600 0.72rem/1.4 "JetBrains Mono", monospace;
+    }
+    .hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-style: italic; font-weight: 500; }
+    .hero p { max-width: 650px; margin: 0.8rem auto 1.2rem; color: var(--soft); font-size: 1.12rem; }
+    .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    .chip, .eyebrow {
+      font: 600 0.73rem/1.4 "JetBrains Mono", monospace; letter-spacing: 0.02em;
+    }
+    .chip { padding: 0.3rem 0.7rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--card); }
+    .panel, .card, details {
+      background: var(--card); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow);
+    }
+    .panel { padding: clamp(1.2rem, 4vw, 2rem); margin: 1.5rem 0; }
+    .panel h2 { font-size: 1.5rem; margin-bottom: 0.7rem; }
+    .panel > :last-child, .note > :last-child, .card > :last-child { margin-bottom: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.8rem; }
+    .card { padding: 1rem 1.1rem; }
+    .card h3 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .card p { color: var(--soft); font-size: 0.95rem; }
+    .eyebrow { display: block; color: var(--amber-deep); margin-bottom: 0.4rem; text-transform: uppercase; }
+    .session { margin: 1.8rem 0 3rem; }
+    .session ol { margin: 0; padding-left: 1.4rem; }
+    .session li + li { margin-top: 0.35rem; }
+    .waypoint { position: relative; margin: 0 0 3.5rem; padding-left: 3rem; }
+    .waypoint::before {
+      content: attr(data-step); position: absolute; left: 0; top: 0;
+      width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center;
+      color: var(--paper); background: var(--ink); font: 600 0.9rem "JetBrains Mono", monospace;
+    }
+    .waypoint h2 { font-size: clamp(1.65rem, 3vw, 2rem); margin-bottom: 0.5rem; }
+    .waypoint h3 { font-size: 1.3rem; margin: 1.6rem 0 0.5rem; }
+    .sub { color: var(--soft); }
+    .note { border: 1px solid var(--rule); border-radius: 8px; padding: 1rem 1.15rem; margin: 1.2rem 0; }
+    .note.tip { background: var(--amber-wash); border-color: #e2c98a; }
+    .note.info { background: var(--blue-wash); border-color: #c9d2e6; }
+    .note.warning { background: var(--danger-wash); border-color: #e3b6ac; }
+    .note.success { background: var(--green-wash); border-color: #b9d8c5; }
+    .note strong:first-child { color: var(--ink); }
+    .table-wrap { overflow-x: auto; margin: 1.2rem 0; border: 1px solid var(--rule); border-radius: 8px; }
+    table { width: 100%; min-width: 540px; border-collapse: collapse; background: var(--card); font-size: 0.95rem; }
+    th, td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+    th { background: #eeeade; font-size: 0.85rem; }
+    tr:last-child td { border-bottom: 0; }
+    .code-window { margin: 1rem 0; background: var(--code); color: #f0f0f0; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+    .code-title { display: block; padding: 0.5rem 0.9rem; background: var(--code-bar); color: #f0f0f0; font: 0.75rem "JetBrains Mono", monospace; }
+    pre { margin: 0; padding: 1rem; overflow-x: auto; line-height: 1.55; tab-size: 4; }
+    pre code { overflow-wrap: normal; font-size: 0.85rem; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 0.65rem; margin: 0.65rem 0; }
+    .checklist input { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; margin: 0.35rem 0 0; accent-color: var(--green); }
+    details { margin: 0.7rem 0; padding: 0.85rem 1rem; }
+    summary { cursor: pointer; font-weight: 700; }
+    details p { margin: 0.7rem 0 0; }
+    .closing { text-align: center; color: var(--soft); padding: 1rem 0 0; }
+    .closing h2 { color: var(--ink); font-size: 2rem; font-style: italic; margin-bottom: 0.5rem; }
+    @media (max-width: 600px) {
+      .topnav nav { margin-left: 0; }
+      .hero { padding-top: 2rem; }
+      .waypoint { padding-left: 0; }
+      .waypoint::before { position: static; margin-bottom: 0.7rem; }
+      .wrap { padding-inline: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      .topnav, .skip-link { display: none; }
+      body { background: white; }
+      .wrap { max-width: none; padding: 0; }
+      .waypoint, .panel, .card { break-inside: avoid; }
+      details > * { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to lesson content</a>
+  <header class="topnav">
+    <a class="brand" href="index.html">Levani Mentorship</a>
+    <nav aria-label="Lesson sections">
+      <a href="#mental-model">Mental model</a>
+      <a href="#lab">Docker lab</a>
+      <a href="#deployment">Deployment</a>
+      <a href="#ai">AI review</a>
+      <a href="#homework">Homework</a>
+    </nav>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="hero">
+      <div class="stamp">BLOCK 3<br />LESSON 10</div>
+      <h1>From “Works on My Laptop” to a Runnable Project</h1>
+      <p>Think like a developer: package an application, protect its data, and choose where it should run.</p>
+      <div class="chips" aria-label="Lesson topics">
+        <span class="chip">Docker</span><span class="chip">Deployment choices</span>
+        <span class="chip">SQLite persistence</span><span class="chip">AI verification</span>
+      </div>
+    </header>
+
+    <section class="panel" aria-labelledby="outcomes-title">
+      <span class="eyebrow">The mission</span>
+      <h2 id="outcomes-title">Make a project someone else can run</h2>
+      <p>SpaceBuddy connects Python, Telegram, NASA, and a database. But another computer does not automatically have your Python packages, configuration, or data. Today you will package a tiny offline example, then plan how the same ideas apply to your bot.</p>
+      <ul>
+        <li>Explain the difference between a Docker image, a container, and a hosting service.</li>
+        <li>Build and run an image, then demonstrate what a persistent volume changes.</li>
+        <li>Choose a plausible deployment approach and identify its secrets, storage, and cost risks.</li>
+        <li>Ask AI for help without trusting its answer until you have checked it.</li>
+      </ul>
+    </section>
+
+    <section class="panel session" aria-labelledby="session-title">
+      <span class="eyebrow">One-hour session</span>
+      <h2 id="session-title">Our route today</h2>
+      <ol>
+        <li><strong>10 min — Review:</strong> show the current project, its startup command, and one uncertainty from lesson 9.</li>
+        <li><strong>15 min — Mental model:</strong> compare environments, containers, and deployment options.</li>
+        <li><strong>25 min — Guided lab:</strong> build the offline example and test persistence with a volume.</li>
+        <li><strong>10 min — Review:</strong> explain the result, inspect an AI suggestion, and plan homework.</li>
+      </ol>
+      <p>If setup takes longer, use the mentor's screen for the lab and finish the local setup during homework.</p>
+    </section>
+
+    <section class="waypoint" id="mental-model" data-step="1">
+      <span class="eyebrow">Think before you build</span>
+      <h2>What actually runs the project?</h2>
+      <p>Suppose your bot works on your laptop. A fresh machine still needs a compatible Python version, the right packages, configuration, and somewhere to store its database. Writing down those needs is the first step toward a reproducible project.</p>
+      <div class="grid">
+        <article class="card"><h3>Virtual environment</h3><p>Separates Python packages for one project on a machine. You still manage Python and other system dependencies on that machine.</p></article>
+        <article class="card"><h3>Docker image</h3><p>A packaged filesystem and startup instructions, built from a <code>Dockerfile</code>. Think of it as a reusable blueprint.</p></article>
+        <article class="card"><h3>Container</h3><p>A running instance of an image. It has its own writable layer and can receive runtime configuration and mounted storage.</p></article>
+        <article class="card"><h3>Host</h3><p>The computer or cloud service running the process or container. Docker packages the app; it does not provide an always-on server.</p></article>
+      </div>
+      <div class="note tip"><strong>Discuss:</strong> If you send a friend only your Python file, what else might they need? Name a dependency, a setting, and a piece of data.</div>
+    </section>
+
+    <section class="waypoint" id="lab" data-step="2">
+      <span class="eyebrow">Guided lab · offline example</span>
+      <h2>Build it. Run it. Restart it.</h2>
+      <p class="sub">This small SQLite counter works without Telegram, NASA, or API keys. It is a safe way to learn the workflow before adapting your own project.</p>
+      <div class="note info">
+        <strong>Before starting:</strong> Install and start <a href="https://docs.docker.com/get-started/get-docker/">Docker Desktop</a> or another Docker Engine setup. Open a terminal in a new, empty folder named <code>lesson10-docker-demo</code>. Run <code>docker version</code> and check that both client and server are available. The first build needs internet access to download the Python image.
+      </div>
+      <h3>1. Create a tiny application</h3>
+      <p>Create <code>app.py</code> in that folder. Each run stores one visit in an SQLite database under <code>/data</code>.</p>
+      <div class="code-window"><span class="code-title">app.py</span><pre><code>import sqlite3
+
+with sqlite3.connect("/data/visits.db") as db:
+    db.execute("CREATE TABLE IF NOT EXISTS visits (id INTEGER PRIMARY KEY)")
+    db.execute("INSERT INTO visits DEFAULT VALUES")
+    count = db.execute("SELECT COUNT(*) FROM visits").fetchone()[0]
+
+print(f"Saved visits: {count}")</code></pre></div>
+      <h3>2. Describe the image</h3>
+      <p>Create a file named exactly <code>Dockerfile</code> in the same folder, with no extension. This example uses Python's built-in SQLite library, so it needs no package installation.</p>
+      <div class="code-window"><span class="code-title">Dockerfile</span><pre><code>FROM python:3.13-slim
+WORKDIR /app
+COPY app.py .
+RUN mkdir -p /data
+CMD ["python", "app.py"]</code></pre></div>
+      <div class="note tip"><strong>Read the recipe:</strong> <code>FROM</code> selects a base image; <code>WORKDIR</code> sets the working folder; <code>COPY</code> adds the app; <code>RUN</code> prepares a folder during the build; <code>CMD</code> supplies the default command when a container starts.</div>
+      <h3>3. Build and compare runs</h3>
+      <p>Run these commands from the folder containing both files. The final dot is the build context: the folder Docker can read while building.</p>
+      <div class="code-window"><span class="code-title">Terminal · Windows, macOS, or Linux</span><pre><code>docker build -t lesson10-demo .
+docker run --rm lesson10-demo
+docker run --rm lesson10-demo
+docker run --rm --mount type=volume,source=lesson10-demo-data,target=/data lesson10-demo
+docker run --rm --mount type=volume,source=lesson10-demo-data,target=/data lesson10-demo</code></pre></div>
+      <p>The first two runs each print <code>Saved visits: 1</code>: <code>--rm</code> removes each stopped container and its writable layer. The last two runs should print <code>1</code> then <code>2</code> when using a new named volume. If the volume already exists, the count continues from its previous value.</p>
+      <div class="note success"><strong>Explain it back:</strong> Where is <code>visits.db</code> written in each pair of runs? What is removed, and what remains? A volume is separate from the container, but it is not automatically a backup or a cloud database.</div>
+      <div class="note warning"><strong>Real data is different:</strong> This disposable demo uses Docker's default container user for simplicity. For a real deployment, consider a non-root user and storage permissions. Never put live user data in this exercise or delete a volume without knowing what it contains.</div>
+      <h3>If something goes wrong</h3>
+      <ul>
+        <li><strong>Cannot connect to Docker:</strong> start Docker Desktop/Engine and retry <code>docker version</code>.</li>
+        <li><strong>Dockerfile not found:</strong> check the current folder and the exact filename, including hidden extensions.</li>
+        <li><strong>Image build fails:</strong> read the first error; check internet access and the file contents before asking AI.</li>
+        <li><strong>Count is not 1 then 2:</strong> check whether the named volume existed from an earlier run; a new volume starts fresh.</li>
+      </ul>
+    </section>
+
+    <section class="waypoint" id="deployment" data-step="3">
+      <span class="eyebrow">Choose the right tool</span>
+      <h2>From local demo to running service</h2>
+      <p>Deployment means making an application available in its intended environment. A cloud provider may build from a Git repository or run a Docker image. Choose based on what the app actually needs, not on how many tools you can add.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Option</th><th scope="col">Useful when</th><th scope="col">Question to ask</th></tr></thead>
+          <tbody>
+            <tr><td>Run locally</td><td>Learning, development, and private demos</td><td>What happens when the laptop sleeps?</td></tr>
+            <tr><td>Deploy from Git</td><td>A host supports the language and application type directly</td><td>Can it run a continuously active worker, not just a website?</td></tr>
+            <tr><td>Deploy a Docker image</td><td>You want more control over the runtime or a portable package</td><td>Does the provider support this image and persistent storage?</td></tr>
+            <tr><td>Virtual server</td><td>You need more control over the machine</td><td>Who will maintain updates, access, and monitoring?</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>SpaceBuddy decision:</strong> a Telegram bot using long polling needs a running worker process, even though it does not serve a web page. A static-site host is not enough. Docker can package that worker, but a separate machine or service must keep it running.</p>
+      <div class="note warning">
+        <strong>Persistence checkpoint:</strong> A SQLite file inside a container's writable layer may disappear when the container is replaced. A local named volume demonstrates persistence on your own Docker host; it does not prove a cloud provider preserves data across redeployments. Check the provider's storage and backup guarantees, or choose an appropriate managed database. Consider SQLite's concurrency and backup needs before choosing it for a multi-user service.
+      </div>
+      <p>Before any real deployment, check the provider's current worker support, storage, sleep/restart behavior, pricing, account requirements, and logs. A free tier or 24/7 availability is not guaranteed. Ask the mentor before creating a paid account or exposing the bot publicly.</p>
+      <h3>Adapt the idea to SpaceBuddy</h3>
+      <ol>
+        <li>First run the real project locally and identify its actual startup command, Python version, dependency file, and Telegram library. Lessons 7 and 9 show different libraries; use the one your project actually uses.</li>
+        <li>Write a <code>Dockerfile</code> for that project: choose a compatible Python base, install the project's existing dependencies, copy the required source, and use its real startup command. Test it before considering hosting.</li>
+        <li>Use a <code>.dockerignore</code> to exclude at least <code>.env</code>, virtual environments, Git metadata, and local database files from the build context. Pass secrets at runtime using the host's secret settings; for a local test, <code>docker run --env-file .env ...</code> can supply a correctly formatted local environment file. Do not copy secrets into the image or commit them.</li>
+        <li>Identify the actual SQLite path. A volume mounted at <code>/data</code> only preserves the database if the application is configured to write its database there. Check permissions and verify persistence with non-sensitive test data.</li>
+        <li>Stop the existing polling instance before starting another with the same bot token. Check logs and send a test message; a running process alone is not proof the bot works.</li>
+      </ol>
+      <p>Keep <code>.env</code> and live databases out of Git too. A <code>.gitignore</code> does not remove a file already tracked or erase it from history; if a token was exposed, revoke or rotate it and ask the mentor for help.</p>
+    </section>
+
+    <section class="waypoint" id="ai" data-step="4">
+      <span class="eyebrow">AI as a teammate, not an autopilot</span>
+      <h2>Ask, inspect, verify, explain</h2>
+      <p>Give an assistant a narrow problem and constraints. Share only sanitized snippets: never paste tokens, private user data, or an entire secret file.</p>
+      <div class="code-window"><span class="code-title">Example prompt · adapt to your project</span><pre><code>I have a Python Telegram bot that uses [actual library] and SQLite.
+It starts with [actual command] and stores its database at [path].
+Suggest a simple Dockerfile and .dockerignore. Explain each instruction,
+how runtime configuration is supplied, and what happens to the database
+when the container is replaced. Do not include real secrets.</code></pre></div>
+      <p><strong>Your review:</strong> Does the suggestion use your real entry point and dependency file? Are secrets excluded from the build context? Does the database path match the proposed mount? Can you build, run, and test it? If any answer is unclear, ask a follow-up or inspect the <a href="https://docs.docker.com/get-started/">Docker documentation</a>.</p>
+      <div class="note tip"><strong>Practice:</strong> Ask AI to explain one line of the lab Dockerfile. Check its explanation against the observed result and be ready to describe it in your own words.</div>
+    </section>
+
+    <section class="waypoint" id="check" data-step="5">
+      <span class="eyebrow">Knowledge check</span>
+      <h2>Can you explain your choices?</h2>
+      <p>Answer aloud first; then open each explanation.</p>
+      <details><summary>1. Is a Docker image the same as a running container?</summary><p>No. An image is a packaged blueprint; a container is an instance created from it. One image can be used to create multiple containers.</p></details>
+      <details><summary>2. Will Docker keep a bot online after your laptop shuts down?</summary><p>No. The container needs a running host. To stay online when your laptop is off, the bot needs a suitable continuously running remote host.</p></details>
+      <details><summary>3. Why did the demo count increase with a volume?</summary><p>The database was written under the mounted <code>/data</code> directory. The named volume survived removal of the first container and was mounted into the next one.</p></details>
+      <details><summary>4. Is a volume automatically a backup?</summary><p>No. It separates storage from the container lifecycle, but data can still be lost or damaged. A real project needs a suitable backup and recovery plan.</p></details>
+      <details><summary>5. Where should a bot token go?</summary><p>Supply it at runtime through an appropriate secret mechanism, not in source code, an image, Git, screenshots, or an AI prompt. Rotate an exposed token.</p></details>
+      <details><summary>6. What must you check before accepting an AI-generated Dockerfile?</summary><p>Check that it matches your project, excludes secrets, handles data correctly, builds and runs successfully, and that you can explain its important instructions.</p></details>
+    </section>
+
+    <section class="panel" id="homework" aria-labelledby="homework-title">
+      <span class="eyebrow">Homework · 90–120 minutes</span>
+      <h2 id="homework-title">Make a reproducible run</h2>
+      <p><strong>Core goal:</strong> complete and explain the offline lab. If your SpaceBuddy project already runs locally and there is time, adapt the approach to it. Do not deploy publicly or pay for hosting just to complete this assignment.</p>
+      <ol>
+        <li><strong>Build and test (40–50 min):</strong> create the demo files, build the image, and run both pairs of commands. Record the observed counts and explain the difference.</li>
+        <li><strong>Document (20–25 min):</strong> add a short README with prerequisites, build and run commands, expected results, and what the volume preserves. Include the Dockerfile and app source in your homework branch or repository.</li>
+        <li><strong>Plan the real project (20–25 min):</strong> sketch SpaceBuddy's components and write down its actual startup command, dependency file, secret names <em>without values</em>, database path, and one possible hosting option. State what you still need to verify about storage, worker support, and cost.</li>
+        <li><strong>Review (10–20 min):</strong> use AI for one focused question, check its answer, run <code>git status</code>, and commit only the intended demo and documentation files. Share the branch or PR with your mentor.</li>
+      </ol>
+      <h3>Definition of done</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="done-build" /><label for="done-build">I built the image and observed the two different persistence behaviors.</label></li>
+        <li><input type="checkbox" id="done-readme" /><label for="done-readme">Someone else can follow my README to run the demo.</label></li>
+        <li><input type="checkbox" id="done-plan" /><label for="done-plan">I can explain a deployment choice and its data, secrets, and cost risks.</label></li>
+        <li><input type="checkbox" id="done-ai" /><label for="done-ai">I checked an AI answer and can explain what I accepted or changed.</label></li>
+        <li><input type="checkbox" id="done-git" /><label for="done-git">My commit contains no tokens, private database, or local environment file.</label></li>
+      </ul>
+      <div class="note info"><strong>Optional stretch:</strong> Containerize the actual bot using the adaptation checklist above. Use test data and stop the existing polling process first. Record a successful test message; do not assume that the demo's <code>/data</code> path or startup command matches your project.</div>
+      <div class="note warning"><strong>Stuck?</strong> After 10 minutes, note the command, the exact error, and what you tried; ask your mentor. Remove tokens, personal data, and other secrets before sharing logs or screenshots.</div>
+    </section>
+
+    <footer class="closing">
+      <h2>Think beyond the code.</h2>
+      <p>A useful developer can explain how a project runs, where its data lives, and how to verify a change. Next: <a href="lesson11.html">choosing a problem and planning a realistic project</a>.</p>
+      <p><a href="index.html">Back to lesson index</a> · <a href="lesson9.html">Review lesson 9</a></p>
+    </footer>
+  </main>
+</body>
+</html>
